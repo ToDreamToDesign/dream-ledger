@@ -2,6 +2,19 @@
 
 ---
 
+## v0.6
+
+Added
+
+- archive/snapshots/2026/SNAPSHOT-2026-06.md — 第一份正式月結快照（audited）
+- 月結格式確立：資產／負債明細、淨值、現金流、被動收入覆蓋率、備注
+
+Notes
+
+- 每月底新增一份 SNAPSHOT-YYYY-MM.md，路徑為 archive/snapshots/YYYY/
+
+---
+
 ## v0.5
 
 Added

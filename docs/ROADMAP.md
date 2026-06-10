@@ -24,7 +24,7 @@
 
 ## Phase 3 — Financial Intelligence
 
-- [ ] Monthly snapshot workflow
+- [x] Monthly snapshot workflow (archive/snapshots/YYYY/SNAPSHOT-YYYY-MM.md)
 - [ ] Cashflow forecast
 - [ ] Liability projection
 - [ ] Dividend projection
