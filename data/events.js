@@ -27,6 +27,15 @@ lifeEvents.push(
     },
     {
         year: "2024",
+        category: "Leverage",
+        title: "富邦信貸投入保單",
+        fact:     "開始研究以信貸槓桿投入配息型保單的可行性，評估借貸利率與保單年化配息率之間的利差空間。",
+        context:  "儲蓄速度遠低於目標，意識到靠薪資線性累積資產效率太低，開始尋找槓桿工具。",
+        question: "借別人的錢買資產，這在數學上成立嗎？風險邊界在哪？",
+        decision: "認定利差策略在理論上可行，開始規劃信貸申請路徑，等待時機執行。"
+    },
+    {
+        year: "2024",
         category: "Investment",
         title: "開立台銀儲蓄保單，資產第一塊基石",
         fact:     "開始繳納台銀儲蓄保單，累積投入金額作為保單價值，長照險部分無解約價值不列入資產。",
@@ -42,6 +51,15 @@ lifeEvents.push(
         context:  "意識到純儲蓄沒有風險保障，需要在資產累積的同時建立基本保險層。",
         question: "保障和儲蓄應該分開處理還是合併在一張保單內？",
         decision: "採用附保障的儲蓄型保單，在繳費壓力較輕的月份進行調降，平衡保費與現金流。"
+    },
+    {
+        year: "2025",
+        category: "Cognition",
+        title: "建立第一版財務追蹤系統",
+        fact:     "以試算表建立第一版個人財務追蹤系統，開始記錄資產、負債與每月現金流。",
+        context:  "對自身財務狀況長期處於模糊感，無法回答「我現在有多少錢」這個基本問題。",
+        question: "數字化能帶來清醒嗎？還是只會帶來焦慮？",
+        decision: "選擇面對數字，用試算表建立初版追蹤框架，雖然不精確但是起點。"
     },
     {
         year: "2025",
@@ -82,7 +100,16 @@ lifeEvents.push(
     {
         year: "2026",
         category: "Cognition",
-        title: "建立 DREAM Ledger，以事實對抗資訊霧霾",
+        title: "GitHub + Claude Code 工作流建立",
+        fact:     "將 DREAM Ledger 遷移至 GitHub，以 Claude Code 作為主要開發與維護工具，建立 Git 版本控制工作流。",
+        context:  "試算表無法版本控制、無法協作、無法演化，需要一個真正的工程系統來承載財務考古的長期願景。",
+        question: "一個人能否用 AI 工具建立真正可維護的軟體系統？",
+        decision: "採用 Git + GitHub + Claude Code 工作流，讓 DREAM Ledger 從「網站」進化為「工程專案」。"
+    },
+    {
+        year: "2026",
+        category: "Cognition",
+        title: "DREAM Ledger 專案誕生",
         fact:     "啟動個人財務系統 DREAM Ledger，首次完整盤點所有資產與負債，確認淨值為 -134,653。",
         context:  "過去對自身財務狀況有模糊感，數字常被四捨五入或迴避，導致決策缺乏事實基礎。",
         question: "知道淨值是負數之後，心態上能接受嗎？真相是束縛還是解放？",
