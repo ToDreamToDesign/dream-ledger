@@ -56,3 +56,14 @@ Audit date: 2026-06-09
 富邦 90 萬信貸投入凱基配息型保單，建立正利差槓桿結構。
 同月搬遷新租屋處，月租 15,000。
 DREAM Ledger v0.5 Repository 建立後第一份正式審計快照。
+
+---
+
+## Linked
+
+| Type | Reference |
+|------|-----------|
+| Decision | [DEC-006 90 萬信貸投入凱基保單](../../decisions/DEC-006.md) |
+| Decision | [DEC-007 搬遷租屋](../../decisions/DEC-007.md) |
+| Decision | [DEC-008 建立 DREAM Ledger](../../decisions/DEC-008.md) |
+| Reflection | [REF-2026-06](../../reflections/2026/REF-2026-06.md) |

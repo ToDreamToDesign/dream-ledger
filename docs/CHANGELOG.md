@@ -2,6 +2,21 @@
 
 ---
 
+## v0.8
+
+Added
+
+- Linked section in DEC-006, DEC-007, DEC-008
+- Linked section in SNAPSHOT-2026-06.md
+- Linked section in REF-2026-06.md
+- 三層雙向導航：Decision ↔ Snapshot ↔ Reflection
+
+Notes
+
+- 每筆新增的 DEC / SNAPSHOT / REF 請補上 Linked 區塊，維持三層可互相導航
+
+---
+
 ## v0.7
 
 Added

@@ -18,6 +18,7 @@
 - [x] Event timeline page
 - [x] Category filter
 - [x] Reflection records (archive/reflections/YYYY/REF-YYYY-MM.md)
+- [x] Decision ↔ Snapshot ↔ Reflection linking (Linked section in archive files)
 - [ ] Decision detail page
 
 ---
