@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DREAM Ledger</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="style.css?v=v3">
+<style>
+    /* ── Hero 欄位分流 ── */
+    .hero-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+    .hero-right-metrics { display: flex; gap: 40px; text-align: right; }
+    .hero-sub-metric span { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+    .hero-sub-metric strong { font-size: 22px; font-weight: bold; }
+
+    /* ── 頁面切換（單頁應用） ── */
+    .page { display: none; flex-direction: column; gap: 28px; }
+    .page.active { display: flex; }
+
+    /* ── 資產管理頁 ── */
+    .asset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .asset-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border); }
+    .asset-item:last-child { border: none; }
+    .asset-label { font-size: 14px; color: var(--text-muted); }
+    .asset-value { font-size: 18px; font-weight: 600; color: var(--neon-cyan); }
+    .liability-value { color: var(--neon-rose); }
+    .section-total { display: flex; justify-content: space-between; align-items: center; padding: 16px 0 0 0; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .section-total span { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+    .section-total strong { font-size: 22px; font-weight: 700; }
+    .asset-note { font-size: 11px; color: var(--text-muted); margin-top: 3px; }
+
+    /* ── 負債管理頁 ── */
+    .debt-bar-wrap { margin-top: 8px; }
+    .debt-bar-bg { background: rgba(255,255,255,0.05); border-radius: 4px; height: 6px; margin-top: 10px; }
+    .debt-bar-fill { height: 6px; border-radius: 4px; background: var(--neon-rose); transition: width 0.6s ease; }
+    .debt-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 5px; }
+    .badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; letter-spacing: 0.5px; }
+    .badge-active { background: rgba(244,63,94,0.12); color: var(--neon-rose); border: 1px solid rgba(244,63,94,0.2); }
+    .badge-soon    { background: rgba(251,191,36,0.1);  color: var(--neon-amber); border: 1px solid rgba(251,191,36,0.2); }
+
+    /* ── 人生事件頁 ── */
+    .timeline-wrap { position: relative; padding-left: 28px; }
+    .timeline-wrap::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 1px; background: var(--border); }
+    .timeline-item { position: relative; margin-bottom: 24px; }
+    .timeline-dot { position: absolute; left: -24px; top: 4px; width: 10px; height: 10px; border-radius: 50%; background: var(--neon-cyan); box-shadow: 0 0 8px rgba(50,212,215,0.4); }
+    .timeline-dot.dot-life     { background: var(--neon-amber); box-shadow: 0 0 8px rgba(251,191,36,0.4); }
+    .timeline-dot.dot-career   { background: var(--neon-green); box-shadow: 0 0 8px rgba(52,211,153,0.4); }
+    .timeline-dot.dot-cognition{ background: #a78bfa; box-shadow: 0 0 8px rgba(167,139,250,0.4); }
+    .timeline-year  { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
+    .timeline-title { font-size: 14px; font-weight: 600; color: var(--text-main); }
+    .timeline-cat   { font-size: 10px; color: var(--text-muted); background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 1px 7px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; margin-left: 8px; }
+    .category-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+    .filter-btn { background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text-muted); padding: 5px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+    .filter-btn.active { background: rgba(50,212,215,0.08); border-color: rgba(50,212,215,0.3); color: var(--neon-cyan); }
+
+    /* ── 記帳紀錄頁 ── */
+    .record-month-header { font-size: 12px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; padding: 8px 0; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+    .record-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+    .record-row:last-child { border: none; }
+    .record-name { font-size: 13px; color: var(--text-main); }
+    .record-sub  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+    .record-amt  { font-size: 15px; font-weight: 600; }
+    .amt-in  { color: var(--neon-green); }
+    .amt-out { color: var(--neon-rose); }
+    .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0 0 0; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .summary-row span  { font-size: 13px; color: var(--text-muted); }
+    .summary-row strong{ font-size: 20px; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="layout" id="layout-root">
+
+    <aside class="sidebar" id="main-sidebar">
+        <div class="logo">
+            <div class="logo-icon">DL</div>
+            <div class="logo-text">
+                <h2>DREAM Ledger</h2>
+                <p>Reality First</p>
+            </div>
+        </div>
+        <nav>
+            <button class="nav-btn active" data-page="dashboard">Dashboard</button>
+            <button class="nav-btn" data-page="assets">資產管理</button>
+            <button class="nav-btn" data-page="liabilities">負債管理</button>
+            <button class="nav-btn" data-page="events">人生事件</button>
+            <button class="nav-btn" data-page="records">記帳紀錄</button>
+        </nav>
+    </aside>
+
+    <main class="content">
+
+        <div class="top-bar">
+            <button id="sidebar-toggle" class="toggle-btn">
+                <span></span><span></span><span></span>
+            </button>
+            <span class="brand-tag" id="page-brand">DREAM LEDGER // DASHBOARD</span>
+        </div>
+
+        <!-- ════════════════ PAGE: Dashboard ════════════════ -->
+        <div class="page active" id="page-dashboard">
+
+            <section class="hero dark-panel">
+                <div class="hero-container">
+                    <div class="hero-left">
+                        <span>真實淨資產 Net Worth</span>
+                        <h1 id="networth">--</h1>
+                    </div>
+                    <div class="hero-right-metrics">
+                        <div class="hero-sub-metric">
+                            <span>總資產 Total Assets</span>
+                            <strong id="totalAssets" style="color: var(--neon-cyan);">--</strong>
+                        </div>
+                        <div class="hero-sub-metric">
+                            <span>總負債 Total Liabilities</span>
+                            <strong id="totalLiabilities" style="color: var(--neon-rose);">--</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="stats">
+                <div class="card dark-panel card-income">
+                    <span>總現金流入 (月)</span>
+                    <strong id="income">--</strong>
+                </div>
+                <div class="card dark-panel card-expense">
+                    <span>總支出 (月)</span>
+                    <strong id="expense">--</strong>
+                </div>
+                <div class="card dark-panel card-cashflow">
+                    <span>自由現金流</span>
+                    <strong id="cashflow">--</strong>
+                </div>
+                <div class="card dark-panel card-debt">
+                    <span>真實總負債</span>
+                    <strong id="debt">--</strong>
+                </div>
+                <div class="card dark-panel card-passive-income">
+                    <span>被動保單配息</span>
+                    <strong id="passiveIncome">--</strong>
+                </div>
+                <div class="card dark-panel card-passive-assets">
+                    <span>被動配息覆蓋率</span>
+                    <strong id="coverageRatio">--</strong>
+                </div>
+            </section>
+
+            <section class="main-grid">
+                <div class="chart-card dark-panel">
+                    <div class="section-header">
+                        <h3>資產體量擴張曲線</h3>
+                        <div style="display:flex;align-items:center;gap:12px">
+                            <span id="chart-snapshot-meta" style="font-size:11px;color:var(--text-muted)">載入中...</span>
+                            <span style="font-size:11px;color:var(--text-muted)">
+                                <span style="color:var(--neon-cyan)">─</span> 資產
+                                <span style="color:var(--neon-rose);margin-left:8px">─</span> 淨值
+                            </span>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="assetChart"></canvas>
+                    </div>
+                </div>
+                <div class="event-card dark-panel" id="panel-events">
+                    <div class="panel-header">
+                        <h3>歷史決策考古河流</h3>
+                        <span style="font-size:12px;color:var(--text-muted)">點擊卡片解鎖細節</span>
+                    </div>
+                    <div class="panel-body" id="event-list" style="margin-top:15px"></div>
+                </div>
+            </section>
+
+        </div>
+
+        <!-- ════════════════ PAGE: 資產管理 ════════════════ -->
+        <div class="page" id="page-assets">
+            <section class="hero dark-panel">
+                <div class="hero-container">
+                    <div class="hero-left">
+                        <span>總資產 Total Assets</span>
+                        <h1 id="a-totalAssets" style="color: var(--neon-cyan)">--</h1>
+                    </div>
+                    <div class="hero-right-metrics">
+                        <div class="hero-sub-metric">
+                            <span>真實淨值</span>
+                            <strong id="a-netWorth">--</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="asset-grid">
+                <!-- 資產明細 -->
+                <div class="dark-panel">
+                    <div class="section-header">
+                        <h3>💰 資產明細</h3>
+                        <span>實體持有</span>
+                    </div>
+                    <div class="asset-item">
+                        <div>
+                            <div class="asset-label">現金</div>
+                            <div class="asset-note">流動資產</div>
+                        </div>
+                        <div class="asset-value" id="a-cash">--</div>
+                    </div>
+                    <div class="asset-item">
+                        <div>
+                            <div class="asset-label">凱基配息型保單</div>
+                            <div class="asset-note">核心被動資產，一次性投入，無需持續繳費</div>
+                        </div>
+                        <div class="asset-value" id="a-kgi">--</div>
+                    </div>
+                    <div class="asset-item">
+                        <div>
+                            <div class="asset-label">安達台幣保單</div>
+                            <div class="asset-note">前 6 期 5,000/月 → 第 7 期起 2,000/月</div>
+                        </div>
+                        <div class="asset-value" id="a-anda">--</div>
+                    </div>
+                    <div class="asset-item">
+                        <div>
+                            <div class="asset-label">台銀儲蓄保單</div>
+                            <div class="asset-note">以累積投入金額為保單價值；長照險無解約價值不列入</div>
+                        </div>
+                        <div class="asset-value" id="a-bot">--</div>
+                    </div>
+                    <div class="section-total">
+                        <span>總資產</span>
+                        <strong id="a-totalAssets2" style="color:var(--neon-cyan)">--</strong>
+                    </div>
+                </div>
+
+                <!-- 被動收入系統 -->
+                <div class="dark-panel">
+                    <div class="section-header">
+                        <h3>⚡ 被動收入系統</h3>
+                        <span>每月穩定現金流</span>
+                    </div>
+                    <div class="asset-item">
+                        <div>
+                            <div class="asset-label">凱基保單每月配息</div>
+                            <div class="asset-note">槓桿貸款利差核心引擎</div>
+                        </div>
+                        <div class="asset-value" id="a-dividend">--</div>
+                    </div>
+                    <div class="asset-item">
+                        <div>
+                            <div class="asset-label">配息覆蓋率</div>
+                            <div class="asset-note">被動收入 ÷ 每月總支出</div>
+                        </div>
+                        <div class="asset-value" id="a-coverage">--</div>
+                    </div>
+                    <div style="margin-top: 24px; padding: 16px; background: rgba(50,212,215,0.04); border-radius: 8px; border: 1px solid rgba(50,212,215,0.1);">
+                        <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">策略備忘</div>
+                        <div style="font-size:13px; color:var(--text-main); line-height:1.7">
+                            凱基保單為一次性投入 90 萬，以配息對抗每月富邦信貸月付款 12,302，
+                            目標利差為正數，建立穩定被動現金流以降低生存焦慮。
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ════════════════ PAGE: 負債管理 ════════════════ -->
+        <div class="page" id="page-liabilities">
+            <section class="hero dark-panel">
+                <div class="hero-container">
+                    <div class="hero-left">
+                        <span>真實總負債 Total Liabilities</span>
+                        <h1 id="l-totalLiabilities" style="color: var(--neon-rose)">--</h1>
+                    </div>
+                    <div class="hero-right-metrics">
+                        <div class="hero-sub-metric">
+                            <span>每月還款合計</span>
+                            <strong id="l-monthlyRepay" style="color:var(--neon-amber)">--</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="stats" style="grid-template-columns: repeat(4,1fr)">
+                <div class="card dark-panel card-debt">
+                    <span>富邦信貸</span>
+                    <strong id="l-fubon">--</strong>
+                </div>
+                <div class="card dark-panel card-debt">
+                    <span>學貸</span>
+                    <strong id="l-student">--</strong>
+                </div>
+                <div class="card dark-panel" style="border-color:rgba(251,191,36,0.15)!important">
+                    <span>私人借款</span>
+                    <strong id="l-private" style="color:var(--neon-amber)">--</strong>
+                </div>
+                <div class="card dark-panel card-debt">
+                    <span>按摩椅分期</span>
+                    <strong id="l-massage">--</strong>
+                </div>
+            </section>
+
+            <section class="stats" style="grid-template-columns: 1fr 1fr; margin-top: 0">
+                <div class="card dark-panel card-passive-assets">
+                    <span>配息覆蓋率（vs 總支出）</span>
+                    <strong id="l-coverage">--</strong>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:6px">配息 ÷ 每月總支出</div>
+                </div>
+                <div class="card dark-panel card-cashflow">
+                    <span>貸款覆蓋率（vs 富邦月付）</span>
+                    <strong id="l-loanCoverage">--</strong>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:6px">凱基配息 ÷ 富邦月付 12,302</div>
+                </div>
+            </section>
+
+            <div class="dark-panel">
+                <div class="section-header">
+                    <h3>負債結構分析</h3>
+                    <span>各項佔比與月還款明細</span>
+                </div>
+                <div id="debt-breakdown"></div>
+            </div>
+        </div>
+
+        <!-- ════════════════ PAGE: 人生事件 ════════════════ -->
+        <div class="page" id="page-events">
+            <section class="hero dark-panel" style="padding:20px 28px">
+                <div>
+                    <span style="color:var(--text-muted);font-size:13px">人生決策考古館 / Life Decision Archive</span>
+                    <h2 style="margin-top:6px;font-size:1.6rem">每一個決策，都值得被記住</h2>
+                </div>
+            </section>
+
+            <div class="dark-panel">
+                <div class="section-header">
+                    <h3>決策時間軸</h3>
+                    <div class="category-filter" id="cat-filter">
+                        <button class="filter-btn active" data-cat="all">全部</button>
+                        <button class="filter-btn" data-cat="Investment">投資</button>
+                        <button class="filter-btn" data-cat="Protection">保障</button>
+                        <button class="filter-btn" data-cat="Leverage">槓桿</button>
+                        <button class="filter-btn" data-cat="Life">生活</button>
+                        <button class="filter-btn" data-cat="Career">職涯</button>
+                    </div>
+                </div>
+                <div class="timeline-wrap" id="timeline-list"></div>
+            </div>
+        </div>
+
+        <!-- ════════════════ PAGE: 記帳紀錄 ════════════════ -->
+        <div class="page" id="page-records">
+            <section class="hero dark-panel" style="padding:20px 28px">
+                <div class="hero-container">
+                    <div class="hero-left">
+                        <span>2026 年 6 月 固定支出分解</span>
+                        <h1 id="r-totalExpense" style="color:var(--neon-rose)">--</h1>
+                    </div>
+                    <div class="hero-right-metrics">
+                        <div class="hero-sub-metric">
+                            <span>底薪</span>
+                            <strong style="color:var(--neon-green)" id="r-salary">--</strong>
+                        </div>
+                        <div class="hero-sub-metric">
+                            <span>自由現金流</span>
+                            <strong style="color:var(--neon-cyan)" id="r-cashflow">--</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="asset-grid">
+                <!-- 收入 -->
+                <div class="dark-panel">
+                    <div class="section-header"><h3>📥 每月收入</h3></div>
+                    <div class="record-row">
+                        <div>
+                            <div class="record-name">底薪</div>
+                            <div class="record-sub">保底基準，每月確認</div>
+                        </div>
+                        <div class="record-amt amt-in" id="r-baseSalary">--</div>
+                    </div>
+                    <div class="record-row">
+                        <div>
+                            <div class="record-name">公司費用報銷</div>
+                            <div class="record-sub">浮動，每月不同</div>
+                        </div>
+                        <div class="record-amt amt-in" id="r-reimb">--</div>
+                    </div>
+                    <div class="record-row">
+                        <div>
+                            <div class="record-name">凱基保單配息</div>
+                            <div class="record-sub">穩定被動現金流</div>
+                        </div>
+                        <div class="record-amt amt-in" id="r-dividend">--</div>
+                    </div>
+                    <div class="summary-row">
+                        <span>合計</span>
+                        <strong class="amt-in" id="r-totalIncome">--</strong>
+                    </div>
+                </div>
+
+                <!-- 支出 -->
+                <div class="dark-panel">
+                    <div class="section-header"><h3>📤 每月固定支出</h3></div>
+                    <div class="record-month-header">居住</div>
+                    <div class="record-row">
+                        <div><div class="record-name">房租</div></div>
+                        <div class="record-amt amt-out">-$15,000</div>
+                    </div>
+                    <div class="record-month-header">保險</div>
+                    <div class="record-row">
+                        <div><div class="record-name">台銀儲蓄</div></div>
+                        <div class="record-amt amt-out">-$5,300</div>
+                    </div>
+                    <div class="record-row">
+                        <div><div class="record-name">長照終身保險</div></div>
+                        <div class="record-amt amt-out">-$2,456</div>
+                    </div>
+                    <div class="record-row">
+                        <div><div class="record-name">安達台幣保單</div></div>
+                        <div class="record-amt amt-out">-$2,000</div>
+                    </div>
+                    <div class="record-row">
+                        <div>
+                            <div class="record-name">安達美元保單</div>
+                            <div class="record-sub">161 USD，匯率 30 換算</div>
+                        </div>
+                        <div class="record-amt amt-out">-$4,830</div>
+                    </div>
+                    <div class="record-month-header">貸款</div>
+                    <div class="record-row">
+                        <div><div class="record-name">學貸</div></div>
+                        <div class="record-amt amt-out">-$4,737</div>
+                    </div>
+                    <div class="record-row">
+                        <div><div class="record-name">富邦信貸</div></div>
+                        <div class="record-amt amt-out">-$12,302</div>
+                    </div>
+                    <div class="record-row">
+                        <div><div class="record-name">按摩椅分期</div></div>
+                        <div class="record-amt amt-out">-$1,250</div>
+                    </div>
+                    <div class="record-month-header">訂閱與通訊</div>
+                    <div class="record-row">
+                        <div><div class="record-name">中華電信</div></div>
+                        <div class="record-amt amt-out">-$3,492</div>
+                    </div>
+                    <div class="record-row">
+                        <div><div class="record-name">iCloud / XIM / YouTube / Netflix / LINE</div></div>
+                        <div class="record-amt amt-out">-$929</div>
+                    </div>
+                    <div class="summary-row">
+                        <span>合計</span>
+                        <strong class="amt-out" id="r-totalExpense2">--</strong>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </main>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+</div>
+
+<script src="user.js"></script>
+<script src="snapshot.js"></script>
+<script src="model.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

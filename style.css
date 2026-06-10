@@ -1,0 +1,408 @@
+:root {
+    --bg: #090d10;                   
+    --panel: #11171e;                
+    --panel-hover: #161f29;          
+    --border: rgba(255, 255, 255, 0.05); 
+    
+    --text-main: #f1f5f9;            
+    --text-muted: #64748b;           
+    
+    --neon-cyan: #32d4d7;            
+    --neon-green: #34d399;           
+    --neon-rose: #f43f5e;            
+    --neon-amber: #fbbf24;           
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg) !important;
+    color: var(--text-main) !important;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--bg);
+    position: relative;
+}
+
+/* ================= 1. Sidebar 側邊欄 (桌機預設) ================= */
+.sidebar {
+    width: 260px;
+    background-color: #06090c;
+    border-right: 1px solid var(--border);
+    padding: 32px 24px;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s ease, opacity 0.3s ease;
+}
+
+/* 桌機端摺疊狀態：縮為 icon rail，保留 logo 可見 */
+.layout.sidebar-collapsed .sidebar {
+    width: 64px;
+    padding: 32px 12px;
+    opacity: 1;
+    pointer-events: auto;
+    overflow: hidden;
+}
+
+/* 折疊時隱藏文字，只保留 logo icon */
+.layout.sidebar-collapsed .logo h2,
+.layout.sidebar-collapsed .logo p,
+.layout.sidebar-collapsed .nav-btn {
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+/* logo icon 置中 */
+.layout.sidebar-collapsed .logo {
+    justify-content: center;
+    gap: 0;
+}
+
+.logo {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--neon-cyan);
+    border-radius: 10px;
+    color: var(--neon-cyan);
+    font-weight: 700;
+    box-shadow: 0 0 12px rgba(50, 212, 215, 0.15);
+}
+
+.logo h2 { font-size: 1.1rem; font-weight: 600; letter-spacing: -0.5px; }
+.logo p { color: var(--text-muted); font-size: .75rem; margin-top: 2px; }
+
+nav { display: flex; flex-direction: column; gap: 6px; }
+
+.nav-btn {
+    width: 100%;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    text-align: left;
+    font-size: .95rem;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.nav-btn:hover { background-color: rgba(255, 255, 255, 0.02); color: var(--text-main); }
+.nav-btn.active {
+    background-color: rgba(50, 212, 215, 0.06);
+    border: 1px solid rgba(50, 212, 215, 0.15);
+    color: var(--neon-cyan);
+}
+
+/* 遮罩預設隱藏 */
+.sidebar-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(4px);
+    z-index: 90;
+    display: none;
+}
+
+/* ================= 2. 主內容區域 (桌機預設) ================= */
+.content {
+    flex: 1;
+    padding: 40px 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    min-width: 0; /* 防止 Chart.js 撐破容器 */
+}
+
+.top-bar { display: flex; align-items: center; gap: 20px; }
+.brand-tag { font-size: 0.75rem; color: var(--text-muted); letter-spacing: 2px; font-weight: 500; }
+
+.toggle-btn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px;
+    border-radius: 8px;
+}
+.toggle-btn span { display: block; width: 16px; height: 2px; background-color: var(--neon-cyan); }
+
+.dark-panel {
+    background-color: var(--panel) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 16px;
+    padding: 28px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* ================= 3. Hero 總資產區 ================= */
+.hero { display: flex; justify-content: space-between; align-items: center; }
+.hero-left span { color: var(--text-muted); font-size: 0.85rem; font-weight: 500; }
+.hero-left h1 { font-size: 3.4rem; font-weight: 700; margin: 6px 0; letter-spacing: -1px; }
+.hero-left .growth { color: var(--neon-green); font-size: 0.9rem; font-weight: 500; }
+.hero-right { text-align: right; }
+.mini-stat span { color: var(--text-muted); font-size: 0.8rem; display: block; margin-bottom: 6px; }
+.mini-stat strong { font-size: 1.4rem; font-weight: 600; }
+
+/* ================= 4. Stats 數據網格 (桌機預設為完美的 3 欄) ================= */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.card { position: relative; transition: border-color 0.25s, box-shadow 0.25s; }
+.card span { color: var(--text-muted); font-size: 0.85rem; font-weight: 500; }
+.card strong { display: block; margin-top: 14px; font-size: 1.8rem; font-weight: 600; }
+
+/* 卡片渲染控色 */
+.card-income { border: 1px solid rgba(52, 211, 153, 0.12) !important; background: linear-gradient(180deg, var(--panel), rgba(52, 211, 153, 0.01)) !important;}
+.card-income strong { color: var(--neon-green) !important; }
+.card-cashflow { border: 1px solid rgba(50, 212, 215, 0.16) !important; background: linear-gradient(180deg, var(--panel), rgba(50, 212, 215, 0.02)) !important;}
+.card-cashflow strong { color: var(--neon-cyan) !important; }
+.card-debt { border: 1px solid rgba(244, 63, 94, 0.12) !important; background: linear-gradient(180deg, var(--panel), rgba(244, 63, 94, 0.01)) !important;}
+.card-debt strong { color: var(--neon-rose) !important; }
+.card-passive-income { border: 1px solid rgba(251, 191, 36, 0.1) !important; background: linear-gradient(180deg, var(--panel), rgba(251, 191, 36, 0.01)) !important;}
+.card-passive-income strong { color: var(--neon-amber) !important; }
+.card-passive-assets strong { color: var(--neon-cyan) !important; opacity: 0.85; }
+
+/* ================= 5. 工作區排版 (桌機預設 2:1) ================= */
+.main-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 28px;
+}
+.chart-card { height: 400px; display: flex; flex-direction: column; }
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+.section-header h3 { font-size: 1.1rem; font-weight: 600; }
+.section-header span { color: var(--text-muted); font-size: 0.8rem; }
+.chart-container { position: relative; flex: 1; width: 100%; height: 100%; }
+
+.event-card { display: flex; flex-direction: column; }
+.panel-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 16px; }
+.panel-header h3 { font-size: 1.1rem; font-weight: 600; }
+.collapse-panel-btn { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; }
+.collapsed .panel-body { display: none !important; }
+
+.event-item { display: flex; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--border); align-items: center; }
+.event-item:last-child { border: none; }
+.event-year { color: var(--neon-cyan); font-weight: 600; background: rgba(50, 212, 215, 0.06); padding: 4px 10px; border-radius: 6px; font-size: 0.8rem; }
+.text-cyan { color: var(--neon-cyan); }
+
+/* ================= 6. 手風琴決策河流 ================= */
+.collapsible-event {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: border-color 0.2s ease;
+}
+.collapsible-event:hover {
+    border-color: rgba(50, 212, 215, 0.2);
+}
+.collapsible-event.is-open {
+    border-color: rgba(50, 212, 215, 0.3);
+    background: rgba(50, 212, 215, 0.02);
+}
+.event-summary {
+    padding: 14px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+.event-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+}
+.event-tag {
+    font-size: 10px;
+    color: var(--text-muted);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border);
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+.event-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-main);
+    margin: 0;
+}
+.toggle-icon {
+    font-size: 11px;
+    color: var(--text-muted);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s;
+    flex-shrink: 0;
+}
+
+/* 本體論四節點區塊 */
+.ontology-block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+}
+.ontology-node {
+    padding: 10px 12px;
+    border-radius: 6px;
+    border-left: 2px solid transparent;
+}
+.ontology-node strong {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+.ontology-node p {
+    font-size: 12px;
+    color: var(--text-main);
+    line-height: 1.6;
+    margin: 0;
+}
+.node-fact     { background: rgba(100, 116, 139, 0.06); border-left-color: #64748b; }
+.node-fact strong     { color: #64748b; }
+.node-context  { background: rgba(50, 212, 215, 0.04); border-left-color: var(--neon-cyan); }
+.node-context strong  { color: var(--neon-cyan); }
+.node-question { background: rgba(251, 191, 36, 0.04); border-left-color: var(--neon-amber); }
+.node-question strong { color: var(--neon-amber); }
+.node-decision { background: rgba(52, 211, 153, 0.05); border-left-color: var(--neon-green); }
+.node-decision strong { color: var(--neon-green); }
+
+
+/* ==========================================================================
+   📱 RESPONSIVE BREAKPOINTS (響應式斷點核心調優)
+   ========================================================================== */
+
+/* ─── 1. 平板型中螢幕裝置防線 (Tablet Breakpoint) ─── */
+@media (max-width: 1024px) {
+    .content {
+        padding: 32px; /* 稍微壓縮主邊距 */
+        gap: 24px;
+    }
+    
+    .stats {
+        grid-template-columns: repeat(2, 1fr); /* 降維成 2 欄 x 3 排 */
+        gap: 20px;
+    }
+    
+    .main-grid {
+        grid-template-columns: 1fr; /* 下方圖表與事件改為上下堆疊 */
+        gap: 24px;
+    }
+    
+    .chart-card {
+        height: 360px; /* 略微降低圖表高度 */
+    }
+}
+
+/* ─── 2. 手機型小螢幕終極熔斷防線 (Mobile Breakpoint) ─── */
+@media (max-width: 768px) {
+    /* 側邊欄大變身：化為懸浮抽屜 */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 260px;
+        transform: translateX(-100%); /* 預設完全推至螢幕外 */
+        box-shadow: 20px 0 40px rgba(0,0,0,0.5);
+    }
+    
+    /* 當手機端觸發開啟時，用 transform 滑出 */
+    .layout.sidebar-collapsed .sidebar {
+        transform: translateX(0);
+        width: 260px;
+        opacity: 1;
+        pointer-events: auto;
+    }
+    
+    /* 開啟時顯現遮罩 */
+    .layout.sidebar-collapsed .sidebar-overlay {
+        display: block;
+    }
+
+    .content {
+        padding: 24px 16px; /* 手機端兩側留白最優化，騰出最大閱讀空間 */
+        gap: 20px;
+    }
+    
+    /* Hero 總資產面板：垂直堆疊 */
+    .hero {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+        padding: 20px; /* 調小面板內距 */
+    }
+    
+    .hero-left h1 {
+        font-size: 2.2rem; /* 降低字體，避免在 iPhone 等小螢幕上溢出折行 */
+        margin: 4px 0;
+    }
+    
+    .hero-right {
+        text-align: left; /* 靠左對齊 */
+    }
+    
+    /* 核心網格全部降維為單一縱列流體 */
+    .stats {
+        grid-template-columns: 1fr; 
+        gap: 14px;
+    }
+    
+    .card {
+        padding: 20px; /* 縮減內距，把寬度留給數據 */
+    }
+    
+    .card strong {
+        font-size: 1.6rem;
+        margin-top: 10px;
+    }
+    
+    .dark-panel {
+        padding: 20px; /* 全域面板內距優化 */
+    }
+    
+    .chart-card {
+        height: 300px; /* 手機端最佳圖表觀看高度 */
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        margin-bottom: 16px;
+    }
+}

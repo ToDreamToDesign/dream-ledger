@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DREAM Ledger 2.0 - 個人財務指揮中心</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="boot-diagnostic-mask" class="diagnostic-mask">
+        <div class="diagnostic-box">
+            <h2 style="font-family:'Orbitron'; color:var(--neon-red); margin-bottom:1rem; letter-spacing:2px;">🚨 BOOT_FATAL_DIAGNOSTIC</h2>
+            <p id="boot-fatal-message" style="font-size:0.9rem; color:var(--text-muted); line-height:1.6; margin-bottom:1.5rem;">
+                </p>
+            <div id="boot-fatal-code" style="font-family:monospace; font-size:0.75rem; background:rgba(0,0,0,0.4); padding:0.5rem; border-radius:8px; color:var(--neon-red);">
+                </div>
+        </div>
+    </div>
+
+    <aside class="sidebar" id="sidebar-panel">
+        <div class="brand-title">DREAM<span>LEDGER</span></div>
+        <nav style="flex: 1;">
+            <a href="#" class="nav-item active">財務指揮面板 (Dashboard) <div class="role-tag">Admin</div></a>
+        </nav>
+        <div style="font-size: 0.65rem; color: var(--text-muted); text-align: center; font-family: 'Orbitron', sans-serif; letter-spacing: 1px; opacity: 0.4;">
+            PLATFORM v2.1-RC1
+        </div>
+    </aside>
+
+    <main class="main-content" id="main-panel">
+        
+        <div id="preview-badge-notice" class="preview-alert-banner">
+            <div style="display:flex; align-items:center; gap:10px;">
+                <span style="font-family:'Orbitron'; font-weight:900; color:var(--neon-purple);">[DRY RUN PREVIEW]</span>
+                <span>當前指標大盤正處於「傳票草稿模擬虛擬過帳」狀態，並非最終歷史事實。</span>
+            </div>
+            <button id="btn-clear-preview" class="form-control" style="padding:4px 10px; font-size:0.75rem; border-color:var(--neon-purple); color:var(--neon-purple); display:none; cursor:pointer;" onclick="clearDryRunPreview()">退出預覽</button>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="glass-card card-purple">
+                <div class="card-label">核心指揮成績單 // 淨值 Net Worth</div>
+                <div class="card-value" id="ui-networth">--</div>
+            </div>
+            <div class="glass-card card-cyan">
+                <div class="card-label">流動生存水位 // 可用現金 Cash</div>
+                <div class="glass-card card-cyan" style="display:none;"></div> 
+                <div class="card-value" id="ui-cash">--</div>
+            </div>
+            <div class="glass-card card-alert">
+                <div class="card-label">授信風險警戒 // 總負債 Debt</div>
+                <div class="card-value" id="ui-debt">--</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="glass-card card-purple">
+                <div class="card-label">對沖授信結構 // 保單信貸覆蓋率</div>
+                <div class="card-value" id="ui-coverage">--<span class="card-unit">%</span></div>
+            </div>
+            <div class="glass-card card-cyan" id="card-safety">
+                <div class="card-label">防禦生命線 // 安全可用月數 Runway</div>
+                <div class="card-value" id="ui-safety">--<span class="card-unit">MOS</span></div>
+            </div>
+            <div class="glass-card card-purple">
+                <div class="card-label">現金流量回歸 // 本月自由現金流</div>
+                <div class="card-value" id="ui-cashflow">--</div>
+            </div>
+        </div>
+
+        <div class="glass-card form-panel">
+            <h3 style="font-family:'Orbitron'; font-size:0.95rem; color:var(--neon-cyan); margin-bottom:1.25rem; letter-spacing:1px;">📥 PHASE 2 // TRANSACTION CAPTURE ENGINE</h3>
+            
+            <div class="form-group-row">
+                <div class="form-field-wrapper">
+                    <label>業務事件類型 (Event)</label>
+                    <select id="form-event" class="form-control">
+                        <option value="NORMAL">NORMAL (常態金流分錄)</option>
+                        <option value="REVALUATION">REVALUATION (市值/匯率重估)</option>
+                        <option value="OPENING_ADJUSTMENT">OPENING_ADJUSTMENT (期初追溯校正)</option>
+                    </select>
+                </div>
+                <div class="form-field-wrapper">
+                    <label>審計軌跡備忘錄 (Memo Track)</label>
+                    <input type="text" id="form-memo" class="form-control" value="本期安達保單美金資產估值自動校正">
+                </div>
+            </div>
+
+            <div style="margin-top:1.25rem; margin-bottom:0.5rem;"><span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">分錄複式記帳細項 (Journal Lines Aggregate)</span></div>
+            <div id="form-lines-container">
+                </div>
+            
+            <button class="btn-add-line" onclick="addFormLine()">+ Add Line (新增分錄線)</button>
+
+            <div class="form-balance-bar">
+                <div>借方累計: <span id="form-total-debit" style="color:var(--neon-green); font-weight:bold;">0</span></div>
+                <div>貸方累計: <span id="form-total-credit" style="color:#FB7185; font-weight:bold;">0</span></div>
+                <div id="form-balance-indicator" class="form-balance-status unbalanced">UNBALANCED</div>
+            </div>
+
+            <div class="capture-action-group">
+                <button id="btn-preview-action" class="btn-command btn-preview" disabled onclick="triggerDryRunPreview()">Stage 2: Preview (模擬過帳)</button>
+                <button id="btn-post-action" class="btn-command btn-post" disabled onclick="commitFormPost()">Stage 3: Post (正式過帳鎖定)</button>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <div class="glass-card"><div class="card-label">資產配置結構大盤 (Asset Allocation)</div><div class="chart-box" id="ui-asset-chart"></div></div>
+            <div class="glass-card"><div class="card-label">債務存量槓桿結構 (Debt Leverage)</div><div class="chart-box" id="ui-debt-chart"></div></div>
+        </div>
+
+        <div class="accordion-section" id="journalAccordion">
+            <button class="accordion-trigger" onclick="toggleJournalAccordion()">
+                <div class="accordion-title-area"><span class="accordion-icon">▶</span><span>總帳日記帳流向最新追溯 (Recent Journal Lines)</span></div>
+                <span style="font-size: 0.75rem; color: var(--text-muted); font-family: monospace;">[IMMUTABLE SOURCE OF TRUTH]</span>
+            </button>
+            <div class="accordion-content"><div class="table-container"><table><thead><tr><th>分錄序號</th><th>業務事件</th><th>科目流向路徑</th><th>實質變動</th><th>審計備忘軌跡</th></tr></thead><tbody id="journal-rows-container"></tbody></table></div></div>
+        </div>
+
+        <div class="glass-card debug-card">
+            <div class="debug-header"><div>🛠️ TRIAL BALANCE // 總帳實時借貸餘額平衡核武器艙</div><div id="debug-status-badge" class="debug-badge">VAL</div></div>
+            <div style="display: flex; justify-content: space-between; font-family: monospace; font-size: 0.85rem;">
+                <div>借方餘額總和 (Debit): <span id="debug-debit">0</span></div>
+                <div>貸方餘額總和 (Credit): <span id="debug-credit">0</span></div>
+                <div>天平絕對差額 (Difference): <span id="debug-diff">0</span></div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="model.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "title": "JournalEntry",
+  "type": "object",
+  "required": ["entryId", "journalNo", "transactionDate", "lines"],
+  "properties": {
+    "entryId": { "type": "string" },
+    "journalNo": { "type": "string" },
+    "transactionDate": { "type": "string" },
+    "lines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["accountCode", "amount", "direction"],
+        "properties": {
+          "accountCode": { "type": "string" },
+          "amount": { "type": "string" },
+          "direction": { "type": "string", "enum": ["DEBIT", "CREDIT"] }
+        }
+      }
+    }
+  }
+}

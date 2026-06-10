@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DREAM Ledger</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="style.css?v=rwd_upgrade_v2">
+</head>
+<body>
+
+<div class="layout" id="layout-root">
+
+    <aside class="sidebar" id="main-sidebar">
+        <div class="logo">
+            <div class="logo-icon">DL</div>
+            <div>
+                <h2>DREAM Ledger</h2>
+                <p>Reality First</p>
+            </div>
+        </div>
+        <nav>
+            <button class="nav-btn active">Dashboard</button>
+            <button class="nav-btn">資產管理</button>
+            <button class="nav-btn">負債管理</button>
+            <button class="nav-btn">人生事件</button>
+            <button class="nav-btn">記帳紀錄</button>
+        </nav>
+    </aside>
+
+    <main class="content">
+        
+        <div class="top-bar">
+            <button id="sidebar-toggle" class="toggle-btn">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <span class="brand-tag">DREAM LEDGER // MOBILE RESPONSIVE</span>
+        </div>
+
+        <section class="hero dark-panel">
+            <div class="hero-left">
+                <span>總資產 Net Worth</span>
+                <h1 id="networth">$2,680,000</h1>
+                <p class="growth">▲ +4.2% 本月</p>
+            </div>
+            <div class="hero-right">
+                <div class="mini-stat">
+                    <span>運作模式</span>
+                    <strong class="text-cyan">Reality First</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class="stats">
+            <div class="card dark-panel card-income">
+                <span>收入</span>
+                <strong>$75,000</strong>
+            </div>
+
+            <div class="card dark-panel card-expense">
+                <span>支出</span>
+                <strong>$42,000</strong>
+            </div>
+
+            <div class="card dark-panel card-cashflow">
+                <span>現金流</span>
+                <strong>$33,000</strong>
+            </div>
+
+            <div class="card dark-panel card-debt">
+                <span>負債</span>
+                <strong>$900,000</strong>
+            </div>
+
+            <div class="card dark-panel card-passive-income">
+                <span>被動收入</span>
+                <strong>$8,500</strong>
+            </div>
+
+            <div class="card dark-panel card-passive-assets">
+                <span>被動資產</span>
+                <strong>$1,250,000</strong>
+            </div>
+        </section>
+
+        <section class="main-grid">
+            
+            <div class="chart-card dark-panel">
+                <div class="section-header">
+                    <h3>資產成長曲線</h3>
+                    <span>人生重要事件節點</span>
+                </div>
+                <div class="chart-container">
+                    <canvas id="assetChart"></canvas>
+                </div>
+            </div>
+
+            <div class="event-card dark-panel" id="panel-events">
+                <div class="panel-header">
+                    <h3>近期重要事件</h3>
+                    <button class="collapse-panel-btn" onclick="togglePanel('panel-events')">摺疊</button>
+                </div>
+                <div class="panel-body" id="event-list">
+                    </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+</div>
+
+<script src="model.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>

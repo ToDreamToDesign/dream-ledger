@@ -1,0 +1,49 @@
+{
+  "event_id": "EVT-2026-003-CreditLoanToInsurance",
+  "timestamp": "2026-06-07T12:00:00Z",
+  
+  "observation_layer": {
+    "observation": "申請一筆 90 萬元新台幣的低利信用貸款，並全額投入特定配息型保單以獲取被動現金流。"
+  },
+  
+  "interpretation_layer": {
+    "belief": "市場利率很低，保單配息穩定，這筆利差交易是完美的無風險被動收入套利，能幫我快速累積財務防線。",
+    "interpretation": "這本質上是一次財務槓桿操作。大腦在高焦慮階段容易過度放大利差的套利安全感，而忽略了流動性鎖死與資產底層結構的潛在風險。",
+    "significance": "利用槓桿建立被動現金流時，核心焦點不應是當前的配息率，而是自身對流動性中斷的極端抗震能力。"
+  },
+  
+  "policy_layer": {
+    "policy_id": "PLC-2026-LEVERAGE-GUARD",
+    "policy": "未來任何涉及信貸或套利的槓桿決策，必須強制執行 48 小時情緒冷卻，且必須預留至少 12 個月的本息還款預備金，否則一律否決。",
+    "status": "active"
+  },
+  
+  "outcome_layer": {
+    "outcome": "成功建立每月固定配息現金流。但 2026 年中遭遇突發大額支出需求時，因保單資產短期內無法無損解約，導致流動性出現短暫緊繃，承受了預期之外的情緒壓力和隱性代價。",
+    "policy_ref": "PLC-2026-LEVERAGE-GUARD"
+  },
+  
+  "decision_quality_axis": {
+    "dq_grade": "B",
+    "information_score": 0.80,
+    "guardrail_score": 0.70,
+    "emotion_score": 0.65
+  },
+  
+  "assumption_audit_layer": {
+    "audit_verdict": "流程評分為 B，程序尚算理智，但底層的世界模型假設存在嚴重的範式盲區，高估了環境的剛性穩定。",
+    "crushed_assumptions": [
+      {
+        "assumption_id": "ASM-LEVERAGE-001",
+        "statement": "信貸利差在貸款存續期內會永遠大於保單配息衰減波動。",
+        "status": "verified"
+      },
+      {
+        "assumption_id": "ASM-LIQUIDITY-002",
+        "statement": "我個人的物理生活在未來數年內不會發生突發性、打破常規的大額流動性資金需求。",
+        "status": "invalidated",
+        "confidence_delta": "0.85 -> 0.20"
+      }
+    ]
+  }
+}
