@@ -26,7 +26,7 @@ lifeEvents.push(
         decision: "優先穩定現金流，同步建立第一個儲蓄型資產節點。"
     },
     {
-        year: "2024",
+        year: "2025",
         category: "Leverage",
         title: "富邦信貸投入保單",
         fact:     "開始研究以信貸槓桿投入配息型保單的可行性，評估借貸利率與保單年化配息率之間的利差空間。",
