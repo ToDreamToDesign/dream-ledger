@@ -66,10 +66,15 @@ const dreamUser = {
         expense: {
             rent: 15000,              // 房租
             insurance: 14586,         // 保險 (含安達美元保單 161 USD，以匯率 30 換算)
-            loanRepayment: 18289,     // 貸款月還款 (學貸 4737 + 富邦 12302 + 按摩椅 1250)
+            loanRepayment: {
+                fubon:       12302,   // 富邦信貸月還款 (84期，第4期起)
+                student:      4737,   // 學貸月還款
+                massageChair: 1250,   // 按摩椅分期月還款
+                get total() { return this.fubon + this.student + this.massageChair; }
+            },
             telecomSubscription: 4421, // 電信與各類訂閱
             get total() {
-                return this.rent + this.insurance + this.loanRepayment + this.telecomSubscription;
+                return this.rent + this.insurance + this.loanRepayment.total + this.telecomSubscription;
             }
         },
         // 真實自由現金流 (動態計算，隨收入變動即時更新)

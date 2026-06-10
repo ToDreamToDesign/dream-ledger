@@ -104,9 +104,10 @@ function renderAssets() {
     set("a-kgi",          formatCurrency(a.kgiPolicy));
     set("a-anda",         formatCurrency(a.andaTwd));
     set("a-bot",          formatCurrency(a.botSavings));
-    set("a-totalAssets2", formatCurrency(totalAssets));
-    set("a-dividend",     formatCurrency(dividend));
-    set("a-coverage",     formatPercentage(dividend / expense));
+    set("a-totalAssets2",   formatCurrency(totalAssets));
+    set("a-dividend",       formatCurrency(dividend));
+    set("a-coverage",       formatPercentage(dividend / expense));
+    set("a-fubonMonthly",   formatCurrency(dreamUser.cashflowModel.expense.loanRepayment.fubon));
 
     const nwEl = document.getElementById("a-netWorth");
     if (nwEl) nwEl.style.color = netWorth < 0 ? "var(--neon-rose)" : "var(--neon-green)";
@@ -116,8 +117,12 @@ function renderAssets() {
 function renderLiabilities() {
     if (typeof dreamUser === "undefined") return;
     const l = dreamUser.realLiabilities;
-    const totalLiab    = dreamUser.getters.getTotalLiabilities();
-    const monthlyRepay = dreamUser.cashflowModel.expense.loanRepayment;
+    const totalLiab      = dreamUser.getters.getTotalLiabilities();
+    const loan           = dreamUser.cashflowModel.expense.loanRepayment;
+    const monthlyRepay   = loan.total;
+    const fubonMonthly   = loan.fubon;
+    const studentMonthly = loan.student;
+    const massageMonthly = loan.massageChair;
 
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
     set("l-totalLiabilities", formatCurrency(totalLiab));
@@ -130,7 +135,6 @@ function renderLiabilities() {
     // 兩個覆蓋率指標
     const dividend     = dreamUser.cashflowModel.income.kgiDividend;
     const totalExpense = dreamUser.cashflowModel.expense.total;
-    const fubonMonthly = 12302;
     const coverageEl     = document.getElementById("l-coverage");
     const loanCoverageEl = document.getElementById("l-loanCoverage");
     if (coverageEl) {
@@ -142,13 +146,14 @@ function renderLiabilities() {
         loanCoverageEl.textContent = formatPercentage(loanRatio);
         loanCoverageEl.style.color = loanRatio >= 0.5 ? "var(--neon-cyan)" : "var(--neon-amber)";
     }
+    set("l-fubonMonthlyNote", formatCurrency(fubonMonthly));
 
     // 負債結構分析列表
     const breakdown = [
-        { label: '富邦信貸', amount: l.fubonLoan,    monthly: 12302, badge: 'active', note: '84 期分期，核心槓桿負債' },
-        { label: '學貸',     amount: l.studentLoan,  monthly: 4737,  badge: 'active', note: '長期低利政府貸款' },
-        { label: '私人借款', amount: l.privateLoan,  monthly: 0,     badge: 'soon',   note: '預計 2026/07 全額償還' },
-        { label: '按摩椅分期', amount: l.massageChair, monthly: 1250, badge: 'active', note: '信用卡分期，餘額遞減中' },
+        { label: '富邦信貸',   amount: l.fubonLoan,    monthly: fubonMonthly,   badge: 'active', note: '84 期分期，核心槓桿負債' },
+        { label: '學貸',       amount: l.studentLoan,  monthly: studentMonthly, badge: 'active', note: '長期低利政府貸款' },
+        { label: '私人借款',   amount: l.privateLoan,  monthly: 0,              badge: 'soon',   note: '預計 2026/07 全額償還' },
+        { label: '按摩椅分期', amount: l.massageChair, monthly: massageMonthly, badge: 'active', note: '信用卡分期，餘額遞減中' },
     ];
 
     const container = document.getElementById('debt-breakdown');
@@ -238,6 +243,9 @@ function renderRecords() {
     set("r-totalIncome",  '+' + formatCurrency(i.total));
     set("r-totalExpense",  formatCurrency(e.total));
     set("r-totalExpense2", '-' + formatCurrency(e.total));
+    set("r-loanFubon",    '-' + formatCurrency(e.loanRepayment.fubon));
+    set("r-loanStudent",  '-' + formatCurrency(e.loanRepayment.student));
+    set("r-loanMassage",  '-' + formatCurrency(e.loanRepayment.massageChair));
 }
 
 // ── 8. Dashboard 手風琴事件列表 ──────────────────────────────

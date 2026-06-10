@@ -253,7 +253,7 @@
                     <div style="margin-top: 24px; padding: 16px; background: rgba(50,212,215,0.04); border-radius: 8px; border: 1px solid rgba(50,212,215,0.1);">
                         <div style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">策略備忘</div>
                         <div style="font-size:13px; color:var(--text-main); line-height:1.7">
-                            凱基保單為一次性投入 90 萬，以配息對抗每月富邦信貸月付款 12,302，
+                            凱基保單為一次性投入 90 萬，以配息對抗每月富邦信貸月付款 <span id="a-fubonMonthly">--</span>，
                             目標利差為正數，建立穩定被動現金流以降低生存焦慮。
                         </div>
                     </div>
@@ -306,7 +306,7 @@
                 <div class="card dark-panel card-cashflow">
                     <span>貸款覆蓋率（vs 富邦月付）</span>
                     <strong id="l-loanCoverage">--</strong>
-                    <div style="font-size:11px;color:var(--text-muted);margin-top:6px">凱基配息 ÷ 富邦月付 12,302</div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:6px">凱基配息 ÷ 富邦月付 <span id="l-fubonMonthlyNote">--</span></div>
                 </div>
             </section>
 
@@ -336,8 +336,10 @@
                         <button class="filter-btn" data-cat="Investment">投資</button>
                         <button class="filter-btn" data-cat="Protection">保障</button>
                         <button class="filter-btn" data-cat="Leverage">槓桿</button>
+                        <button class="filter-btn" data-cat="Asset Allocation">資產配置</button>
                         <button class="filter-btn" data-cat="Life">生活</button>
                         <button class="filter-btn" data-cat="Career">職涯</button>
+                        <button class="filter-btn" data-cat="Cognition">認知</button>
                     </div>
                 </div>
                 <div class="timeline-wrap" id="timeline-list"></div>
@@ -427,15 +429,15 @@
                     <div class="record-month-header">貸款</div>
                     <div class="record-row">
                         <div><div class="record-name">學貸</div></div>
-                        <div class="record-amt amt-out">-$4,737</div>
+                        <div class="record-amt amt-out" id="r-loanStudent">--</div>
                     </div>
                     <div class="record-row">
                         <div><div class="record-name">富邦信貸</div></div>
-                        <div class="record-amt amt-out">-$12,302</div>
+                        <div class="record-amt amt-out" id="r-loanFubon">--</div>
                     </div>
                     <div class="record-row">
                         <div><div class="record-name">按摩椅分期</div></div>
-                        <div class="record-amt amt-out">-$1,250</div>
+                        <div class="record-amt amt-out" id="r-loanMassage">--</div>
                     </div>
                     <div class="record-month-header">訂閱與通訊</div>
                     <div class="record-row">
