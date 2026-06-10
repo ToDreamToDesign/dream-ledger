@@ -17,8 +17,8 @@
 - [x] `events.js`
 - [x] Event timeline page
 - [x] Category filter
+- [x] Reflection records (archive/reflections/YYYY/REF-YYYY-MM.md)
 - [ ] Decision detail page
-- [ ] Reflection records
 
 ---
 

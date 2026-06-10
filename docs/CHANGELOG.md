@@ -2,6 +2,20 @@
 
 ---
 
+## v0.7
+
+Added
+
+- archive/reflections/2026/REF-2026-06.md — 第一份月度反思紀錄
+- 月反思格式確立：What happened / What changed / What surprised me / What would I do differently / What did I learn
+
+Notes
+
+- 每月底新增一份 REF-YYYY-MM.md，路徑為 archive/reflections/YYYY/
+- Snapshot（事實）+ Decision（決策）+ Reflection（反思）三條時間軸正式閉環
+
+---
+
 ## v0.6
 
 Added
