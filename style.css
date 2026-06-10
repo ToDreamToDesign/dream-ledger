@@ -466,6 +466,13 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     letter-spacing: 0.8px;
 }
 
+.landing-desc {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.9;
+    margin-top: 20px;
+}
+
 .landing-divider {
     width: 48px;
     height: 1px;
