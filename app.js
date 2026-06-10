@@ -428,6 +428,16 @@ function initSidebarToggle() {
 
 // ── 11. 系統啟動 ──────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
+    // Landing overlay
+    const landingOverlay = document.getElementById('landing-overlay');
+    const landingEnter   = document.getElementById('landing-enter');
+    if (landingEnter && landingOverlay) {
+        landingEnter.addEventListener('click', () => {
+            landingOverlay.classList.add('fade-out');
+            setTimeout(() => landingOverlay.remove(), 600);
+        });
+    }
+
     initNav();
     initSidebarToggle();
     initTimelineFilter();
