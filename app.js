@@ -25,6 +25,7 @@ const PAGE_LABELS = {
     liabilities: 'DREAM LEDGER // 負債管理',
     events:      'DREAM LEDGER // 人生事件',
     records:     'DREAM LEDGER // 記帳紀錄',
+    about:       'DREAM LEDGER // About',
 };
 
 function navigateTo(pageId) {
