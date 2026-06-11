@@ -184,13 +184,14 @@ function renderLiabilities() {
 
 // ── 6. 人生事件頁渲染（時間軸） ──────────────────────────────
 const DOT_CLASS = {
-    Investment:     '',
-    Protection:     '',
+    Investment:       '',
+    Protection:       '',
     'Asset Allocation': '',
-    Leverage:       '',
-    Life:           'dot-life',
-    Career:         'dot-career',
-    Cognition:      'dot-cognition',
+    Leverage:         '',
+    Life:             'dot-life',
+    Career:           'dot-career',
+    Cognition:        'dot-cognition',
+    Family:           'dot-family',
 };
 
 function renderTimeline(filterCat = 'all') {
