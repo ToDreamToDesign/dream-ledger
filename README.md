@@ -39,3 +39,13 @@ Wisdom
 Technology is expendable.
 
 Understanding is legacy.
+
+---
+
+## Source of Truth
+
+The canonical history and personal context of DREAM Ledger is maintained in:
+
+[docs/CANONICAL_TIMELINE.md](docs/CANONICAL_TIMELINE.md)
+
+All Events, Decisions, Reflections, Snapshots and future documentation must remain consistent with this source.

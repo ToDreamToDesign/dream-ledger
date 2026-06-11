@@ -11,7 +11,8 @@ const dreamUser = {
         governanceLaws: [
             "Reality First (真實第一: 拒絕示意數字與通膨數據)",
             "Event > Theory (事件先於理論)",
-            "Anti-Result Bias (抗結果偏誤品質軸)"
+            "Anti-Result Bias (抗結果偏誤品質軸)",
+            "Responsibility Through Experience (責任來自經歷: 人生的成長取決於所經歷的，被迫承擔才是真正的清醒)"
         ]
     },
  
