@@ -279,7 +279,26 @@ function expandRecentRecords() {
 }
 
 // 通用圓餅圖渲染（含舊實例銷毀 + 空資料狀態）
-function _renderPieChart(canvasId, wrapId, oldInstance, labels, data) {
+// ── DREAM Ledger Visual Language v1 ──────────────────────────
+// 色彩哲學：投資=未來(Cyan)、負債=過去(Amber)、生活=現在(Slate)
+const VL = {
+    investment: '#28F0D7',
+    debt:       '#C98B3A',
+    _living:    ['#4A5568', '#556070', '#6B7A8D', '#7A8A9B', '#8A9BAA'],
+};
+
+function _semanticColors(labels) {
+    let li = 0;
+    return labels.map(label => {
+        if (/投資|配息|儲蓄/.test(label))              return VL.investment;
+        if (/貸款|負債|分期|信貸|借款/.test(label))     return VL.debt;
+        return VL._living[li++ % VL._living.length];
+    });
+}
+
+function _fmtShort(n) { return '$' + Math.round(Math.abs(n)).toLocaleString('zh-TW'); }
+
+function _renderPieChart(canvasId, wrapId, oldInstance, labels, data, opts = {}) {
     const ctx  = document.getElementById(canvasId);
     const wrap = document.getElementById(wrapId || canvasId + 'Wrap');
     if (!ctx) return null;
@@ -299,17 +318,62 @@ function _renderPieChart(canvasId, wrapId, oldInstance, labels, data) {
     ctx.style.display = '';
     if (wrap) { const old = wrap.querySelector('.rec-chart-empty'); if (old) old.remove(); }
 
-    const COLORS = ['#32d4d7','#34d399','#fbbf24','#a78bfa','#f43f5e','#fb923c','#60a5fa','#4ade80','#f9a8d4','#6ee7b7'];
+    const colors = opts.colors || _semanticColors(labels);
+
+    // 根據色段決定 glow（有投資 → 青光，有負債 → 暖金，兩者都有 → 青光優先）
+    const hasInv  = colors.includes(VL.investment);
+    const hasDebt = colors.includes(VL.debt);
+    const glowColor = opts.glowColor
+        || (hasInv  ? 'rgba(40,240,215,0.28)' : hasDebt ? 'rgba(201,139,58,0.28)' : null);
+
+    const inlinePlugins = [];
+
+    if (glowColor) {
+        inlinePlugins.push({
+            id: 'arcGlow',
+            beforeDatasetsDraw(chart) {
+                chart.ctx.save();
+                chart.ctx.shadowBlur  = 14;
+                chart.ctx.shadowColor = glowColor;
+            },
+            afterDatasetsDraw(chart) {
+                chart.ctx.restore();
+                chart.ctx.shadowBlur = 0;
+            }
+        });
+    }
+
+    if (opts.centerLabel) {
+        inlinePlugins.push({
+            id: 'centerText',
+            afterDraw(chart) {
+                const { ctx: c, chartArea } = chart;
+                const cx = (chartArea.left + chartArea.right) / 2;
+                const cy = (chartArea.top + chartArea.bottom) / 2;
+                c.save();
+                c.textAlign      = 'center';
+                c.textBaseline   = 'middle';
+                c.fillStyle      = opts.centerColor || '#e2e8f0';
+                c.font           = 'bold 15px system-ui,sans-serif';
+                c.fillText(opts.centerValue || '', cx, cy - 9);
+                c.fillStyle      = '#64748b';
+                c.font           = '10px system-ui,sans-serif';
+                c.fillText(opts.centerLabel, cx, cy + 9);
+                c.restore();
+            }
+        });
+    }
+
     return new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels,
             datasets: [{
                 data,
-                backgroundColor: COLORS.slice(0, data.length),
-                borderColor: 'rgba(15,23,42,0.8)',
-                borderWidth: 2,
-                hoverOffset: 4
+                backgroundColor: colors,
+                borderColor: 'rgba(255,255,255,0.06)',
+                borderWidth: 1.5,
+                hoverOffset: 6
             }]
         },
         options: {
@@ -323,8 +387,9 @@ function _renderPieChart(canvasId, wrapId, oldInstance, labels, data) {
                     return ` ${ctx.label}: $${ctx.parsed.toLocaleString()} (${pct}%)`;
                 }}}
             },
-            cutout: '52%'
-        }
+            cutout: '62%'
+        },
+        plugins: inlinePlugins
     });
 }
 
@@ -419,23 +484,25 @@ function renderRecords() {
     fillDetailList('rs-income-items',  incomeItems, false);
     fillDetailList('rs-expense-items', expenseItems, true);
 
-    // ─ 圓餅圖 ─
+    // ─ 圓餅圖（DREAM Visual Language v1）─
     _chartRecIncome = _renderPieChart(
         'chartRecIncome', null, _chartRecIncome,
         incomeItems.map(it => it.label),
-        incomeItems.map(it => it.amount)
+        incomeItems.map(it => it.amount),
+        { centerLabel: '固定收入', centerValue: _fmtShort(i.total) }
     );
 
     const expChartItems = [
-        { label: '房租',   amount: e.rent },
-        { label: '保險',   amount: e.insurance },
-        { label: '貸款',   amount: e.loanRepayment.total },
+        { label: '房租',    amount: e.rent },
+        { label: '保險',    amount: e.insurance },
+        { label: '貸款',    amount: e.loanRepayment.total },
         { label: '電信訂閱', amount: e.telecomSubscription },
     ].filter(it => it.amount > 0);
     _chartRecExpense = _renderPieChart(
         'chartRecExpense', null, _chartRecExpense,
         expChartItems.map(it => it.label),
-        expChartItems.map(it => it.amount)
+        expChartItems.map(it => it.amount),
+        { centerLabel: '固定支出', centerValue: _fmtShort(e.total) }
     );
 
     const catMap = {};
@@ -444,7 +511,8 @@ function renderRecords() {
     _chartRecMonthly = _renderPieChart(
         'chartRecMonthly', 'chartRecMonthlyWrap', _chartRecMonthly,
         monthCats.map(([cat]) => cat),
-        monthCats.map(([, amt]) => amt)
+        monthCats.map(([, amt]) => amt),
+        { centerLabel: '本月支出', centerValue: _fmtShort(mthExpTotal) }
     );
 }
 
