@@ -53,6 +53,19 @@
     .category-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
     .filter-btn { background: rgba(255,255,255,0.03); border: 1px solid var(--border); color: var(--text-muted); padding: 5px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
     .filter-btn.active { background: rgba(50,212,215,0.08); border-color: rgba(50,212,215,0.3); color: var(--neon-cyan); }
+    /* User Switcher */
+    .user-switcher { display: flex; gap: 6px; padding: 16px 16px 0; }
+    .user-tab { flex: 1; padding: 6px 0; font-size: 11px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; transition: all 0.2s; text-align: center; }
+    .user-tab.active { background: rgba(50,212,215,0.08); border-color: rgba(50,212,215,0.3); color: var(--neon-cyan); }
+    /* Sandbox Banner */
+    .sandbox-banner { display: none; align-items: center; justify-content: space-between; background: rgba(244,63,94,0.07); border: 1px solid rgba(244,63,94,0.2); border-radius: 8px; padding: 8px 16px; margin: 8px 16px; font-size: 12px; color: var(--neon-rose); }
+    .sandbox-banner button { font-size: 11px; color: var(--text-muted); background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 4px; padding: 3px 10px; cursor: pointer; }
+    /* Record Form */
+    .rec-input { width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; color: var(--text-main); font-size: 13px; outline: none; }
+    .rec-input:focus { border-color: rgba(50,212,215,0.4); }
+    .rec-row { display: flex; gap: 8px; }
+    .rec-submit { width: 100%; padding: 10px; background: rgba(50,212,215,0.08); border: 1px solid rgba(50,212,215,0.25); border-radius: 6px; color: var(--neon-cyan); font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+    .rec-submit:hover { background: rgba(50,212,215,0.14); }
 
     /* ── 記帳紀錄頁 ── */
     .record-month-header { font-size: 12px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; padding: 8px 0; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
@@ -116,9 +129,18 @@
             <button class="nav-btn" data-page="records">記帳紀錄</button>
             <button class="nav-btn" data-page="about">About</button>
         </nav>
+        <div class="user-switcher">
+            <button class="user-tab" data-user="primary" onclick="switchUser('primary')">Primary</button>
+            <button class="user-tab" data-user="sandbox" onclick="switchUser('sandbox')">Sandbox</button>
+        </div>
     </aside>
 
     <main class="content">
+
+        <div id="sandbox-banner" class="sandbox-banner">
+            <span>🧪 SANDBOX — Alex Chen &nbsp;<span style="opacity:0.5;font-size:10px">（測試模式，數字為虛構資料）</span></span>
+            <button onclick="resetSandbox()">Reset</button>
+        </div>
 
         <div class="top-bar">
             <div class="header-logo">DL</div>
@@ -487,6 +509,51 @@
                     </div>
                 </div>
             </section>
+
+            <!-- 新增記錄 -->
+            <div class="dark-panel">
+                <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px">新增記錄</div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                    <div class="rec-row">
+                        <input type="text"   id="rec-desc"     class="rec-input" placeholder="說明（午餐、配息、加薪...）" style="flex:2">
+                        <input type="number" id="rec-amount"   class="rec-input" placeholder="金額" min="0" style="flex:1">
+                    </div>
+                    <div class="rec-row">
+                        <select id="rec-type" class="rec-input" style="flex:1">
+                            <option value="expense">支出</option>
+                            <option value="income">收入</option>
+                        </select>
+                        <select id="rec-category" class="rec-input" style="flex:1">
+                            <option value="食">食</option>
+                            <option value="住">住</option>
+                            <option value="行">行</option>
+                            <option value="投資">投資</option>
+                            <option value="收入">收入</option>
+                            <option value="負債">負債</option>
+                            <option value="健康">健康</option>
+                            <option value="學習">學習</option>
+                            <option value="通訊">通訊</option>
+                            <option value="人情">人情</option>
+                            <option value="儲蓄">儲蓄</option>
+                            <option value="其他">其他</option>
+                        </select>
+                        <input type="date" id="rec-date" class="rec-input" style="flex:1">
+                    </div>
+                    <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);cursor:pointer;user-select:none">
+                        <input type="checkbox" id="rec-is-event" style="accent-color:var(--neon-cyan);width:14px;height:14px">
+                        記事模式（純文字紀錄，無金額）
+                    </label>
+                    <textarea id="rec-note" class="rec-input" placeholder="記事內容（選填）" rows="2" style="resize:vertical;display:none"></textarea>
+                    <button class="rec-submit" onclick="addRecord()">+ 記錄</button>
+                </div>
+            </div>
+
+            <!-- 最近記錄 -->
+            <div class="dark-panel">
+                <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px">最近記錄</div>
+                <div id="records-list"></div>
+            </div>
+
         </div>
 
         <!-- ════════════════ PAGE: About ════════════════ -->
@@ -579,6 +646,7 @@
 <script src="data/user.js"></script>
 <script src="data/snapshot.js"></script>
 <script src="data/events.js"></script>
+<script src="data/sandbox-seed.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

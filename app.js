@@ -428,8 +428,213 @@ function initSidebarToggle() {
     }
 }
 
-// ── 11. 系統啟動 ──────────────────────────────────────────────
+// ── 11. Sandbox 管理 ──────────────────────────────────────────
+const LS_ACTIVE_USER  = "dream-ledger:activeUser";
+const LS_SANDBOX      = "dream-ledger:sandbox";
+const LS_RECORDS      = "dream-ledger:records";
+const SANDBOX_VERSION = "1.0";
+
+function getActiveUser() {
+    return localStorage.getItem(LS_ACTIVE_USER) || 'primary';
+}
+
+function getSandboxData() {
+    const raw = localStorage.getItem(LS_SANDBOX);
+    if (!raw) return null;
+    try { return JSON.parse(raw); } catch { return null; }
+}
+
+function activateSandbox() {
+    let data = getSandboxData();
+    if (!data || data.version !== SANDBOX_VERSION) {
+        data = sandboxSeed;
+        localStorage.setItem(LS_SANDBOX, JSON.stringify(sandboxSeed));
+        // 初始化 sandbox records（如果 localStorage 中沒有）
+        if (!localStorage.getItem(LS_RECORDS + ':sandbox')) {
+            localStorage.setItem(LS_RECORDS + ':sandbox', JSON.stringify(sandboxSeed.records));
+        }
+    }
+
+    const u = data.user;
+
+    // 替換資產（保留 getter 結構，只換數值）
+    Object.keys(dreamUser.realAssets).forEach(k => delete dreamUser.realAssets[k]);
+    Object.assign(dreamUser.realAssets, u.realAssets);
+
+    // 替換負債
+    Object.keys(dreamUser.realLiabilities).forEach(k => delete dreamUser.realLiabilities[k]);
+    Object.assign(dreamUser.realLiabilities, u.realLiabilities);
+
+    // 替換收入（逐欄賦值，保留 getter）
+    dreamUser.cashflowModel.income.baseSalary    = u.income.baseSalary;
+    dreamUser.cashflowModel.income.reimbursement = u.income.reimbursement;
+    dreamUser.cashflowModel.income.kgiDividend   = u.income.kgiDividend;
+
+    // 替換支出（逐欄賦值，保留 getter）
+    dreamUser.cashflowModel.expense.rent                        = u.expense.rent;
+    dreamUser.cashflowModel.expense.insurance                   = u.expense.insurance;
+    dreamUser.cashflowModel.expense.telecomSubscription         = u.expense.telecomSubscription;
+    dreamUser.cashflowModel.expense.loanRepayment.fubon         = u.expense.loanRepayment.fubon;
+    dreamUser.cashflowModel.expense.loanRepayment.student       = u.expense.loanRepayment.student;
+    dreamUser.cashflowModel.expense.loanRepayment.massageChair  = u.expense.loanRepayment.massageChair;
+
+    // 替換人生事件
+    lifeEvents.length = 0;
+    data.events.forEach(e => lifeEvents.push(e));
+
+    // 替換快照
+    snapshots.length = 0;
+    data.snapshots.forEach(s => snapshots.push(s));
+
+    // 顯示 Sandbox banner
+    const banner = document.getElementById('sandbox-banner');
+    if (banner) banner.style.display = 'flex';
+}
+
+function switchUser(userType) {
+    localStorage.setItem(LS_ACTIVE_USER, userType);
+    location.reload();
+}
+
+function resetSandbox() {
+    if (!confirm('重建 Sandbox？所有 Sandbox 記錄將被清除並恢復預設資料。')) return;
+    localStorage.removeItem(LS_SANDBOX);
+    localStorage.removeItem(LS_RECORDS + ':sandbox');
+    location.reload();
+}
+
+function updateUserSwitcherUI(activeUser) {
+    document.querySelectorAll('.user-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.user === activeUser);
+    });
+}
+
+// ── 12. Records CRUD ──────────────────────────────────────────
+function getRecordsKey() {
+    return LS_RECORDS + ':' + getActiveUser();
+}
+
+function loadRecords() {
+    const raw = localStorage.getItem(getRecordsKey());
+    if (!raw) return [];
+    try { return JSON.parse(raw); } catch { return []; }
+}
+
+function saveRecordsToStorage(records) {
+    localStorage.setItem(getRecordsKey(), JSON.stringify(records));
+}
+
+function addRecord() {
+    const desc     = document.getElementById('rec-desc')?.value.trim();
+    const amount   = parseFloat(document.getElementById('rec-amount')?.value || '0');
+    const type     = document.getElementById('rec-type')?.value || 'expense';
+    const category = document.getElementById('rec-category')?.value || '其他';
+    const date     = document.getElementById('rec-date')?.value || new Date().toISOString().slice(0, 10);
+    const note     = document.getElementById('rec-note')?.value.trim() || '';
+    const isEvent  = document.getElementById('rec-is-event')?.checked || false;
+
+    if (!desc) return;
+    if (!isEvent && (isNaN(amount) || amount <= 0)) return;
+
+    const records = loadRecords();
+    records.unshift({
+        id:          'rec_' + Date.now(),
+        date,
+        description: desc,
+        amount:      isEvent ? 0 : amount,
+        type,
+        category,
+        isEvent,
+        note
+    });
+    saveRecordsToStorage(records);
+    renderRecentRecords();
+
+    // 清空表單
+    ['rec-desc', 'rec-amount', 'rec-note'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    const cb = document.getElementById('rec-is-event');
+    if (cb) { cb.checked = false; cb.dispatchEvent(new Event('change')); }
+}
+
+function deleteRecord(id) {
+    const records = loadRecords().filter(r => r.id !== id);
+    saveRecordsToStorage(records);
+    renderRecentRecords();
+}
+
+function renderRecentRecords() {
+    const container = document.getElementById('records-list');
+    if (!container) return;
+
+    const records = loadRecords();
+    if (records.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:16px 0;text-align:center">尚無記錄 — 使用上方表單新增第一筆</div>';
+        return;
+    }
+
+    container.innerHTML = records.slice(0, 60).map(r => {
+        const isNote  = r.isEvent && r.amount === 0;
+        const sign    = r.type === 'income' ? '+' : '-';
+        const color   = r.type === 'income' ? 'var(--neon-green)' : 'var(--neon-rose)';
+        const amtEl   = isNote
+            ? '<span style="font-size:11px;color:var(--neon-cyan)">記事</span>'
+            : `<span style="font-size:15px;font-weight:600;color:${color}">${sign}$${r.amount.toLocaleString()}</span>`;
+        const noteEl  = r.note
+            ? `<div style="font-size:11px;color:var(--text-muted);margin-top:4px;padding-left:8px;border-left:2px solid var(--border);line-height:1.6">${r.note}</div>`
+            : '';
+        const eventBadge = r.isEvent
+            ? '<span style="font-size:9px;color:var(--neon-cyan);border:1px solid rgba(50,212,215,0.4);border-radius:3px;padding:1px 5px;margin-left:6px;vertical-align:middle">記事</span>'
+            : '';
+        return `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)">
+            <div style="flex:1;min-width:0">
+                <div style="font-size:13px;color:var(--text-main)">${r.description}${eventBadge}</div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${r.date} · ${r.category}</div>
+                ${noteEl}
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;margin-left:12px;flex-shrink:0">
+                ${amtEl}
+                <span style="font-size:12px;color:var(--text-muted);cursor:pointer;opacity:0.5;transition:opacity 0.2s"
+                      onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'"
+                      onclick="deleteRecord('${r.id}')">✕</span>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function initRecordForm() {
+    const checkbox = document.getElementById('rec-is-event');
+    const textarea = document.getElementById('rec-note');
+    const amountInput = document.getElementById('rec-amount');
+    if (checkbox && textarea) {
+        checkbox.addEventListener('change', () => {
+            textarea.style.display = checkbox.checked ? 'block' : 'none';
+            if (amountInput) amountInput.style.display = checkbox.checked ? 'none' : '';
+        });
+    }
+    const dateInput = document.getElementById('rec-date');
+    if (dateInput && !dateInput.value) {
+        dateInput.value = new Date().toISOString().slice(0, 10);
+    }
+}
+
+// ── 13. 系統啟動 ──────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
+    // 先判斷使用者模式，Sandbox 模式需在渲染前覆寫資料
+    const activeUser = getActiveUser();
+    if (activeUser === 'sandbox') {
+        activateSandbox();
+    } else {
+        // Primary：初始化 primary records（若不存在）
+        if (!localStorage.getItem(LS_RECORDS + ':primary')) {
+            localStorage.setItem(LS_RECORDS + ':primary', JSON.stringify([]));
+        }
+    }
+    updateUserSwitcherUI(activeUser);
+
     // Landing overlay
     const landingOverlay = document.getElementById('landing-overlay');
     const landingEnter   = document.getElementById('landing-enter');
@@ -443,6 +648,7 @@ document.addEventListener("DOMContentLoaded", () => {
     initNav();
     initSidebarToggle();
     initTimelineFilter();
+    initRecordForm();
 
     renderDashboard();
     renderAssets();
@@ -451,6 +657,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderRecords();
     renderEventAccordion();
     renderAssetChart();
+    renderRecentRecords();
 
-    console.log("🚀 [DREAM Ledger v4] 五頁全面就位，事實數據同步完畢。");
+    console.log(`🚀 [DREAM Ledger v4] 啟動完成，模式：${activeUser}`);
 });
