@@ -284,16 +284,23 @@ function expandRecentRecords() {
 const VL = {
     investment: '#28F0D7',
     debt:       '#C98B3A',
-    _living:    ['#4A5568', '#556070', '#6B7A8D', '#7A8A9B', '#8A9BAA'],
+    // 生活色刻意降低存在感，讓 Debt/Investment 成為視覺焦點
+    _living:    ['#3A4455', '#434C5E', '#4B5563', '#525E6E', '#5C6A78'],
 };
 
 function _semanticColors(labels) {
     let li = 0;
     return labels.map(label => {
-        if (/投資|配息|儲蓄/.test(label))              return VL.investment;
-        if (/貸款|負債|分期|信貸|借款/.test(label))     return VL.debt;
+        if (/投資|配息|儲蓄/.test(label))                            return VL.investment;
+        if (/貸款|負債|分期|信貸|借款/.test(label))                   return VL.debt;
         return VL._living[li++ % VL._living.length];
     });
+}
+
+// 清除 chart wrap 內的臨時提示元素
+function _clearChartWrap(wrapId, className) {
+    const wrap = document.getElementById(wrapId);
+    if (wrap) { const el = wrap.querySelector('.' + className); if (el) el.remove(); }
 }
 
 function _fmtShort(n) { return '$' + Math.round(Math.abs(n)).toLocaleString('zh-TW'); }
@@ -484,34 +491,64 @@ function renderRecords() {
     fillDetailList('rs-income-items',  incomeItems, false);
     fillDetailList('rs-expense-items', expenseItems, true);
 
-    // ─ 圓餅圖（DREAM Visual Language v1）─
-    _chartRecIncome = _renderPieChart(
-        'chartRecIncome', null, _chartRecIncome,
-        incomeItems.map(it => it.label),
-        incomeItems.map(it => it.amount),
-        { centerLabel: '固定收入', centerValue: _fmtShort(i.total) }
-    );
+    // ─ 圓餅圖（DREAM Visual Language v1 — 資金流向視覺化）─
 
-    const expChartItems = [
-        { label: '房租',    amount: e.rent },
-        { label: '保險',    amount: e.insurance },
-        { label: '貸款',    amount: e.loanRepayment.total },
-        { label: '電信訂閱', amount: e.telecomSubscription },
+    // ① 固定收入：單一來源時不畫圓環，改為文字卡
+    _clearChartWrap('chartRecIncomeWrap', 'vl-single-source');
+    if (_chartRecIncome) { _chartRecIncome.destroy(); _chartRecIncome = null; }
+    if (incomeItems.length <= 1) {
+        const canvas = document.getElementById('chartRecIncome');
+        const wrap   = document.getElementById('chartRecIncomeWrap');
+        if (canvas) canvas.style.display = 'none';
+        if (wrap && incomeItems.length === 1) {
+            const it  = incomeItems[0];
+            const div = document.createElement('div');
+            div.className = 'vl-single-source';
+            div.style.cssText = 'text-align:center;padding:44px 0;';
+            div.innerHTML = `
+                <div style="font-size:10px;color:#64748b;letter-spacing:.08em;margin-bottom:10px">單一收入來源</div>
+                <div style="font-size:24px;font-weight:700;color:#e2e8f0;margin-bottom:6px">${_fmtShort(it.amount)}</div>
+                <div style="font-size:12px;color:#94a3b8">${it.label}</div>
+                <div style="font-size:10px;color:#64748b;margin-top:4px">佔比 100%</div>`;
+            wrap.appendChild(div);
+        }
+    } else {
+        const canvas = document.getElementById('chartRecIncome');
+        if (canvas) canvas.style.display = '';
+        _chartRecIncome = _renderPieChart(
+            'chartRecIncome', 'chartRecIncomeWrap', null,
+            incomeItems.map(it => it.label),
+            incomeItems.map(it => it.amount),
+            { centerLabel: '固定收入', centerValue: _fmtShort(i.total) }
+        );
+    }
+
+    // ② 固定支出：聚合成 生活 / 負債 兩層（對應 現在 / 過去）
+    const expFlowItems = [
+        { label: '生活支出', amount: e.rent + e.insurance + e.telecomSubscription },
+        { label: '負債支出', amount: e.loanRepayment.total },
     ].filter(it => it.amount > 0);
     _chartRecExpense = _renderPieChart(
-        'chartRecExpense', null, _chartRecExpense,
-        expChartItems.map(it => it.label),
-        expChartItems.map(it => it.amount),
+        'chartRecExpense', 'chartRecExpenseWrap', _chartRecExpense,
+        expFlowItems.map(it => it.label),
+        expFlowItems.map(it => it.amount),
         { centerLabel: '固定支出', centerValue: _fmtShort(e.total) }
     );
 
-    const catMap = {};
-    mthExpRecs.forEach(r => { catMap[r.category] = (catMap[r.category] || 0) + r.amount; });
-    const monthCats = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
+    // ③ 本月支出：聚合成 生活 / 負債 / 投資（現在 / 過去 / 未來）
+    const flowBuckets = { '生活': 0, '負債': 0, '投資': 0 };
+    const DEBT_CATS   = new Set(['負債']);
+    const INV_CATS    = new Set(['投資', '儲蓄']);
+    mthExpRecs.forEach(r => {
+        if (DEBT_CATS.has(r.category))     flowBuckets['負債'] += r.amount;
+        else if (INV_CATS.has(r.category)) flowBuckets['投資'] += r.amount;
+        else                               flowBuckets['生活'] += r.amount;
+    });
+    const flowData = Object.entries(flowBuckets).filter(([, v]) => v > 0);
     _chartRecMonthly = _renderPieChart(
         'chartRecMonthly', 'chartRecMonthlyWrap', _chartRecMonthly,
-        monthCats.map(([cat]) => cat),
-        monthCats.map(([, amt]) => amt),
+        flowData.map(([k]) => k),
+        flowData.map(([, v]) => v),
         { centerLabel: '本月支出', centerValue: _fmtShort(mthExpTotal) }
     );
 }
