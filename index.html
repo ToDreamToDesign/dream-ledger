@@ -443,7 +443,42 @@
                 </div>
             </section>
 
-            <!-- ② 新增記錄 + 最近紀錄（雙欄）-->
+            <!-- ② 固定收支明細（可展開卡片）-->
+            <section class="asset-grid">
+
+                <!-- 固定收入 -->
+                <div class="dark-panel">
+                    <div class="rec-toggle-hdr" onclick="toggleRecCard(this)">
+                        <div>
+                            <span class="rec-stat-label">固定收入</span>
+                            <div class="rec-stat-value amt-in" style="margin:6px 0 4px" id="rs-income-detail-val">--</div>
+                            <span class="rec-stat-sub" id="rs-income-detail-sub">-- 項收入來源</span>
+                        </div>
+                        <span class="rec-toggle-arrow">▼ 展開</span>
+                    </div>
+                    <div class="rec-toggle-body" id="rs-income-body">
+                        <div id="rs-income-items"></div>
+                    </div>
+                </div>
+
+                <!-- 固定支出 -->
+                <div class="dark-panel">
+                    <div class="rec-toggle-hdr" onclick="toggleRecCard(this)">
+                        <div>
+                            <span class="rec-stat-label">固定支出</span>
+                            <div class="rec-stat-value amt-out" style="margin:6px 0 4px" id="rs-expense-detail-val">--</div>
+                            <span class="rec-stat-sub" id="rs-expense-detail-sub">-- 項支出來源</span>
+                        </div>
+                        <span class="rec-toggle-arrow">▼ 展開</span>
+                    </div>
+                    <div class="rec-toggle-body" id="rs-expense-body">
+                        <div id="rs-expense-items"></div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ③ 新增記錄 + 最近紀錄（雙欄）-->
             <section class="rec-main-grid">
 
                 <!-- 新增記錄 -->
@@ -495,41 +530,6 @@
                     <div id="records-list"></div>
                     <button class="rec-see-all-btn" id="rs-recent-see-all" style="display:none"
                             onclick="expandRecentRecords()">▼ 查看更多</button>
-                </div>
-
-            </section>
-
-            <!-- ③ 固定收支明細（可展開卡片）-->
-            <section class="asset-grid">
-
-                <!-- 固定收入 -->
-                <div class="dark-panel">
-                    <div class="rec-toggle-hdr" onclick="toggleRecCard(this)">
-                        <div>
-                            <span class="rec-stat-label">固定收入</span>
-                            <div class="rec-stat-value amt-in" style="margin:6px 0 4px" id="rs-income-detail-val">--</div>
-                            <span class="rec-stat-sub" id="rs-income-detail-sub">-- 項收入來源</span>
-                        </div>
-                        <span class="rec-toggle-arrow">▼ 展開</span>
-                    </div>
-                    <div class="rec-toggle-body" id="rs-income-body">
-                        <div id="rs-income-items"></div>
-                    </div>
-                </div>
-
-                <!-- 固定支出 -->
-                <div class="dark-panel">
-                    <div class="rec-toggle-hdr" onclick="toggleRecCard(this)">
-                        <div>
-                            <span class="rec-stat-label">固定支出</span>
-                            <div class="rec-stat-value amt-out" style="margin:6px 0 4px" id="rs-expense-detail-val">--</div>
-                            <span class="rec-stat-sub" id="rs-expense-detail-sub">-- 項支出來源</span>
-                        </div>
-                        <span class="rec-toggle-arrow">▼ 展開</span>
-                    </div>
-                    <div class="rec-toggle-body" id="rs-expense-body">
-                        <div id="rs-expense-items"></div>
-                    </div>
                 </div>
 
             </section>
