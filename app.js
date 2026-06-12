@@ -233,21 +233,71 @@ function initTimelineFilter() {
 // ── 7. 記帳紀錄頁渲染 ────────────────────────────────────────
 function renderRecords() {
     if (typeof dreamUser === "undefined") return;
-    const i = dreamUser.cashflowModel.income;
-    const e = dreamUser.cashflowModel.expense;
+    const i   = dreamUser.cashflowModel.income;
+    const e   = dreamUser.cashflowModel.expense;
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-    set("r-salary",       formatCurrency(i.baseSalary));
-    set("r-cashflow",     formatCurrency(dreamUser.cashflowModel.getMonthlyCashflow()));
+    // 固定收支（from user.js）
+    set("r-salary",        formatCurrency(i.baseSalary));
+    set("r-cashflow",      formatCurrency(dreamUser.cashflowModel.getMonthlyCashflow()));
     set("r-baseSalary",   '+' + formatCurrency(i.baseSalary));
     set("r-reimb",        '+' + formatCurrency(i.reimbursement));
     set("r-dividend",     '+' + formatCurrency(i.kgiDividend));
     set("r-totalIncome",  '+' + formatCurrency(i.total));
-    set("r-totalExpense",  formatCurrency(e.total));
+    set("r-totalExpense",      formatCurrency(e.total));
     set("r-totalExpense2", '-' + formatCurrency(e.total));
     set("r-loanFubon",    '-' + formatCurrency(e.loanRepayment.fubon));
     set("r-loanStudent",  '-' + formatCurrency(e.loanRepayment.student));
     set("r-loanMassage",  '-' + formatCurrency(e.loanRepayment.massageChair));
+
+    // 本月記帳統計（from localStorage records）
+    const records        = loadRecords();
+    const txRecords      = records.filter(r => !r.isEvent && r.amount > 0);
+    const monthlyIncome  = txRecords.filter(r => r.type === 'income' ).reduce((s, r) => s + r.amount, 0);
+    const monthlyExpense = txRecords.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
+    const fixedIncome    = i.total;
+    const fixedExpense   = e.total;
+    const actualCashflow = fixedIncome + monthlyIncome - fixedExpense - monthlyExpense;
+
+    set("r-monthly-income-total",  '+' + formatCurrency(monthlyIncome));
+    set("r-monthly-expense-total", '-' + formatCurrency(monthlyExpense));
+    set("r-cf-fixed-income",      '+' + formatCurrency(fixedIncome));
+    set("r-cf-monthly-in",        '+' + formatCurrency(monthlyIncome));
+    set("r-cf-fixed-expense",     '-' + formatCurrency(fixedExpense));
+    set("r-cf-monthly-out",       '-' + formatCurrency(monthlyExpense));
+
+    // 更新 hero + detail 的實際自由現金流
+    const color = actualCashflow >= 0 ? 'var(--neon-green)' : 'var(--neon-rose)';
+    ['r-actual-cashflow', 'r-actual-cashflow-detail'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.textContent = formatCurrency(actualCashflow); el.style.color = color; }
+    });
+
+    // 本月記帳收入列表
+    const incomeContainer = document.getElementById('monthly-records-income');
+    if (incomeContainer) {
+        const incRecs = txRecords.filter(r => r.type === 'income');
+        incomeContainer.innerHTML = incRecs.length === 0
+            ? '<div style="color:var(--text-muted);font-size:12px;padding:8px 0">尚無記帳收入</div>'
+            : incRecs.slice(0, 15).map(r => `
+                <div class="record-row">
+                    <div><div class="record-name">${r.description}</div><div class="record-sub">${r.date} · ${r.category}</div></div>
+                    <div class="record-amt amt-in">+${formatCurrency(r.amount)}</div>
+                </div>`).join('');
+    }
+
+    // 本月記帳支出列表
+    const expenseContainer = document.getElementById('monthly-records-expense');
+    if (expenseContainer) {
+        const expRecs = txRecords.filter(r => r.type === 'expense');
+        expenseContainer.innerHTML = expRecs.length === 0
+            ? '<div style="color:var(--text-muted);font-size:12px;padding:8px 0">尚無記帳支出</div>'
+            : expRecs.slice(0, 15).map(r => `
+                <div class="record-row">
+                    <div><div class="record-name">${r.description}</div><div class="record-sub">${r.date} · ${r.category}</div></div>
+                    <div class="record-amt amt-out">-${formatCurrency(r.amount)}</div>
+                </div>`).join('');
+    }
 }
 
 // ── 8. Dashboard 手風琴事件列表 ──────────────────────────────
@@ -570,6 +620,7 @@ function addRecord() {
         else                    dreamUser.realAssets.cash -= amount;
         renderDashboard();
         renderAssets();
+        renderRecords();
     }
 
     // 清空表單
@@ -591,6 +642,7 @@ function deleteRecord(id) {
         else                        dreamUser.realAssets.cash += rec.amount;
         renderDashboard();
         renderAssets();
+        renderRecords();
     }
 
     saveRecordsToStorage(records.filter(r => r.id !== id));

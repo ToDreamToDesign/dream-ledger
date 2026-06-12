@@ -123,12 +123,12 @@
             </div>
         </div>
         <nav>
-            <button class="nav-btn active" data-page="dashboard">Dashboard</button>
-            <button class="nav-btn" data-page="assets">資產管理</button>
-            <button class="nav-btn" data-page="liabilities">負債管理</button>
-            <button class="nav-btn" data-page="events">人生事件</button>
-            <button class="nav-btn" data-page="records">記帳紀錄</button>
-            <button class="nav-btn" data-page="about">About</button>
+            <button class="nav-btn active" data-page="dashboard"><span class="nav-zh">儀表板</span><span class="nav-en">Dashboard</span></button>
+            <button class="nav-btn" data-page="assets"><span class="nav-zh">資產管理</span><span class="nav-en">Assets</span></button>
+            <button class="nav-btn" data-page="liabilities"><span class="nav-zh">負債管理</span><span class="nav-en">Liabilities</span></button>
+            <button class="nav-btn" data-page="records"><span class="nav-zh">記帳紀錄</span><span class="nav-en">Ledger</span></button>
+            <button class="nav-btn" data-page="events"><span class="nav-zh">人生事件</span><span class="nav-en">Life Events</span></button>
+            <button class="nav-btn" data-page="about"><span class="nav-zh">關於系統</span><span class="nav-en">About</span></button>
         </nav>
         <div class="user-switcher">
             <button class="user-tab" data-user="primary" onclick="switchUser('primary')">Primary</button>
@@ -407,8 +407,8 @@
             <section class="hero dark-panel" style="padding:20px 28px">
                 <div class="hero-container">
                     <div class="hero-left">
-                        <span>2026 年 6 月 固定支出分解</span>
-                        <h1 id="r-totalExpense" style="color:var(--neon-rose)">--</h1>
+                        <span>實際自由現金流</span>
+                        <h1 id="r-actual-cashflow">--</h1>
                     </div>
                     <div class="hero-right-metrics">
                         <div class="hero-sub-metric">
@@ -416,7 +416,7 @@
                             <strong style="color:var(--neon-green)" id="r-salary">--</strong>
                         </div>
                         <div class="hero-sub-metric">
-                            <span>自由現金流</span>
+                            <span>固定現金流</span>
                             <strong style="color:var(--neon-cyan)" id="r-cashflow">--</strong>
                         </div>
                     </div>
@@ -510,6 +510,54 @@
                     </div>
                 </div>
             </section>
+
+            <!-- 本月記帳收入 / 支出 -->
+            <section class="asset-grid">
+                <div class="dark-panel">
+                    <div class="section-header"><h3>📈 本月記帳收入</h3></div>
+                    <div id="monthly-records-income"><div style="color:var(--text-muted);font-size:12px;padding:8px 0">尚無記帳收入</div></div>
+                    <div class="summary-row">
+                        <span>小計</span>
+                        <strong class="amt-in" id="r-monthly-income-total">+$0</strong>
+                    </div>
+                </div>
+                <div class="dark-panel">
+                    <div class="section-header"><h3>📉 本月記帳支出</h3></div>
+                    <div id="monthly-records-expense"><div style="color:var(--text-muted);font-size:12px;padding:8px 0">尚無記帳支出</div></div>
+                    <div class="summary-row">
+                        <span>小計</span>
+                        <strong class="amt-out" id="r-monthly-expense-total">-$0</strong>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 實際現金流總結 -->
+            <div class="dark-panel">
+                <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px">現金流總結 Cashflow Summary</div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="font-size:13px;color:var(--text-muted)">固定收入</span>
+                        <span class="amt-in" id="r-cf-fixed-income">--</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="font-size:13px;color:var(--text-muted)">本月記帳收入</span>
+                        <span class="amt-in" id="r-cf-monthly-in">--</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="font-size:13px;color:var(--text-muted)">固定支出</span>
+                        <span class="amt-out" id="r-cf-fixed-expense">--</span>
+                    </div>
+                    <div style="display:flex;justify-content:space-between;align-items:center">
+                        <span style="font-size:13px;color:var(--text-muted)">本月記帳支出</span>
+                        <span class="amt-out" id="r-cf-monthly-out">--</span>
+                    </div>
+                    <div style="height:1px;background:var(--border);margin:4px 0"></div>
+                    <div style="display:flex;justify-content:space-between;align-items:baseline">
+                        <span style="font-size:13px;font-weight:600;color:var(--text-main)">實際自由現金流</span>
+                        <strong id="r-actual-cashflow-detail" style="font-size:1.2rem">--</strong>
+                    </div>
+                </div>
+            </div>
 
             <!-- 新增記錄 -->
             <div class="dark-panel">
