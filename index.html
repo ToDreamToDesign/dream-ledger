@@ -74,12 +74,32 @@
     .record-row:last-child { border: none; }
     .record-name { font-size: 13px; color: var(--text-main); }
     .record-sub  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-    .record-amt  { font-size: 15px; font-weight: 600; }
+    .record-amt  { font-size: 15px; font-weight: 600; white-space: nowrap; }
     .amt-in  { color: var(--neon-green); }
     .amt-out { color: var(--neon-rose); }
     .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0 0 0; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.08); }
     .summary-row span  { font-size: 13px; color: var(--text-muted); }
     .summary-row strong{ font-size: 20px; font-weight: 700; }
+
+    /* ── 記帳紀錄 — 字卡統計列 ── */
+    .rec-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    @media (max-width: 800px) { .rec-stat-grid { grid-template-columns: repeat(2, 1fr); } }
+    .rec-stat-card { display: flex; flex-direction: column; gap: 6px; }
+    .rec-stat-label { font-size: 10px; color: var(--text-muted); letter-spacing: 0.6px; text-transform: uppercase; }
+    .rec-stat-value { font-size: 1.45rem; font-weight: 700; line-height: 1.1; }
+    .rec-stat-sub   { font-size: 11px; color: var(--text-muted); }
+
+    /* ── 明細區 — 標題列 ── */
+    .rec-sec-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .rec-sec-title { font-size: 13px; font-weight: 600; color: var(--text-main); }
+    .rec-count-badge { font-size: 11px; color: var(--text-muted); background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 2px 9px; border-radius: 12px; }
+    .rec-hidden-item { display: none !important; }
+    .rec-see-all-btn { width: 100%; margin-top: 10px; padding: 8px; background: transparent; border: 1px dashed var(--border); border-radius: 6px; color: var(--text-muted); font-size: 12px; cursor: pointer; transition: all 0.2s; }
+    .rec-see-all-btn:hover { background: rgba(255,255,255,0.04); color: var(--text-main); border-style: solid; }
+
+    /* ── 圖表區 ── */
+    .rec-chart-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    @media (max-width: 900px) { .rec-chart-grid { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
@@ -404,168 +424,87 @@
 
         <!-- ════════════════ PAGE: 記帳紀錄 ════════════════ -->
         <div class="page" id="page-records">
-            <section class="hero dark-panel" style="padding:20px 28px">
-                <div class="hero-container">
-                    <div class="hero-left">
-                        <span>實際自由現金流</span>
-                        <h1 id="r-actual-cashflow">--</h1>
-                    </div>
-                    <div class="hero-right-metrics">
-                        <div class="hero-sub-metric">
-                            <span>底薪</span>
-                            <strong style="color:var(--neon-green)" id="r-salary">--</strong>
-                        </div>
-                        <div class="hero-sub-metric">
-                            <span>固定現金流</span>
-                            <strong style="color:var(--neon-cyan)" id="r-cashflow">--</strong>
-                        </div>
-                    </div>
+
+            <!-- 字卡統計列 -->
+            <section class="rec-stat-grid">
+                <div class="dark-panel rec-stat-card">
+                    <span class="rec-stat-label">固定收入</span>
+                    <strong class="rec-stat-value amt-in" id="rs-fixed-income">--</strong>
+                    <span class="rec-stat-sub" id="rs-income-sub">-- 項收入</span>
+                </div>
+                <div class="dark-panel rec-stat-card">
+                    <span class="rec-stat-label">固定支出</span>
+                    <strong class="rec-stat-value amt-out" id="rs-fixed-expense">--</strong>
+                    <span class="rec-stat-sub" id="rs-expense-sub">-- 項支出</span>
+                </div>
+                <div class="dark-panel rec-stat-card">
+                    <span class="rec-stat-label">本月支出</span>
+                    <strong class="rec-stat-value amt-out" id="rs-monthly-expense">--</strong>
+                    <span class="rec-stat-sub" id="rs-monthly-sub">-- 筆記帳</span>
+                </div>
+                <div class="dark-panel rec-stat-card">
+                    <span class="rec-stat-label">實際自由現金流</span>
+                    <strong class="rec-stat-value" id="rs-cashflow">--</strong>
+                    <span class="rec-stat-sub">即時更新</span>
                 </div>
             </section>
 
-            <section class="asset-grid">
-                <!-- 收入 -->
-                <div class="dark-panel">
-                    <div class="section-header"><h3>📥 每月收入</h3></div>
-                    <div class="record-row">
-                        <div>
-                            <div class="record-name">底薪</div>
-                            <div class="record-sub">保底基準，每月確認</div>
-                        </div>
-                        <div class="record-amt amt-in" id="r-baseSalary">--</div>
-                    </div>
-                    <div class="record-row">
-                        <div>
-                            <div class="record-name">公司費用報銷</div>
-                            <div class="record-sub">浮動，每月不同</div>
-                        </div>
-                        <div class="record-amt amt-in" id="r-reimb">--</div>
-                    </div>
-                    <div class="record-row">
-                        <div>
-                            <div class="record-name">凱基保單配息</div>
-                            <div class="record-sub">穩定被動現金流</div>
-                        </div>
-                        <div class="record-amt amt-in" id="r-dividend">--</div>
-                    </div>
-                    <div class="summary-row">
-                        <span>合計</span>
-                        <strong class="amt-in" id="r-totalIncome">--</strong>
-                    </div>
-                </div>
-
-                <!-- 支出 -->
-                <div class="dark-panel">
-                    <div class="section-header"><h3>📤 每月固定支出</h3></div>
-                    <div class="record-month-header">居住</div>
-                    <div class="record-row">
-                        <div><div class="record-name">房租</div></div>
-                        <div class="record-amt amt-out">-$15,000</div>
-                    </div>
-                    <div class="record-month-header">保險</div>
-                    <div class="record-row">
-                        <div><div class="record-name">台銀儲蓄</div></div>
-                        <div class="record-amt amt-out">-$5,300</div>
-                    </div>
-                    <div class="record-row">
-                        <div><div class="record-name">長照終身保險</div></div>
-                        <div class="record-amt amt-out">-$2,456</div>
-                    </div>
-                    <div class="record-row">
-                        <div><div class="record-name">安達台幣保單</div></div>
-                        <div class="record-amt amt-out">-$2,000</div>
-                    </div>
-                    <div class="record-row">
-                        <div>
-                            <div class="record-name">安達美元保單</div>
-                            <div class="record-sub">161 USD，匯率 30 換算</div>
-                        </div>
-                        <div class="record-amt amt-out">-$4,830</div>
-                    </div>
-                    <div class="record-month-header">貸款</div>
-                    <div class="record-row">
-                        <div><div class="record-name">學貸</div></div>
-                        <div class="record-amt amt-out" id="r-loanStudent">--</div>
-                    </div>
-                    <div class="record-row">
-                        <div><div class="record-name">富邦信貸</div></div>
-                        <div class="record-amt amt-out" id="r-loanFubon">--</div>
-                    </div>
-                    <div class="record-row">
-                        <div><div class="record-name">按摩椅分期</div></div>
-                        <div class="record-amt amt-out" id="r-loanMassage">--</div>
-                    </div>
-                    <div class="record-month-header">訂閱與通訊</div>
-                    <div class="record-row">
-                        <div><div class="record-name">中華電信</div></div>
-                        <div class="record-amt amt-out">-$3,492</div>
-                    </div>
-                    <div class="record-row">
-                        <div><div class="record-name">iCloud / XIM / YouTube / Netflix / LINE</div></div>
-                        <div class="record-amt amt-out">-$929</div>
-                    </div>
-                    <div class="summary-row">
-                        <span>合計</span>
-                        <strong class="amt-out" id="r-totalExpense2">--</strong>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 本月記帳收入 / 支出 -->
-            <section class="asset-grid">
-                <div class="dark-panel">
-                    <div class="section-header"><h3>📈 本月記帳收入</h3></div>
-                    <div id="monthly-records-income"><div style="color:var(--text-muted);font-size:12px;padding:8px 0">尚無記帳收入</div></div>
-                    <div class="summary-row">
-                        <span>小計</span>
-                        <strong class="amt-in" id="r-monthly-income-total">+$0</strong>
-                    </div>
-                </div>
-                <div class="dark-panel">
-                    <div class="section-header"><h3>📉 本月記帳支出</h3></div>
-                    <div id="monthly-records-expense"><div style="color:var(--text-muted);font-size:12px;padding:8px 0">尚無記帳支出</div></div>
-                    <div class="summary-row">
-                        <span>小計</span>
-                        <strong class="amt-out" id="r-monthly-expense-total">-$0</strong>
-                    </div>
-                </div>
-            </section>
-
-            <!-- 實際現金流總結 -->
+            <!-- 固定收入明細 -->
             <div class="dark-panel">
-                <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:16px">現金流總結 Cashflow Summary</div>
-                <div style="display:flex;flex-direction:column;gap:10px">
-                    <div style="display:flex;justify-content:space-between;align-items:center">
-                        <span style="font-size:13px;color:var(--text-muted)">固定收入</span>
-                        <span class="amt-in" id="r-cf-fixed-income">--</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center">
-                        <span style="font-size:13px;color:var(--text-muted)">本月記帳收入</span>
-                        <span class="amt-in" id="r-cf-monthly-in">--</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center">
-                        <span style="font-size:13px;color:var(--text-muted)">固定支出</span>
-                        <span class="amt-out" id="r-cf-fixed-expense">--</span>
-                    </div>
-                    <div style="display:flex;justify-content:space-between;align-items:center">
-                        <span style="font-size:13px;color:var(--text-muted)">本月記帳支出</span>
-                        <span class="amt-out" id="r-cf-monthly-out">--</span>
-                    </div>
-                    <div style="height:1px;background:var(--border);margin:4px 0"></div>
-                    <div style="display:flex;justify-content:space-between;align-items:baseline">
-                        <span style="font-size:13px;font-weight:600;color:var(--text-main)">實際自由現金流</span>
-                        <strong id="r-actual-cashflow-detail" style="font-size:1.2rem">--</strong>
-                    </div>
+                <div class="rec-sec-hdr">
+                    <span class="rec-sec-title">固定收入明細</span>
+                    <span class="rec-count-badge" id="rs-income-count-badge">--</span>
                 </div>
+                <div id="rs-income-items"></div>
+                <button class="rec-see-all-btn" id="rs-income-see-all" style="display:none"
+                        onclick="recSeeAll('rs-income-items', this)">▼ 查看全部</button>
             </div>
+
+            <!-- 固定支出明細 -->
+            <div class="dark-panel">
+                <div class="rec-sec-hdr">
+                    <span class="rec-sec-title">固定支出明細</span>
+                    <span class="rec-count-badge" id="rs-expense-count-badge">--</span>
+                </div>
+                <div id="rs-expense-items"></div>
+                <button class="rec-see-all-btn" id="rs-expense-see-all" style="display:none"
+                        onclick="recSeeAll('rs-expense-items', this)">▼ 查看全部</button>
+            </div>
+
+            <!-- 本月記帳明細 -->
+            <div class="dark-panel">
+                <div class="rec-sec-hdr">
+                    <span class="rec-sec-title">記帳明細</span>
+                    <span class="rec-count-badge" id="rs-ledger-count-badge">--</span>
+                </div>
+                <div id="rs-ledger-items"></div>
+                <button class="rec-see-all-btn" id="rs-ledger-see-all" style="display:none"
+                        onclick="recSeeAll('rs-ledger-items', this)">▼ 查看全部</button>
+            </div>
+
+            <!-- 收支分布圖 -->
+            <section class="rec-chart-grid">
+                <div class="dark-panel">
+                    <div class="section-header"><h3>固定收入分布</h3></div>
+                    <div style="position:relative;height:220px"><canvas id="chartRecIncome"></canvas></div>
+                </div>
+                <div class="dark-panel">
+                    <div class="section-header"><h3>固定支出分布</h3></div>
+                    <div style="position:relative;height:220px"><canvas id="chartRecExpense"></canvas></div>
+                </div>
+                <div class="dark-panel">
+                    <div class="section-header"><h3>本月支出分布</h3></div>
+                    <div style="position:relative;height:220px" id="chartRecMonthlyWrap"><canvas id="chartRecMonthly"></canvas></div>
+                </div>
+            </section>
 
             <!-- 新增記錄 -->
             <div class="dark-panel">
                 <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px">新增記錄</div>
                 <div style="display:flex;flex-direction:column;gap:10px">
                     <div class="rec-row">
-                        <input type="text"   id="rec-desc"     class="rec-input" placeholder="說明（午餐、配息、加薪...）" style="flex:2">
-                        <input type="number" id="rec-amount"   class="rec-input" placeholder="金額" min="0" style="flex:1">
+                        <input type="text"   id="rec-desc"   class="rec-input" placeholder="說明（午餐、配息、加薪...）" style="flex:2">
+                        <input type="number" id="rec-amount" class="rec-input" placeholder="金額" min="0" style="flex:1">
                     </div>
                     <div class="rec-row">
                         <select id="rec-type" class="rec-input" style="flex:1">

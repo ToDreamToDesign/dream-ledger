@@ -17,6 +17,9 @@ function formatPercentage(value) {
 
 // Chart 實例快取（防止重複渲染導致 Canvas is already in use）
 let _assetChartInstance = null;
+let _chartRecIncome     = null;
+let _chartRecExpense    = null;
+let _chartRecMonthly    = null;
 
 // ── 2. 頁面路由系統 ───────────────────────────────────────────
 const PAGE_LABELS = {
@@ -231,73 +234,186 @@ function initTimelineFilter() {
 }
 
 // ── 7. 記帳紀錄頁渲染 ────────────────────────────────────────
+
+// 展開明細區（隱藏的項目顯示出來，隱藏展開按鈕）
+function recSeeAll(containerId, btn) {
+    document.querySelectorAll('#' + containerId + ' .rec-hidden-item')
+        .forEach(el => el.classList.remove('rec-hidden-item'));
+    btn.style.display = 'none';
+}
+
+// 通用圓餅圖渲染（含舊實例銷毀 + 空資料狀態）
+function _renderPieChart(canvasId, wrapId, oldInstance, labels, data) {
+    const ctx  = document.getElementById(canvasId);
+    const wrap = document.getElementById(wrapId || canvasId + 'Wrap');
+    if (!ctx) return null;
+    if (oldInstance) oldInstance.destroy();
+
+    if (!data.length || data.every(d => d === 0)) {
+        ctx.style.display = 'none';
+        if (wrap && !wrap.querySelector('.rec-chart-empty')) {
+            const div = document.createElement('div');
+            div.className = 'rec-chart-empty';
+            div.style.cssText = 'text-align:center;color:var(--text-muted);font-size:12px;padding:70px 0';
+            div.textContent = '本月尚無記錄';
+            wrap.appendChild(div);
+        }
+        return null;
+    }
+    ctx.style.display = '';
+    if (wrap) { const old = wrap.querySelector('.rec-chart-empty'); if (old) old.remove(); }
+
+    const COLORS = ['#32d4d7','#34d399','#fbbf24','#a78bfa','#f43f5e','#fb923c','#60a5fa','#4ade80','#f9a8d4','#6ee7b7'];
+    return new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels,
+            datasets: [{
+                data,
+                backgroundColor: COLORS.slice(0, data.length),
+                borderColor: 'rgba(15,23,42,0.8)',
+                borderWidth: 2,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { color: '#64748b', font: { size: 10 }, padding: 8, boxWidth: 10 } },
+                tooltip: { callbacks: { label: ctx => {
+                    const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                    const pct   = total ? (ctx.parsed / total * 100).toFixed(1) : 0;
+                    return ` ${ctx.label}: $${ctx.parsed.toLocaleString()} (${pct}%)`;
+                }}}
+            },
+            cutout: '52%'
+        }
+    });
+}
+
 function renderRecords() {
-    if (typeof dreamUser === "undefined") return;
+    if (typeof dreamUser === 'undefined') return;
     const i   = dreamUser.cashflowModel.income;
     const e   = dreamUser.cashflowModel.expense;
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-    // 固定收支（from user.js）
-    set("r-salary",        formatCurrency(i.baseSalary));
-    set("r-cashflow",      formatCurrency(dreamUser.cashflowModel.getMonthlyCashflow()));
-    set("r-baseSalary",   '+' + formatCurrency(i.baseSalary));
-    set("r-reimb",        '+' + formatCurrency(i.reimbursement));
-    set("r-dividend",     '+' + formatCurrency(i.kgiDividend));
-    set("r-totalIncome",  '+' + formatCurrency(i.total));
-    set("r-totalExpense",      formatCurrency(e.total));
-    set("r-totalExpense2", '-' + formatCurrency(e.total));
-    set("r-loanFubon",    '-' + formatCurrency(e.loanRepayment.fubon));
-    set("r-loanStudent",  '-' + formatCurrency(e.loanRepayment.student));
-    set("r-loanMassage",  '-' + formatCurrency(e.loanRepayment.massageChair));
+    // 固定收入 / 支出明細陣列
+    const incomeItems = [
+        { label: '底薪',     sub: '保底基準，每月確認', amount: i.baseSalary },
+        { label: '費用報銷', sub: '浮動收入',           amount: i.reimbursement },
+        { label: '凱基配息', sub: '被動現金流',         amount: i.kgiDividend },
+    ].filter(it => it.amount > 0);
 
-    // 本月記帳統計（from localStorage records）
-    const records        = loadRecords();
-    const txRecords      = records.filter(r => !r.isEvent && r.amount > 0);
-    const monthlyIncome  = txRecords.filter(r => r.type === 'income' ).reduce((s, r) => s + r.amount, 0);
-    const monthlyExpense = txRecords.filter(r => r.type === 'expense').reduce((s, r) => s + r.amount, 0);
-    const fixedIncome    = i.total;
-    const fixedExpense   = e.total;
-    const actualCashflow = fixedIncome + monthlyIncome - fixedExpense - monthlyExpense;
+    const expenseItems = [
+        { label: '房租',       sub: '',   amount: e.rent },
+        { label: '保險',       sub: '',   amount: e.insurance },
+        { label: '富邦信貸',   sub: '月還款', amount: e.loanRepayment.fubon },
+        { label: '學貸',       sub: '月還款', amount: e.loanRepayment.student },
+        { label: '按摩椅分期', sub: '月還款', amount: e.loanRepayment.massageChair },
+        { label: '電信與訂閱', sub: '',   amount: e.telecomSubscription },
+    ].filter(it => it.amount > 0);
 
-    set("r-monthly-income-total",  '+' + formatCurrency(monthlyIncome));
-    set("r-monthly-expense-total", '-' + formatCurrency(monthlyExpense));
-    set("r-cf-fixed-income",      '+' + formatCurrency(fixedIncome));
-    set("r-cf-monthly-in",        '+' + formatCurrency(monthlyIncome));
-    set("r-cf-fixed-expense",     '-' + formatCurrency(fixedExpense));
-    set("r-cf-monthly-out",       '-' + formatCurrency(monthlyExpense));
+    // 記帳記錄
+    const records   = loadRecords();
+    const txRecords = records.filter(r => !r.isEvent && r.amount > 0);
 
-    // 更新 hero + detail 的實際自由現金流
-    const color = actualCashflow >= 0 ? 'var(--neon-green)' : 'var(--neon-rose)';
-    ['r-actual-cashflow', 'r-actual-cashflow-detail'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) { el.textContent = formatCurrency(actualCashflow); el.style.color = color; }
-    });
+    // 本月記錄（用於字卡 + 圓餅圖）
+    const thisMonth  = new Date().toISOString().slice(0, 7);
+    const mthRecs    = txRecords.filter(r => r.date.startsWith(thisMonth));
+    const mthExpRecs = mthRecs.filter(r => r.type === 'expense');
+    const mthIncRecs = mthRecs.filter(r => r.type === 'income');
+    const mthExpTotal = mthExpRecs.reduce((s, r) => s + r.amount, 0);
+    const mthIncTotal = mthIncRecs.reduce((s, r) => s + r.amount, 0);
+    const actualCashflow = i.total + mthIncTotal - e.total - mthExpTotal;
+    const cfColor = actualCashflow >= 0 ? 'var(--neon-green)' : 'var(--neon-rose)';
 
-    // 本月記帳收入列表
-    const incomeContainer = document.getElementById('monthly-records-income');
-    if (incomeContainer) {
-        const incRecs = txRecords.filter(r => r.type === 'income');
-        incomeContainer.innerHTML = incRecs.length === 0
-            ? '<div style="color:var(--text-muted);font-size:12px;padding:8px 0">尚無記帳收入</div>'
-            : incRecs.slice(0, 15).map(r => `
-                <div class="record-row">
-                    <div><div class="record-name">${r.description}</div><div class="record-sub">${r.date} · ${r.category}</div></div>
-                    <div class="record-amt amt-in">+${formatCurrency(r.amount)}</div>
-                </div>`).join('');
+    // ─ 字卡 ─
+    set('rs-fixed-income',    formatCurrency(i.total));
+    set('rs-income-sub',      incomeItems.length + ' 項收入');
+    set('rs-fixed-expense',   formatCurrency(e.total));
+    set('rs-expense-sub',     expenseItems.length + ' 項支出');
+    set('rs-monthly-expense', formatCurrency(mthExpTotal));
+    set('rs-monthly-sub',     mthRecs.length + ' 筆記帳');
+    const cfEl = document.getElementById('rs-cashflow');
+    if (cfEl) { cfEl.textContent = formatCurrency(actualCashflow); cfEl.style.color = cfColor; }
+
+    // ─ 明細列表渲染（通用 helper）─
+    const MAX = 3;
+    function fillList(containerId, seeBtnId, badgeId, items, isExpense) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        if (items.length === 0) {
+            container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:8px 0">尚無資料</div>';
+        } else {
+            container.innerHTML = items.map((it, idx) => {
+                const hidden = idx >= MAX ? ' rec-hidden-item' : '';
+                const sign   = isExpense ? '-' : '+';
+                const cc     = isExpense ? 'amt-out' : 'amt-in';
+                return `<div class="record-row${hidden}">
+                    <div>
+                        <div class="record-name">${it.label}</div>
+                        ${it.sub ? `<div class="record-sub">${it.sub}</div>` : ''}
+                    </div>
+                    <div class="record-amt ${cc}">${sign}${formatCurrency(it.amount)}</div>
+                </div>`;
+            }).join('');
+        }
+        const btn = document.getElementById(seeBtnId);
+        if (btn) btn.style.display = items.length > MAX ? 'block' : 'none';
+        set(badgeId, items.length + (isExpense ? ' 項' : ' 項'));
     }
 
-    // 本月記帳支出列表
-    const expenseContainer = document.getElementById('monthly-records-expense');
-    if (expenseContainer) {
-        const expRecs = txRecords.filter(r => r.type === 'expense');
-        expenseContainer.innerHTML = expRecs.length === 0
-            ? '<div style="color:var(--text-muted);font-size:12px;padding:8px 0">尚無記帳支出</div>'
-            : expRecs.slice(0, 15).map(r => `
-                <div class="record-row">
+    fillList('rs-income-items',  'rs-income-see-all',  'rs-income-count-badge',  incomeItems, false);
+    fillList('rs-expense-items', 'rs-expense-see-all', 'rs-expense-count-badge', expenseItems, true);
+
+    // 記帳明細（全部記錄，按日期降序）
+    const ledgerEl  = document.getElementById('rs-ledger-items');
+    const ledgerBtn = document.getElementById('rs-ledger-see-all');
+    if (ledgerEl) {
+        const sorted = txRecords.slice().sort((a, b) => b.date.localeCompare(a.date));
+        ledgerEl.innerHTML = sorted.length === 0
+            ? '<div style="color:var(--text-muted);font-size:12px;padding:8px 0">尚無記帳記錄</div>'
+            : sorted.map((r, idx) => {
+                const hidden = idx >= MAX ? ' rec-hidden-item' : '';
+                const sign   = r.type === 'income' ? '+' : '-';
+                const cc     = r.type === 'income' ? 'amt-in' : 'amt-out';
+                return `<div class="record-row${hidden}">
                     <div><div class="record-name">${r.description}</div><div class="record-sub">${r.date} · ${r.category}</div></div>
-                    <div class="record-amt amt-out">-${formatCurrency(r.amount)}</div>
-                </div>`).join('');
+                    <div class="record-amt ${cc}">${sign}${formatCurrency(r.amount)}</div>
+                </div>`;
+            }).join('');
+        set('rs-ledger-count-badge', txRecords.length + ' 筆');
+        if (ledgerBtn) ledgerBtn.style.display = txRecords.length > MAX ? 'block' : 'none';
     }
+
+    // ─ 圓餅圖 ─
+    _chartRecIncome = _renderPieChart(
+        'chartRecIncome', null, _chartRecIncome,
+        incomeItems.map(it => it.label),
+        incomeItems.map(it => it.amount)
+    );
+
+    const expChartItems = [
+        { label: '房租',   amount: e.rent },
+        { label: '保險',   amount: e.insurance },
+        { label: '貸款',   amount: e.loanRepayment.total },
+        { label: '電信訂閱', amount: e.telecomSubscription },
+    ].filter(it => it.amount > 0);
+    _chartRecExpense = _renderPieChart(
+        'chartRecExpense', null, _chartRecExpense,
+        expChartItems.map(it => it.label),
+        expChartItems.map(it => it.amount)
+    );
+
+    const catMap = {};
+    mthExpRecs.forEach(r => { catMap[r.category] = (catMap[r.category] || 0) + r.amount; });
+    const monthCats = Object.entries(catMap).sort((a, b) => b[1] - a[1]);
+    _chartRecMonthly = _renderPieChart(
+        'chartRecMonthly', 'chartRecMonthlyWrap', _chartRecMonthly,
+        monthCats.map(([cat]) => cat),
+        monthCats.map(([, amt]) => amt)
+    );
 }
 
 // ── 8. Dashboard 手風琴事件列表 ──────────────────────────────
