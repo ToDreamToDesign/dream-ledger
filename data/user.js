@@ -55,7 +55,23 @@ const dreamUser = {
         }
     },
  
-    // 4. 現金流與生活審計數據 (全面淘汰 75k/42k 舊估算值，回填兩天內核對的真實日常)
+    // 4. 負債顯示元數據 — category（系統通用類別）+ label（個人自訂名稱）
+    //    Dashboard 預設顯示 category，展開後顯示 label
+    liabilityMeta: {
+        fubonLoan:    { category: '信用貸款', label: '富邦信貸',   monthlyKey: 'fubon',        badge: 'active', note: '84 期分期，核心槓桿負債' },
+        studentLoan:  { category: '學生貸款', label: '教育部學貸', monthlyKey: 'student',      badge: 'active', note: '長期低利政府貸款' },
+        privateLoan:  { category: '私人借款', label: '',           monthlyKey: null,           badge: 'soon',   note: '預計 2026/07 全額償還' },
+        massageChair: { category: '分期付款', label: '按摩椅分期', monthlyKey: 'massageChair', badge: 'active', note: '信用卡分期，餘額遞減中' },
+    },
+
+    // 5. 收入顯示元數據 — category（系統通用）+ label（個人自訂）
+    incomeMeta: {
+        baseSalary:    { category: '薪資',    label: '底薪',        sub: '保底基準，每月確認' },
+        reimbursement: { category: '報銷',    label: '費用報銷',    sub: '浮動，每月不同' },
+        kgiDividend:   { category: '配息收入', label: '凱基保單配息', sub: '被動現金流' },
+    },
+
+    // 6. 現金流與生活審計數據 (全面淘汰 75k/42k 舊估算值，回填兩天內核對的真實日常)
     cashflowModel: {
         income: {
             baseSalary: 60000,   // 每月底薪 (保底基準，實際入帳依當月確認)

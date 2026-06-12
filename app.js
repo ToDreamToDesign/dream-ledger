@@ -119,58 +119,76 @@ function renderAssets() {
 
 // ── 5. 負債管理頁渲染 ─────────────────────────────────────────
 function renderLiabilities() {
-    if (typeof dreamUser === "undefined") return;
-    const l = dreamUser.realLiabilities;
-    const totalLiab      = dreamUser.getters.getTotalLiabilities();
-    const loan           = dreamUser.cashflowModel.expense.loanRepayment;
-    const monthlyRepay   = loan.total;
-    const fubonMonthly   = loan.fubon;
-    const studentMonthly = loan.student;
-    const massageMonthly = loan.massageChair;
+    if (typeof dreamUser === 'undefined') return;
+    const l    = dreamUser.realLiabilities;
+    const meta = dreamUser.liabilityMeta || {};
+    const loan = dreamUser.cashflowModel.expense.loanRepayment;
+    const totalLiab    = dreamUser.getters.getTotalLiabilities();
+    const monthlyRepay = loan.total;
 
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-    set("l-totalLiabilities", formatCurrency(totalLiab));
-    set("l-monthlyRepay",     formatCurrency(monthlyRepay));
-    set("l-fubon",            formatCurrency(l.fubonLoan));
-    set("l-student",          formatCurrency(l.studentLoan));
-    set("l-private",          formatCurrency(l.privateLoan));
-    set("l-massage",          formatCurrency(l.massageChair));
+    set('l-totalLiabilities', formatCurrency(totalLiab));
+    set('l-monthlyRepay',     formatCurrency(monthlyRepay));
 
-    // 兩個覆蓋率指標
+    // 配息覆蓋率
     const dividend     = dreamUser.cashflowModel.income.kgiDividend;
     const totalExpense = dreamUser.cashflowModel.expense.total;
-    const coverageEl     = document.getElementById("l-coverage");
-    const loanCoverageEl = document.getElementById("l-loanCoverage");
+    const coverageEl     = document.getElementById('l-coverage');
+    const loanCoverageEl = document.getElementById('l-loanCoverage');
     if (coverageEl) {
         coverageEl.textContent = formatPercentage(dividend / totalExpense);
-        coverageEl.style.color = dividend / totalExpense >= 0.1 ? "var(--neon-green)" : "var(--text-main)";
+        coverageEl.style.color = dividend / totalExpense >= 0.1 ? 'var(--neon-green)' : 'var(--text-main)';
     }
     if (loanCoverageEl) {
-        const loanRatio = dividend / fubonMonthly;
+        const loanRatio = monthlyRepay > 0 ? dividend / monthlyRepay : 0;
         loanCoverageEl.textContent = formatPercentage(loanRatio);
-        loanCoverageEl.style.color = loanRatio >= 0.5 ? "var(--neon-cyan)" : "var(--neon-amber)";
+        loanCoverageEl.style.color = loanRatio >= 0.5 ? 'var(--neon-cyan)' : 'var(--neon-amber)';
     }
-    set("l-fubonMonthlyNote", formatCurrency(fubonMonthly));
+    set('l-loanCoverageNote', formatCurrency(monthlyRepay));
 
-    // 負債結構分析列表
-    const breakdown = [
-        { label: '富邦信貸',   amount: l.fubonLoan,    monthly: fubonMonthly,   badge: 'active', note: '84 期分期，核心槓桿負債' },
-        { label: '學貸',       amount: l.studentLoan,  monthly: studentMonthly, badge: 'active', note: '長期低利政府貸款' },
-        { label: '私人借款',   amount: l.privateLoan,  monthly: 0,              badge: 'soon',   note: '預計 2026/07 全額償還' },
-        { label: '按摩椅分期', amount: l.massageChair, monthly: massageMonthly, badge: 'active', note: '信用卡分期，餘額遞減中' },
-    ];
+    // 從 liabilityMeta 建立 breakdown（category 為主、label 為副）
+    const breakdown = Object.keys(l).map(key => {
+        const m          = meta[key] || {};
+        const monthlyKey = m.monthlyKey;
+        const monthly    = monthlyKey ? (loan[monthlyKey] || 0) : 0;
+        return {
+            category: m.category || key,
+            label:    m.label    || '',
+            amount:   l[key],
+            monthly,
+            badge:    m.badge || 'active',
+            note:     m.note  || '',
+        };
+    }).filter(item => item.amount > 0);
 
+    // 動態字卡列
+    const statGrid = document.getElementById('liab-stat-grid');
+    if (statGrid) {
+        statGrid.innerHTML = breakdown.map(item => {
+            const badgeColor = item.badge === 'soon' ? 'rgba(251,191,36,0.15)' : 'rgba(244,63,94,0.12)';
+            const valColor   = item.badge === 'soon' ? 'var(--neon-amber)'     : 'var(--neon-rose)';
+            return `
+            <div class="card dark-panel" style="border-color:${badgeColor}!important">
+                <span>${item.category}</span>
+                ${item.label ? `<span style="font-size:10px;color:var(--text-muted);display:block;margin-bottom:4px">${item.label}</span>` : ''}
+                <strong style="color:${valColor}">${formatCurrency(item.amount)}</strong>
+            </div>`;
+        }).join('');
+    }
+
+    // 負債結構分析
     const container = document.getElementById('debt-breakdown');
     if (!container) return;
     container.innerHTML = breakdown.map(item => {
-        const pct = (item.amount / totalLiab * 100).toFixed(1);
+        const pct        = (item.amount / totalLiab * 100).toFixed(1);
         const badgeClass = item.badge === 'soon' ? 'badge-soon' : 'badge-active';
         const badgeText  = item.badge === 'soon' ? '即將清償' : '還款中';
         return `
         <div style="margin-bottom:20px">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
                 <div>
-                    <span style="font-size:14px;color:var(--text-main);font-weight:500">${item.label}</span>
+                    <span style="font-size:14px;color:var(--text-main);font-weight:500">${item.category}</span>
+                    ${item.label ? `<span style="font-size:11px;color:var(--text-muted);margin-left:6px">${item.label}</span>` : ''}
                     <span class="badge ${badgeClass}" style="margin-left:8px">${badgeText}</span>
                 </div>
                 <div style="text-align:right">
@@ -178,7 +196,7 @@ function renderLiabilities() {
                     ${item.monthly ? `<div style="font-size:11px;color:var(--text-muted)">月付 ${formatCurrency(item.monthly)}</div>` : ''}
                 </div>
             </div>
-            <div style="font-size:11px;color:var(--text-muted);margin-bottom:6px">${item.note}</div>
+            ${item.note ? `<div style="font-size:11px;color:var(--text-muted);margin-bottom:6px">${item.note}</div>` : ''}
             <div class="debt-bar-bg"><div class="debt-bar-fill" style="width:${pct}%"></div></div>
             <div class="debt-meta"><span>佔總負債</span><span>${pct}%</span></div>
         </div>`;
@@ -316,20 +334,39 @@ function renderRecords() {
     const e   = dreamUser.cashflowModel.expense;
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-    // 固定收入 / 支出明細陣列
+    // 固定收入明細（category 為主、label 為副）
+    const iMeta = dreamUser.incomeMeta || {};
     const incomeItems = [
-        { label: '底薪',     sub: '保底基準，每月確認', amount: i.baseSalary },
-        { label: '費用報銷', sub: '浮動收入',           amount: i.reimbursement },
-        { label: '凱基配息', sub: '被動現金流',         amount: i.kgiDividend },
-    ].filter(it => it.amount > 0);
+        { key: 'baseSalary',    amount: i.baseSalary },
+        { key: 'reimbursement', amount: i.reimbursement },
+        { key: 'kgiDividend',   amount: i.kgiDividend },
+    ].filter(it => it.amount > 0).map(it => ({
+        label:  iMeta[it.key]?.category || it.key,
+        sub:    iMeta[it.key]?.label    || '',
+        amount: it.amount,
+    }));
+
+    // 固定支出明細（貸款項從 liabilityMeta 取 category + label）
+    const lMeta = dreamUser.liabilityMeta || {};
+    const loanExpenses = Object.keys(dreamUser.realLiabilities)
+        .map(key => {
+            const m = lMeta[key] || {};
+            if (!m.monthlyKey) return null;
+            const amt = e.loanRepayment[m.monthlyKey] || 0;
+            if (!amt) return null;
+            return {
+                label:  m.category || key,
+                sub:    m.label ? m.label + ' · 月還款' : '月還款',
+                amount: amt,
+            };
+        })
+        .filter(Boolean);
 
     const expenseItems = [
-        { label: '房租',       sub: '',   amount: e.rent },
-        { label: '保險',       sub: '',   amount: e.insurance },
-        { label: '富邦信貸',   sub: '月還款', amount: e.loanRepayment.fubon },
-        { label: '學貸',       sub: '月還款', amount: e.loanRepayment.student },
-        { label: '按摩椅分期', sub: '月還款', amount: e.loanRepayment.massageChair },
-        { label: '電信與訂閱', sub: '',   amount: e.telecomSubscription },
+        { label: '住居',   sub: '',   amount: e.rent },
+        { label: '保險',   sub: '',   amount: e.insurance },
+        ...loanExpenses,
+        { label: '電信訂閱', sub: '', amount: e.telecomSubscription },
     ].filter(it => it.amount > 0);
 
     // 記帳記錄
@@ -635,6 +672,10 @@ function activateSandbox() {
     // 替換負債
     Object.keys(dreamUser.realLiabilities).forEach(k => delete dreamUser.realLiabilities[k]);
     Object.assign(dreamUser.realLiabilities, u.realLiabilities);
+
+    // 替換顯示元數據（category/label 層）
+    if (data.liabilityMeta) dreamUser.liabilityMeta = data.liabilityMeta;
+    if (data.incomeMeta)    dreamUser.incomeMeta    = data.incomeMeta;
 
     // 替換收入（逐欄賦值，保留 getter）
     dreamUser.cashflowModel.income.baseSalary    = u.income.baseSalary;

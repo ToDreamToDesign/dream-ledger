@@ -36,6 +36,18 @@ const sandboxSeed = {
             telecomSubscription: 1200
         }
     },
+    // 與 user.js 同架構，category 通用、label 為 Sandbox 角色（Alex Chen）的個人標籤
+    liabilityMeta: {
+        fubonLoan:    { category: '信用貸款', label: '',          monthlyKey: 'fubon',        badge: 'active', note: '' },
+        studentLoan:  { category: '學生貸款', label: '助學貸款', monthlyKey: 'student',      badge: 'active', note: '政府低利學貸，按月還款中' },
+        privateLoan:  { category: '私人借款', label: '',          monthlyKey: null,           badge: 'soon',   note: '' },
+        massageChair: { category: '分期付款', label: '家電分期', monthlyKey: 'massageChair', badge: 'active', note: '信用卡分期，餘額遞減中' },
+    },
+    incomeMeta: {
+        baseSalary:    { category: '薪資',    label: '底薪',        sub: '保底基準，每月確認' },
+        reimbursement: { category: '報銷',    label: '費用報銷',    sub: '浮動，每月不同' },
+        kgiDividend:   { category: '配息收入', label: 'ETF 季配息', sub: '月均攤計算' },
+    },
     events: [
         {
             year: "2018", category: "Career",

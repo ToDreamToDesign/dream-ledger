@@ -363,24 +363,8 @@
                 </div>
             </section>
 
-            <section class="stats" style="grid-template-columns: repeat(4,1fr)">
-                <div class="card dark-panel card-debt">
-                    <span>富邦信貸</span>
-                    <strong id="l-fubon">--</strong>
-                </div>
-                <div class="card dark-panel card-debt">
-                    <span>學貸</span>
-                    <strong id="l-student">--</strong>
-                </div>
-                <div class="card dark-panel" style="border-color:rgba(251,191,36,0.15)!important">
-                    <span>私人借款</span>
-                    <strong id="l-private" style="color:var(--neon-amber)">--</strong>
-                </div>
-                <div class="card dark-panel card-debt">
-                    <span>按摩椅分期</span>
-                    <strong id="l-massage">--</strong>
-                </div>
-            </section>
+            <!-- 動態產生：各負債金額字卡（由 renderLiabilities() 填入，類別名稱來自 liabilityMeta） -->
+            <section class="stats" id="liab-stat-grid" style="grid-template-columns: repeat(4,1fr)"></section>
 
             <section class="stats" style="grid-template-columns: 1fr 1fr; margin-top: 0">
                 <div class="card dark-panel card-passive-assets">
@@ -389,9 +373,9 @@
                     <div style="font-size:11px;color:var(--text-muted);margin-top:6px">配息 ÷ 每月總支出</div>
                 </div>
                 <div class="card dark-panel card-cashflow">
-                    <span>貸款覆蓋率（vs 富邦月付）</span>
+                    <span>配息覆蓋率（vs 月還款）</span>
                     <strong id="l-loanCoverage">--</strong>
-                    <div style="font-size:11px;color:var(--text-muted);margin-top:6px">凱基配息 ÷ 富邦月付 <span id="l-fubonMonthlyNote">--</span></div>
+                    <div style="font-size:11px;color:var(--text-muted);margin-top:6px">配息 ÷ 貸款月還款合計 <span id="l-loanCoverageNote">--</span></div>
                 </div>
             </section>
 
