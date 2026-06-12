@@ -60,8 +60,8 @@ const dreamUser = {
     liabilityMeta: {
         fubonLoan:    { category: '信用貸款', label: '富邦信貸',   monthlyKey: 'fubon',        badge: 'active', note: '84 期分期，核心槓桿負債' },
         studentLoan:  { category: '學生貸款', label: '教育部學貸', monthlyKey: 'student',      badge: 'active', note: '長期低利政府貸款' },
-        privateLoan:  { category: '私人借款', label: '',           monthlyKey: null,           badge: 'soon',   note: '預計 2026/07 全額償還' },
-        massageChair: { category: '分期付款', label: '按摩椅分期', monthlyKey: 'massageChair', badge: 'active', note: '信用卡分期，餘額遞減中' },
+        privateLoan:  { category: '個人借款', label: '朋友借款',   monthlyKey: null,           badge: 'soon',   note: '預計 2026/07 全額償還' },
+        massageChair: { category: '信用卡分期', label: '按摩椅分期', monthlyKey: 'massageChair', badge: 'active', note: '信用卡分期，餘額遞減中' },
     },
 
     // 5. 收入顯示元數據 — category（系統通用）+ label（個人自訂）

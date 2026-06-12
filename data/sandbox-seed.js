@@ -45,8 +45,8 @@ const sandboxSeed = {
     liabilityMeta: {
         fubonLoan:    { category: '信用貸款', label: '',             monthlyKey: 'fubon',        badge: 'active', note: '' },
         studentLoan:  { category: '學生貸款', label: '教育部學貸',   monthlyKey: 'student',      badge: 'active', note: '2026/06 開始還款，預計 8 年還完 40 萬' },
-        privateLoan:  { category: '私人借款', label: '',             monthlyKey: null,           badge: 'soon',   note: '' },
-        massageChair: { category: '分期付款', label: 'MacBook 分期', monthlyKey: 'massageChair', badge: 'active', note: '24 期零利率，已繳 12 期，剩餘 12 期' },
+        privateLoan:  { category: '個人借款', label: '',             monthlyKey: null,           badge: 'soon',   note: '' },
+        massageChair: { category: '信用卡分期', label: 'MacBook 分期', monthlyKey: 'massageChair', badge: 'active', note: '24 期零利率，已繳 12 期，剩餘 12 期' },
     },
     incomeMeta: {
         baseSalary:    { category: '薪資',    label: '底薪',     sub: '保底基準，每月確認' },
