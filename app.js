@@ -444,6 +444,16 @@ function getSandboxData() {
     try { return JSON.parse(raw); } catch { return null; }
 }
 
+// 將 user-added records（id 以 'rec_' 開頭）的金額套用到 dreamUser.realAssets.cash
+function applyRecordsDelta(records) {
+    records
+        .filter(r => r.id.startsWith('rec_') && !r.isEvent && r.amount > 0)
+        .forEach(r => {
+            if (r.type === 'income')  dreamUser.realAssets.cash += r.amount;
+            else                       dreamUser.realAssets.cash -= r.amount;
+        });
+}
+
 function activateSandbox() {
     let data = getSandboxData();
     if (!data || data.version !== SANDBOX_VERSION) {
@@ -485,6 +495,10 @@ function activateSandbox() {
     // 替換快照
     snapshots.length = 0;
     data.snapshots.forEach(s => snapshots.push(s));
+
+    // Reload 時重新套用 user-added records 對現金的影響
+    const storedRecords = JSON.parse(localStorage.getItem(LS_RECORDS + ':sandbox') || '[]');
+    applyRecordsDelta(storedRecords);
 
     // 顯示 Sandbox banner
     const banner = document.getElementById('sandbox-banner');
@@ -550,6 +564,14 @@ function addRecord() {
     saveRecordsToStorage(records);
     renderRecentRecords();
 
+    // 即時更新財務引擎（user-added 記錄才套用，記事不套用）
+    if (!isEvent && amount > 0) {
+        if (type === 'income')  dreamUser.realAssets.cash += amount;
+        else                    dreamUser.realAssets.cash -= amount;
+        renderDashboard();
+        renderAssets();
+    }
+
     // 清空表單
     ['rec-desc', 'rec-amount', 'rec-note'].forEach(id => {
         const el = document.getElementById(id);
@@ -560,8 +582,18 @@ function addRecord() {
 }
 
 function deleteRecord(id) {
-    const records = loadRecords().filter(r => r.id !== id);
-    saveRecordsToStorage(records);
+    const records = loadRecords();
+    const rec = records.find(r => r.id === id);
+
+    // 如果是 user-added 記錄，刪除時反向還原現金
+    if (rec && rec.id.startsWith('rec_') && !rec.isEvent && rec.amount > 0) {
+        if (rec.type === 'income')  dreamUser.realAssets.cash -= rec.amount;
+        else                        dreamUser.realAssets.cash += rec.amount;
+        renderDashboard();
+        renderAssets();
+    }
+
+    saveRecordsToStorage(records.filter(r => r.id !== id));
     renderRecentRecords();
 }
 
