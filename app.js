@@ -279,11 +279,12 @@ function expandRecentRecords() {
 // 通用圓餅圖渲染（含舊實例銷毀 + 空資料狀態）
 // ── DREAM Ledger Visual Language v1 ──────────────────────────
 // 色彩哲學：投資=未來(Cyan)、負債=過去(Amber)、生活=現在(Slate)
+// 視覺層級：投資最亮（未來）→ 負債中亮（過去）→ 生活極暗（現在退後）
 const VL = {
-    investment: '#28F0D7',
-    debt:       '#C98B3A',
-    // 生活色刻意降低存在感，讓 Debt/Investment 成為視覺焦點
-    _living:    ['#3A4455', '#434C5E', '#4B5563', '#525E6E', '#5C6A78'],
+    investment: '#2EF5E0',   // neon teal — 最高存在感，面積小但最亮
+    debt:       '#D4944A',   // warm amber — 中高存在感
+    // 生活色貼近背景，讓大面積反而消失在畫布中
+    _living:    ['#29354A', '#2D3A50', '#313E55', '#354259', '#39465D'],
 };
 
 function _semanticColors(labels) {
@@ -489,24 +490,60 @@ function renderRecords() {
     fillDetailList('rs-income-items',  incomeItems, false);
     fillDetailList('rs-expense-items', expenseItems, true);
 
-    // ─ Stat Card 資訊加強 ─
-    // 固定收入：顯示主要來源名稱
+    // ─ Stat Card sub-text ─
     const incomeSubEl = document.getElementById('rs-income-sub');
     if (incomeSubEl) {
-        if (incomeItems.length === 0) incomeSubEl.textContent = '無資料';
-        else if (incomeItems.length === 1) incomeSubEl.textContent = incomeItems[0].label;
-        else incomeSubEl.textContent = incomeItems.map(it => it.label).join(' · ');
+        incomeSubEl.textContent = incomeItems.length === 1
+            ? incomeItems[0].label
+            : incomeItems.map(it => it.label).join(' · ') || '無資料';
     }
-
-    // 固定支出：顯示 生活 / 負債 高階分類金額
     const liveAmt = e.rent + e.insurance + e.telecomSubscription;
     const debtAmt = e.loanRepayment.total;
     const expFlowEl = document.getElementById('rs-expense-flow');
     if (expFlowEl) {
         const parts = [];
-        if (liveAmt > 0) parts.push(`<span style="color:${VL._living[2]}">生活</span> ${_fmtShort(liveAmt)}`);
+        if (liveAmt > 0) parts.push(`<span style="color:#6B7A8D">生活</span> ${_fmtShort(liveAmt)}`);
         if (debtAmt > 0) parts.push(`<span style="color:${VL.debt}">負債</span> ${_fmtShort(debtAmt)}`);
         expFlowEl.innerHTML = parts.join('&nbsp;&nbsp;');
+    }
+
+    // ─ Summary Cards（固定收支，完整結構）─
+    const incTotal = i.total;
+    const expTotal = e.total;
+
+    // 固定收入 Summary
+    const incSumValEl = document.getElementById('rs-inc-sum-val');
+    const incSumDetEl = document.getElementById('rs-inc-sum-detail');
+    if (incSumValEl) incSumValEl.textContent = _fmtShort(incTotal);
+    if (incSumDetEl) {
+        incSumDetEl.innerHTML = incomeItems.length === 0
+            ? '<div style="color:var(--text-muted);font-size:12px">尚無收入來源</div>'
+            : incomeItems.map(it => {
+                const pct = incTotal > 0 ? Math.round(it.amount / incTotal * 100) : 0;
+                const sub = iMeta[Object.keys(iMeta).find(k => iMeta[k].category === it.label)]?.label || it.sub || '';
+                return `<div class="vl-summary-row">
+                    <span>${it.label}${sub ? `<span class="vl-summary-pct">${sub}</span>` : ''}</span>
+                    <span><span class="vl-summary-amt">${_fmtShort(it.amount)}</span><span class="vl-summary-pct">${pct}%</span></span>
+                </div>`;
+            }).join('');
+    }
+
+    // 固定支出 Summary（生活 / 負債 兩層）
+    const expSumValEl = document.getElementById('rs-exp-sum-val');
+    const expSumDetEl = document.getElementById('rs-exp-sum-detail');
+    if (expSumValEl) expSumValEl.textContent = _fmtShort(expTotal);
+    if (expSumDetEl) {
+        const flowRows = [
+            { label: '生活支出', amount: liveAmt, color: '#6B7A8D' },
+            { label: '負債支出', amount: debtAmt, color: VL.debt   },
+        ].filter(r => r.amount > 0);
+        expSumDetEl.innerHTML = flowRows.map(r => {
+            const pct = expTotal > 0 ? Math.round(r.amount / expTotal * 100) : 0;
+            return `<div class="vl-summary-row">
+                <span style="color:${r.color}">${r.label}</span>
+                <span><span class="vl-summary-amt">${_fmtShort(r.amount)}</span><span class="vl-summary-pct">${pct}%</span></span>
+            </div>`;
+        }).join('');
     }
 
     // ─ 本月資金流向（單一主圖）─

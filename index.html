@@ -97,9 +97,16 @@
     .rec-see-all-btn { width: 100%; margin-top: 10px; padding: 8px; background: transparent; border: 1px dashed var(--border); border-radius: 6px; color: var(--text-muted); font-size: 12px; cursor: pointer; transition: all 0.2s; }
     .rec-see-all-btn:hover { background: rgba(255,255,255,0.04); color: var(--text-main); border-style: solid; }
 
-    /* ── 圖表區 ── */
-    .rec-chart-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    @media (max-width: 900px) { .rec-chart-grid { grid-template-columns: 1fr; } }
+    /* ── Summary Card（固定收支摘要）── */
+    .vl-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 768px) { .vl-summary-grid { grid-template-columns: 1fr; } }
+    .vl-summary-total { font-size: 1.6rem; font-weight: 700; line-height: 1.1; margin: 10px 0 14px; }
+    .vl-summary-row { display: flex; justify-content: space-between; align-items: baseline;
+        padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+        font-size: 13px; color: var(--text-main); }
+    .vl-summary-row:last-child { border-bottom: none; }
+    .vl-summary-pct { font-size: 10px; color: var(--text-muted); margin-left: 6px; }
+    .vl-summary-amt { font-size: 13px; font-weight: 600; }
 
     /* ── 新增記錄 + 最近紀錄 雙欄 ── */
     .rec-main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
@@ -534,7 +541,21 @@
 
             </section>
 
-            <!-- ④ 本月資金流向（單一主圖）-->
+            <!-- ④ 固定收支摘要（Summary Cards）-->
+            <section class="vl-summary-grid">
+                <div class="dark-panel">
+                    <span class="rec-stat-label">固定收入</span>
+                    <div class="vl-summary-total amt-in" id="rs-inc-sum-val">--</div>
+                    <div id="rs-inc-sum-detail"></div>
+                </div>
+                <div class="dark-panel">
+                    <span class="rec-stat-label">固定支出</span>
+                    <div class="vl-summary-total amt-out" id="rs-exp-sum-val">--</div>
+                    <div id="rs-exp-sum-detail"></div>
+                </div>
+            </section>
+
+            <!-- ⑤ 本月資金流向（主圖）-->
             <section style="display:flex;justify-content:center">
                 <div class="dark-panel" style="width:100%;max-width:460px">
                     <div class="section-header"><h3>本月資金流向</h3></div>
