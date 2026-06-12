@@ -26,10 +26,10 @@ const dreamUser = {
  
     // 2. 真實負債明細 (全面歸位，不遺漏任何隱性分期)
     realLiabilities: {
-        fubonLoan: 859476,   // 富邦信貸剩餘本金 (曾被錯誤混疊為資產，已撥亂反正)
-        studentLoan: 322679, // 學貸
-        privateLoan: 55000,  // 私人借款 (預計 2026/07 償還，屆時可移除此項)
-        massageChair: 22500  // 按摩椅分期
+        creditLoan:  859476,  // 富邦信貸剩餘本金 (曾被錯誤混疊為資產，已撥亂反正)
+        studentLoan: 322679,  // 學貸
+        personalLoan: 55000,  // 私人借款 (預計 2026/07 償還，屆時可移除此項)
+        cardInstallment: 22500 // 按摩椅分期
     },
  
     // 3. 即時動態財務指標計算 (打破硬編碼，數據驅動 Dashboard)
@@ -58,10 +58,10 @@ const dreamUser = {
     // 4. 負債顯示元數據 — category（系統通用類別）+ label（個人自訂名稱）
     //    Dashboard 預設顯示 category，展開後顯示 label
     liabilityMeta: {
-        fubonLoan:    { category: '信用貸款', label: '富邦信貸',   monthlyKey: 'fubon',        badge: 'active', note: '84 期分期，核心槓桿負債' },
-        studentLoan:  { category: '學生貸款', label: '教育部學貸', monthlyKey: 'student',      badge: 'active', note: '長期低利政府貸款' },
-        privateLoan:  { category: '個人借款', label: '朋友借款',   monthlyKey: null,           badge: 'soon',   note: '預計 2026/07 全額償還' },
-        massageChair: { category: '信用卡分期', label: '按摩椅分期', monthlyKey: 'massageChair', badge: 'active', note: '信用卡分期，餘額遞減中' },
+        creditLoan:      { category: '信用貸款',  label: '富邦信貸',   monthlyKey: 'creditLoan',      badge: 'active', note: '84 期分期，核心槓桿負債' },
+        studentLoan:     { category: '學生貸款',  label: '教育部學貸', monthlyKey: 'student',         badge: 'active', note: '長期低利政府貸款' },
+        personalLoan:    { category: '個人借款',  label: '朋友借款',   monthlyKey: null,              badge: 'soon',   note: '預計 2026/07 全額償還' },
+        cardInstallment: { category: '信用卡分期', label: '按摩椅分期', monthlyKey: 'cardInstallment', badge: 'active', note: '信用卡分期，餘額遞減中' },
     },
 
     // 5. 收入顯示元數據 — category（系統通用）+ label（個人自訂）
@@ -84,10 +84,10 @@ const dreamUser = {
             rent: 15000,              // 房租
             insurance: 14586,         // 保險 (含安達美元保單 161 USD，以匯率 30 換算)
             loanRepayment: {
-                fubon:       12302,   // 富邦信貸月還款 (84期，第4期起)
-                student:      4737,   // 學貸月還款
-                massageChair: 1250,   // 按摩椅分期月還款
-                get total() { return this.fubon + this.student + this.massageChair; }
+                creditLoan:      12302,  // 富邦信貸月還款 (84期，第4期起)
+                student:          4737,  // 學貸月還款
+                cardInstallment:  1250,  // 按摩椅分期月還款
+                get total() { return this.creditLoan + this.student + this.cardInstallment; }
             },
             telecomSubscription: 4421, // 電信與各類訂閱
             get total() {

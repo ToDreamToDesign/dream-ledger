@@ -128,56 +128,59 @@ function renderLiabilities() {
     set('l-totalLiabilities', formatCurrency(totalLiab));
     set('l-monthlyRepay',     formatCurrency(monthlyRepay));
 
-    // 配息覆蓋率
-    const dividend     = dreamUser.cashflowModel.income.kgiDividend;
-    const totalExpense = dreamUser.cashflowModel.expense.total;
-    const coverageEl     = document.getElementById('l-coverage');
-    const loanCoverageEl = document.getElementById('l-loanCoverage');
-    if (coverageEl) {
-        coverageEl.textContent = formatPercentage(dividend / totalExpense);
-        coverageEl.style.color = dividend / totalExpense >= 0.1 ? 'var(--neon-green)' : 'var(--text-main)';
+    // 負債收入比 & 月還款壓力
+    const monthlyIncome  = dreamUser.cashflowModel.income.total;
+    const debtToIncomeEl = document.getElementById('l-debtToIncome');
+    if (debtToIncomeEl && monthlyIncome > 0) {
+        const ratio = totalLiab / monthlyIncome;
+        debtToIncomeEl.textContent = ratio.toFixed(1) + ' 倍月薪';
+        debtToIncomeEl.style.color = ratio > 12 ? 'var(--neon-rose)' : ratio > 6 ? 'var(--neon-amber)' : 'var(--neon-green)';
     }
-    if (loanCoverageEl) {
-        const loanRatio = monthlyRepay > 0 ? dividend / monthlyRepay : 0;
-        loanCoverageEl.textContent = formatPercentage(loanRatio);
-        loanCoverageEl.style.color = loanRatio >= 0.5 ? 'var(--neon-cyan)' : 'var(--neon-amber)';
+    const paymentRatioEl = document.getElementById('l-paymentRatio');
+    if (paymentRatioEl && monthlyIncome > 0) {
+        const ratio = monthlyRepay / monthlyIncome;
+        paymentRatioEl.textContent = formatPercentage(ratio);
+        paymentRatioEl.style.color = ratio > 0.2 ? 'var(--neon-rose)' : ratio > 0.15 ? 'var(--neon-amber)' : 'var(--neon-green)';
     }
-    set('l-loanCoverageNote', formatCurrency(monthlyRepay));
 
-    // 從 liabilityMeta 建立 breakdown（category 為主、label 為副）
-    const breakdown = Object.keys(l).map(key => {
+    // 固定四類別順序：學生貸款 → 信用貸款 → 信用卡分期 → 個人借款
+    const LIAB_ORDER = ['studentLoan', 'creditLoan', 'cardInstallment', 'personalLoan'];
+    const allItems = LIAB_ORDER.map(key => {
         const m          = meta[key] || {};
         const monthlyKey = m.monthlyKey;
         const monthly    = monthlyKey ? (loan[monthlyKey] || 0) : 0;
         return {
             category: m.category || key,
             label:    m.label    || '',
-            amount:   l[key],
+            amount:   l[key] || 0,
             monthly,
             badge:    m.badge || 'active',
             note:     m.note  || '',
         };
-    }).filter(item => item.amount > 0);
+    });
+    const activeItems = allItems.filter(item => item.amount > 0);
 
-    // 動態字卡列
+    // 動態字卡列（固定四張，$0 顯示「無負債」）
     const statGrid = document.getElementById('liab-stat-grid');
     if (statGrid) {
-        statGrid.innerHTML = breakdown.map(item => {
-            const badgeColor = item.badge === 'soon' ? 'rgba(251,191,36,0.15)' : 'rgba(244,63,94,0.12)';
-            const valColor   = item.badge === 'soon' ? 'var(--neon-amber)'     : 'var(--neon-rose)';
+        statGrid.innerHTML = allItems.map(item => {
+            const isEmpty    = item.amount === 0;
+            const badgeColor = isEmpty ? 'rgba(255,255,255,0.04)' : item.badge === 'soon' ? 'rgba(251,191,36,0.15)' : 'rgba(244,63,94,0.12)';
+            const valColor   = isEmpty ? 'var(--text-muted)' : item.badge === 'soon' ? 'var(--neon-amber)' : 'var(--neon-rose)';
             return `
             <div class="card dark-panel" style="border-color:${badgeColor}!important">
                 <span>${item.category}</span>
                 ${item.label ? `<span style="font-size:10px;color:var(--text-muted);display:block;margin-bottom:4px">${item.label}</span>` : ''}
-                <strong style="color:${valColor}">${formatCurrency(item.amount)}</strong>
+                <strong style="color:${valColor}">${isEmpty ? '$0' : formatCurrency(item.amount)}</strong>
+                ${isEmpty ? '<div style="font-size:10px;color:var(--text-muted);margin-top:4px">無負債</div>' : ''}
             </div>`;
         }).join('');
     }
 
-    // 負債結構分析
+    // 負債結構分析（只顯示有餘額的項目）
     const container = document.getElementById('debt-breakdown');
     if (!container) return;
-    container.innerHTML = breakdown.map(item => {
+    container.innerHTML = activeItems.map(item => {
         const pct        = (item.amount / totalLiab * 100).toFixed(1);
         const badgeClass = item.badge === 'soon' ? 'badge-soon' : 'badge-active';
         const badgeText  = item.badge === 'soon' ? '即將清償' : '還款中';
@@ -259,6 +262,15 @@ function recSeeAll(containerId, btn) {
 }
 
 // 可折疊明細卡 toggle（固定收入 / 固定支出）
+function switchDetailTab(tab, btn) {
+    ['income', 'expense', 'debt', 'cashflow'].forEach(t => {
+        const p = document.getElementById('rec-panel-' + t);
+        if (p) p.style.display = t === tab ? '' : 'none';
+    });
+    document.querySelectorAll('.rec-tab').forEach(b => b.classList.remove('rec-tab-active'));
+    if (btn) btn.classList.add('rec-tab-active');
+}
+
 function toggleRecCard(hdr) {
     const body  = hdr.nextElementSibling;
     const arrow = hdr.querySelector('.rec-toggle-arrow');
@@ -405,19 +417,20 @@ function renderRecords() {
     const e   = dreamUser.cashflowModel.expense;
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-    // 固定收入明細（category 為主、label 為副）
+    // 固定收入明細
     const iMeta = dreamUser.incomeMeta || {};
     const incomeItems = [
-        { key: 'baseSalary',    amount: i.baseSalary },
-        { key: 'reimbursement', amount: i.reimbursement },
-        { key: 'kgiDividend',   amount: i.kgiDividend },
+        { key: 'baseSalary',    amount: i.baseSalary,    freq: '每月'   },
+        { key: 'reimbursement', amount: i.reimbursement, freq: '不定期' },
+        { key: 'kgiDividend',   amount: i.kgiDividend,   freq: '每月'   },
     ].filter(it => it.amount > 0).map(it => ({
         label:  iMeta[it.key]?.category || it.key,
         sub:    iMeta[it.key]?.label    || '',
         amount: it.amount,
+        freq:   it.freq,
     }));
 
-    // 固定支出明細（貸款項從 liabilityMeta 取 category + label）
+    // 固定支出明細
     const lMeta = dreamUser.liabilityMeta || {};
     const loanExpenses = Object.keys(dreamUser.realLiabilities)
         .map(key => {
@@ -425,26 +438,29 @@ function renderRecords() {
             if (!m.monthlyKey) return null;
             const amt = e.loanRepayment[m.monthlyKey] || 0;
             if (!amt) return null;
-            return {
-                label:  m.category || key,
-                sub:    m.label ? m.label + ' · 月還款' : '月還款',
-                amount: amt,
-            };
-        })
-        .filter(Boolean);
+            return { label: m.category || key, sub: m.label ? m.label + ' · 月還款' : '月還款', amount: amt, freq: '每月' };
+        }).filter(Boolean);
 
     const expenseItems = [
-        { label: '住居',   sub: '',   amount: e.rent },
-        { label: '保險',   sub: '',   amount: e.insurance },
+        { label: '住居',    sub: '', amount: e.rent,                 freq: '每月' },
+        { label: '保險',    sub: '', amount: e.insurance,            freq: '每月' },
         ...loanExpenses,
-        { label: '電信訂閱', sub: '', amount: e.telecomSubscription },
+        { label: '電信訂閱', sub: '', amount: e.telecomSubscription, freq: '每月' },
     ].filter(it => it.amount > 0);
 
-    // 記帳記錄
-    const records   = loadRecords();
-    const txRecords = records.filter(r => !r.isEvent && r.amount > 0);
+    // 負債支出明細
+    const debtItems = Object.keys(dreamUser.realLiabilities)
+        .map(key => {
+            const m = lMeta[key] || {};
+            if (!m.monthlyKey) return null;
+            const amt = e.loanRepayment[m.monthlyKey] || 0;
+            if (!amt) return null;
+            return { label: m.category || key, sub: m.label || '', amount: amt, freq: '每月' };
+        }).filter(Boolean);
 
-    // 本月記錄（用於字卡 + 圓餅圖）
+    // 記帳記錄
+    const records    = loadRecords();
+    const txRecords  = records.filter(r => !r.isEvent && r.amount > 0);
     const thisMonth  = new Date().toISOString().slice(0, 7);
     const mthRecs    = txRecords.filter(r => r.date.startsWith(thisMonth));
     const mthExpRecs = mthRecs.filter(r => r.type === 'expense');
@@ -454,51 +470,19 @@ function renderRecords() {
     const actualCashflow = i.total + mthIncTotal - e.total - mthExpTotal;
     const cfColor = actualCashflow >= 0 ? 'var(--neon-green)' : 'var(--neon-rose)';
 
-    // ─ 字卡（Row 1）─
+    // ─ 四張字卡 ─
     set('rs-fixed-income',    formatCurrency(i.total));
-    set('rs-income-sub',      incomeItems.length + ' 項收入');
     set('rs-fixed-expense',   formatCurrency(e.total));
-    set('rs-expense-sub',     expenseItems.length + ' 項支出');
     set('rs-monthly-expense', formatCurrency(mthExpTotal));
     set('rs-monthly-sub',     mthRecs.length + ' 筆記帳');
     const cfEl = document.getElementById('rs-cashflow');
     if (cfEl) { cfEl.textContent = formatCurrency(actualCashflow); cfEl.style.color = cfColor; }
 
-    // ─ 可折疊明細卡（Row 3）─
-    set('rs-income-detail-val', formatCurrency(i.total));
-    set('rs-income-detail-sub', incomeItems.length + ' 項收入來源');
-    set('rs-expense-detail-val', formatCurrency(e.total));
-    set('rs-expense-detail-sub', expenseItems.length + ' 項支出來源');
-
-    function fillDetailList(containerId, items, isExpense) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-        container.innerHTML = items.length === 0
-            ? '<div style="color:var(--text-muted);font-size:12px;padding:8px 0">尚無資料</div>'
-            : items.map(it => {
-                const sign = isExpense ? '-' : '+';
-                const cc   = isExpense ? 'amt-out' : 'amt-in';
-                return `<div class="record-row">
-                    <div>
-                        <div class="record-name">${it.label}</div>
-                        ${it.sub ? `<div class="record-sub">${it.sub}</div>` : ''}
-                    </div>
-                    <div class="record-amt ${cc}">${sign}${formatCurrency(it.amount)}</div>
-                </div>`;
-            }).join('');
-    }
-    fillDetailList('rs-income-items',  incomeItems, false);
-    fillDetailList('rs-expense-items', expenseItems, true);
-
-    // ─ Stat Card sub-text ─
     const incomeSubEl = document.getElementById('rs-income-sub');
-    if (incomeSubEl) {
-        incomeSubEl.textContent = incomeItems.length === 1
-            ? incomeItems[0].label
-            : incomeItems.map(it => it.label).join(' · ') || '無資料';
-    }
-    const liveAmt = e.rent + e.insurance + e.telecomSubscription;
-    const debtAmt = e.loanRepayment.total;
+    if (incomeSubEl) incomeSubEl.textContent = incomeItems.map(it => it.label).join(' · ') || '無資料';
+
+    const liveAmt   = e.rent + e.insurance + e.telecomSubscription;
+    const debtAmt   = e.loanRepayment.total;
     const expFlowEl = document.getElementById('rs-expense-flow');
     if (expFlowEl) {
         const parts = [];
@@ -507,61 +491,67 @@ function renderRecords() {
         expFlowEl.innerHTML = parts.join('&nbsp;&nbsp;');
     }
 
-    // ─ Summary Cards（固定收支，完整結構）─
-    const incTotal = i.total;
-    const expTotal = e.total;
-
-    // 固定收入 Summary
-    const incSumValEl = document.getElementById('rs-inc-sum-val');
-    const incSumDetEl = document.getElementById('rs-inc-sum-detail');
-    if (incSumValEl) incSumValEl.textContent = _fmtShort(incTotal);
-    if (incSumDetEl) {
-        incSumDetEl.innerHTML = incomeItems.length === 0
-            ? '<div style="color:var(--text-muted);font-size:12px">尚無收入來源</div>'
-            : incomeItems.map(it => {
-                const pct = incTotal > 0 ? Math.round(it.amount / incTotal * 100) : 0;
-                const sub = iMeta[Object.keys(iMeta).find(k => iMeta[k].category === it.label)]?.label || it.sub || '';
-                return `<div class="vl-summary-row">
-                    <span>${it.label}${sub ? `<span class="vl-summary-pct">${sub}</span>` : ''}</span>
-                    <span><span class="vl-summary-amt">${_fmtShort(it.amount)}</span><span class="vl-summary-pct">${pct}%</span></span>
-                </div>`;
+    // ─ 細項明細 Tab（Table 格式）─
+    function fillDetailTable(tbodyId, items, isExpense) {
+        const tbody = document.getElementById(tbodyId);
+        if (!tbody) return;
+        const color = isExpense ? 'var(--neon-rose)' : 'var(--neon-green)';
+        const sign  = isExpense ? '−' : '+';
+        tbody.innerHTML = items.length === 0
+            ? `<tr><td colspan="4" style="color:var(--text-muted);padding:12px 8px;text-align:center">尚無資料</td></tr>`
+            : items.map(it => {
+                const sub = it.sub ? `<div style="font-size:10px;color:var(--text-muted)">${it.sub}</div>` : '';
+                return `<tr>
+                    <td>${it.label}${sub}</td>
+                    <td style="color:var(--text-muted);font-size:11px">${it.freq || '每月'}</td>
+                    <td style="color:${color};font-weight:600;white-space:nowrap">${sign}${formatCurrency(it.amount)}</td>
+                    <td style="white-space:nowrap;text-align:right">
+                        <span style="color:var(--text-muted);cursor:pointer;font-size:13px;margin-right:8px;opacity:0.55;transition:opacity 0.2s"
+                              onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.55'">✎</span>
+                        <span style="color:var(--text-muted);cursor:pointer;font-size:12px;opacity:0.55;transition:opacity 0.2s"
+                              onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.55'">✕</span>
+                    </td>
+                </tr>`;
             }).join('');
     }
+    fillDetailTable('rs-income-items',  incomeItems,  false);
+    fillDetailTable('rs-expense-items', expenseItems, true);
+    fillDetailTable('rs-debt-items',    debtItems,    true);
 
-    // 固定支出 Summary（生活 / 負債 兩層）
-    const expSumValEl = document.getElementById('rs-exp-sum-val');
-    const expSumDetEl = document.getElementById('rs-exp-sum-detail');
-    if (expSumValEl) expSumValEl.textContent = _fmtShort(expTotal);
-    if (expSumDetEl) {
-        const flowRows = [
-            { label: '生活支出', amount: liveAmt, color: '#6B7A8D' },
-            { label: '負債支出', amount: debtAmt, color: VL.debt   },
-        ].filter(r => r.amount > 0);
-        expSumDetEl.innerHTML = flowRows.map(r => {
-            const pct = expTotal > 0 ? Math.round(r.amount / expTotal * 100) : 0;
-            return `<div class="vl-summary-row">
-                <span style="color:${r.color}">${r.label}</span>
-                <span><span class="vl-summary-amt">${_fmtShort(r.amount)}</span><span class="vl-summary-pct">${pct}%</span></span>
-            </div>`;
-        }).join('');
+    // ─ 現金流明細 ─
+    const cfDetailEl = document.getElementById('rs-cashflow-detail');
+    if (cfDetailEl) {
+        const incTotal = i.total;
+        const rows = [
+            { label: '固定收入', val: incTotal,    color: 'var(--neon-green)', sign: '+' },
+            { label: '固定支出', val: e.total,     color: 'var(--neon-rose)',  sign: '−' },
+            { label: '本月支出', val: mthExpTotal, color: 'var(--neon-rose)',  sign: '−' },
+        ];
+        cfDetailEl.innerHTML = `<div style="display:flex;flex-direction:column;gap:0;padding:8px 0">
+            ${rows.map(r => `
+            <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 4px;border-bottom:1px solid rgba(255,255,255,0.03)">
+                <span style="color:var(--text-muted)">${r.label}</span>
+                <span style="color:${r.color};font-weight:600">${r.sign} ${formatCurrency(r.val)}</span>
+            </div>`).join('')}
+            <div style="display:flex;justify-content:space-between;font-size:14px;padding:12px 4px 4px;border-top:1px solid var(--border);margin-top:4px">
+                <span style="font-weight:600;color:var(--text-main)">現金流</span>
+                <span style="color:${cfColor};font-weight:700;font-size:1.05rem">${formatCurrency(actualCashflow)}</span>
+            </div>
+        </div>`;
     }
 
-    // ─ 本月資金流向（單一主圖）─
-    // 聚合為 生活 / 負債 / 投資，回答：我的錢流向哪裡？
-    const flowBuckets = { '生活': 0, '負債': 0, '投資': 0 };
-    const DEBT_CATS   = new Set(['負債']);
-    const INV_CATS    = new Set(['投資', '儲蓄']);
-    mthExpRecs.forEach(r => {
-        if (DEBT_CATS.has(r.category))     flowBuckets['負債'] += r.amount;
-        else if (INV_CATS.has(r.category)) flowBuckets['投資'] += r.amount;
-        else                               flowBuckets['生活'] += r.amount;
-    });
-    const flowData = Object.entries(flowBuckets).filter(([, v]) => v > 0);
+    // ─ 本月資金流向圓餅：生活支出 + 負債支出 + 現金流 = 固定收入 ─
+    const incTotal = i.total;
+    const flowSegments = [
+        { label: '生活支出', amount: liveAmt,                      color: VL._living[1] },
+        { label: '負債支出', amount: debtAmt,                      color: VL.debt        },
+        { label: '現金流',   amount: Math.max(0, actualCashflow),  color: VL.investment  },
+    ].filter(s => s.amount > 0);
     _chartRecMonthly = _renderPieChart(
         'chartRecMonthly', 'chartRecMonthlyWrap', _chartRecMonthly,
-        flowData.map(([k]) => k),
-        flowData.map(([, v]) => v),
-        { centerLabel: '本月支出', centerValue: _fmtShort(mthExpTotal) }
+        flowSegments.map(s => s.label),
+        flowSegments.map(s => s.amount),
+        { centerLabel: '固定收入', centerValue: _fmtShort(incTotal), colors: flowSegments.map(s => s.color) }
     );
 }
 
@@ -801,9 +791,9 @@ function activateSandbox() {
     dreamUser.cashflowModel.expense.rent                        = u.expense.rent;
     dreamUser.cashflowModel.expense.insurance                   = u.expense.insurance;
     dreamUser.cashflowModel.expense.telecomSubscription         = u.expense.telecomSubscription;
-    dreamUser.cashflowModel.expense.loanRepayment.fubon         = u.expense.loanRepayment.fubon;
-    dreamUser.cashflowModel.expense.loanRepayment.student       = u.expense.loanRepayment.student;
-    dreamUser.cashflowModel.expense.loanRepayment.massageChair  = u.expense.loanRepayment.massageChair;
+    dreamUser.cashflowModel.expense.loanRepayment.creditLoan      = u.expense.loanRepayment.creditLoan;
+    dreamUser.cashflowModel.expense.loanRepayment.student        = u.expense.loanRepayment.student;
+    dreamUser.cashflowModel.expense.loanRepayment.cardInstallment = u.expense.loanRepayment.cardInstallment;
 
     // 替換人生事件
     lifeEvents.length = 0;
@@ -926,12 +916,12 @@ function renderRecentRecords() {
     if (badge) badge.textContent = records.length + ' 筆';
 
     if (records.length === 0) {
-        container.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:16px 0;text-align:center">尚無記錄 — 使用左側表單新增第一筆</div>';
+        container.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:16px 0;text-align:center">尚無記錄 — 使用上方表單新增第一筆</div>';
         if (btn) btn.style.display = 'none';
         return;
     }
 
-    const MAX = _recentShowAll ? 999 : 5;
+    const MAX = _recentShowAll ? 999 : 3;
     if (btn) btn.style.display = (!_recentShowAll && records.length > MAX) ? 'block' : 'none';
 
     container.innerHTML = records.slice(0, MAX).map(r => {

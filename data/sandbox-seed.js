@@ -24,10 +24,10 @@ const sandboxSeed = {
             botSavings:     0
         },
         realLiabilities: {
-            fubonLoan:       0,
-            studentLoan: 400000, // 教育部學貸（本月開始還款）
-            privateLoan:     0,
-            massageChair:  20000 // MacBook 24 期，已繳 12 期，剩餘 20,000
+            creditLoan:       0,
+            studentLoan:  400000, // 教育部學貸（本月開始還款）
+            personalLoan:     0,
+            cardInstallment: 20000 // MacBook 24 期，已繳 12 期，剩餘 20,000
         },
         income: {
             baseSalary:   45000,
@@ -37,16 +37,16 @@ const sandboxSeed = {
         expense: {
             rent:          10000,
             insurance:      1000, // 水電瓦斯（暫用保險欄位）
-            loanRepayment: { fubon: 0, student: 4000, massageChair: 1667 },
+            loanRepayment: { creditLoan: 0, student: 4000, cardInstallment: 1667 },
             telecomSubscription: 3050  // Netflix 250 + 電話費 800 + 0050 定期定額 2,000
         }
     },
     // 與 user.js 同架構，category 通用、label 為 Showcase 角色的個人標籤
     liabilityMeta: {
-        fubonLoan:    { category: '信用貸款', label: '',             monthlyKey: 'fubon',        badge: 'active', note: '' },
-        studentLoan:  { category: '學生貸款', label: '教育部學貸',   monthlyKey: 'student',      badge: 'active', note: '2026/06 開始還款，預計 8 年還完 40 萬' },
-        privateLoan:  { category: '個人借款', label: '',             monthlyKey: null,           badge: 'soon',   note: '' },
-        massageChair: { category: '信用卡分期', label: 'MacBook 分期', monthlyKey: 'massageChair', badge: 'active', note: '24 期零利率，已繳 12 期，剩餘 12 期' },
+        creditLoan:      { category: '信用貸款',  label: '',             monthlyKey: 'creditLoan',      badge: 'active', note: '' },
+        studentLoan:     { category: '學生貸款',  label: '教育部學貸',   monthlyKey: 'student',         badge: 'active', note: '2026/06 開始還款，預計 8 年還完 40 萬' },
+        personalLoan:    { category: '個人借款',  label: '',             monthlyKey: null,              badge: 'soon',   note: '' },
+        cardInstallment: { category: '信用卡分期', label: 'MacBook 分期', monthlyKey: 'cardInstallment', badge: 'active', note: '24 期零利率，已繳 12 期，剩餘 12 期' },
     },
     incomeMeta: {
         baseSalary:    { category: '薪資',    label: '底薪',     sub: '保底基準，每月確認' },

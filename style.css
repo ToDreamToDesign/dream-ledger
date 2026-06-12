@@ -535,6 +535,169 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     box-shadow: 0 0 20px rgba(50, 212, 215, 0.08);
 }
 
+/* ================= 記帳紀錄頁版面系統 ================= */
+.rec-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+.rec-left, .rec-right {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+.rec-stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.rec-stat-card { padding: 16px !important; }
+.rec-stat-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+}
+.rec-stat-value {
+    display: block;
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin: 5px 0 3px;
+}
+.rec-stat-sub { font-size: 11px; color: var(--text-muted); }
+.amt-in  { color: var(--neon-green) !important; }
+.amt-out { color: var(--neon-rose)  !important; }
+
+/* 細項明細 Tab */
+.rec-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+}
+.rec-tab {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 5px 11px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.rec-tab:hover { border-color: rgba(50,212,215,0.3); color: var(--text-main); }
+.rec-tab-active {
+    border-color: rgba(50,212,215,0.5) !important;
+    color: var(--neon-cyan) !important;
+    background: rgba(50,212,215,0.06) !important;
+}
+.rec-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+.rec-detail-table th {
+    color: var(--text-muted);
+    font-weight: 500;
+    padding: 5px 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+}
+.rec-detail-table td {
+    padding: 8px 8px;
+    color: var(--text-main);
+    border-bottom: 1px solid rgba(255,255,255,0.025);
+    vertical-align: middle;
+}
+.rec-add-row-btn {
+    background: transparent;
+    border: 1px dashed var(--border);
+    color: var(--text-muted);
+    padding: 7px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    width: 100%;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.rec-add-row-btn:hover { border-color: rgba(50,212,215,0.35); color: var(--neon-cyan); }
+
+/* 表單元件 */
+.rec-row { display: flex; gap: 10px; }
+.rec-input {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+    color: var(--text-main);
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+    font-family: inherit;
+}
+.rec-input:focus { border-color: rgba(50,212,215,0.4); }
+.rec-submit {
+    background: linear-gradient(135deg, rgba(50,212,215,0.14), rgba(50,212,215,0.07));
+    border: 1px solid rgba(50,212,215,0.4);
+    color: var(--neon-cyan);
+    padding: 11px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.rec-submit:hover { background: rgba(50,212,215,0.18); }
+
+/* 最近紀錄 */
+.rec-sec-hdr { display: flex; justify-content: space-between; align-items: center; }
+.rec-sec-title { font-size: 13px; font-weight: 600; color: var(--text-main); }
+.rec-count-badge {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2px 8px;
+}
+.rec-see-all-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 11px;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.rec-see-all-btn:hover { border-color: rgba(50,212,215,0.3); color: var(--neon-cyan); }
+
+/* 明細列（舊 fillDetailList，保留向下相容） */
+.record-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+.record-name { font-size: 13px; color: var(--text-main); }
+.record-sub  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.record-amt  { font-size: 13px; font-weight: 600; }
+.vl-summary-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 12px; }
+.vl-summary-amt { font-weight: 600; color: var(--text-main); margin-right: 6px; }
+.vl-summary-pct { color: var(--text-muted); font-size: 11px; }
+
+/* RWD */
+@media (max-width: 960px) { .rec-layout { grid-template-columns: 1fr; } }
+@media (max-width: 480px)  { .rec-stat-grid { grid-template-columns: 1fr 1fr; } }
+
+/* ─────────────────────────────────────────────────────── */
+
 .landing-btn:hover {
     background: rgba(50, 212, 215, 0.07);
     box-shadow: 0 0 32px rgba(50, 212, 215, 0.18);
