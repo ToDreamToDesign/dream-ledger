@@ -424,12 +424,12 @@
                 <div class="dark-panel rec-stat-card">
                     <span class="rec-stat-label">固定收入</span>
                     <strong class="rec-stat-value amt-in" id="rs-fixed-income">--</strong>
-                    <span class="rec-stat-sub" id="rs-income-sub">-- 項收入</span>
+                    <span class="rec-stat-sub" id="rs-income-sub" style="font-size:11px;color:#64748b">--</span>
                 </div>
                 <div class="dark-panel rec-stat-card">
                     <span class="rec-stat-label">固定支出</span>
                     <strong class="rec-stat-value amt-out" id="rs-fixed-expense">--</strong>
-                    <span class="rec-stat-sub" id="rs-expense-sub">-- 項支出</span>
+                    <span class="rec-stat-sub" id="rs-expense-flow" style="font-size:11px;line-height:1.6">--</span>
                 </div>
                 <div class="dark-panel rec-stat-card">
                     <span class="rec-stat-label">本月支出</span>
@@ -534,19 +534,13 @@
 
             </section>
 
-            <!-- ④ 收支分布圖 -->
-            <section class="rec-chart-grid">
-                <div class="dark-panel">
-                    <div class="section-header"><h3>固定收入分布</h3></div>
-                    <div style="position:relative;height:220px" id="chartRecIncomeWrap"><canvas id="chartRecIncome"></canvas></div>
-                </div>
-                <div class="dark-panel">
-                    <div class="section-header"><h3>固定支出分布</h3></div>
-                    <div style="position:relative;height:220px" id="chartRecExpenseWrap"><canvas id="chartRecExpense"></canvas></div>
-                </div>
-                <div class="dark-panel">
-                    <div class="section-header"><h3>本月支出分布</h3></div>
-                    <div style="position:relative;height:220px" id="chartRecMonthlyWrap"><canvas id="chartRecMonthly"></canvas></div>
+            <!-- ④ 本月資金流向（單一主圖）-->
+            <section style="display:flex;justify-content:center">
+                <div class="dark-panel" style="width:100%;max-width:460px">
+                    <div class="section-header"><h3>本月資金流向</h3></div>
+                    <div style="position:relative;height:280px" id="chartRecMonthlyWrap">
+                        <canvas id="chartRecMonthly"></canvas>
+                    </div>
                 </div>
             </section>
 

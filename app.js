@@ -17,8 +17,6 @@ function formatPercentage(value) {
 
 // Chart 實例快取（防止重複渲染導致 Canvas is already in use）
 let _assetChartInstance = null;
-let _chartRecIncome     = null;
-let _chartRecExpense    = null;
 let _chartRecMonthly    = null;
 
 // ── 2. 頁面路由系統 ───────────────────────────────────────────
@@ -491,51 +489,28 @@ function renderRecords() {
     fillDetailList('rs-income-items',  incomeItems, false);
     fillDetailList('rs-expense-items', expenseItems, true);
 
-    // ─ 圓餅圖（DREAM Visual Language v1 — 資金流向視覺化）─
-
-    // ① 固定收入：單一來源時不畫圓環，改為文字卡
-    _clearChartWrap('chartRecIncomeWrap', 'vl-single-source');
-    if (_chartRecIncome) { _chartRecIncome.destroy(); _chartRecIncome = null; }
-    if (incomeItems.length <= 1) {
-        const canvas = document.getElementById('chartRecIncome');
-        const wrap   = document.getElementById('chartRecIncomeWrap');
-        if (canvas) canvas.style.display = 'none';
-        if (wrap && incomeItems.length === 1) {
-            const it  = incomeItems[0];
-            const div = document.createElement('div');
-            div.className = 'vl-single-source';
-            div.style.cssText = 'text-align:center;padding:44px 0;';
-            div.innerHTML = `
-                <div style="font-size:10px;color:#64748b;letter-spacing:.08em;margin-bottom:10px">單一收入來源</div>
-                <div style="font-size:24px;font-weight:700;color:#e2e8f0;margin-bottom:6px">${_fmtShort(it.amount)}</div>
-                <div style="font-size:12px;color:#94a3b8">${it.label}</div>
-                <div style="font-size:10px;color:#64748b;margin-top:4px">佔比 100%</div>`;
-            wrap.appendChild(div);
-        }
-    } else {
-        const canvas = document.getElementById('chartRecIncome');
-        if (canvas) canvas.style.display = '';
-        _chartRecIncome = _renderPieChart(
-            'chartRecIncome', 'chartRecIncomeWrap', null,
-            incomeItems.map(it => it.label),
-            incomeItems.map(it => it.amount),
-            { centerLabel: '固定收入', centerValue: _fmtShort(i.total) }
-        );
+    // ─ Stat Card 資訊加強 ─
+    // 固定收入：顯示主要來源名稱
+    const incomeSubEl = document.getElementById('rs-income-sub');
+    if (incomeSubEl) {
+        if (incomeItems.length === 0) incomeSubEl.textContent = '無資料';
+        else if (incomeItems.length === 1) incomeSubEl.textContent = incomeItems[0].label;
+        else incomeSubEl.textContent = incomeItems.map(it => it.label).join(' · ');
     }
 
-    // ② 固定支出：聚合成 生活 / 負債 兩層（對應 現在 / 過去）
-    const expFlowItems = [
-        { label: '生活支出', amount: e.rent + e.insurance + e.telecomSubscription },
-        { label: '負債支出', amount: e.loanRepayment.total },
-    ].filter(it => it.amount > 0);
-    _chartRecExpense = _renderPieChart(
-        'chartRecExpense', 'chartRecExpenseWrap', _chartRecExpense,
-        expFlowItems.map(it => it.label),
-        expFlowItems.map(it => it.amount),
-        { centerLabel: '固定支出', centerValue: _fmtShort(e.total) }
-    );
+    // 固定支出：顯示 生活 / 負債 高階分類金額
+    const liveAmt = e.rent + e.insurance + e.telecomSubscription;
+    const debtAmt = e.loanRepayment.total;
+    const expFlowEl = document.getElementById('rs-expense-flow');
+    if (expFlowEl) {
+        const parts = [];
+        if (liveAmt > 0) parts.push(`<span style="color:${VL._living[2]}">生活</span> ${_fmtShort(liveAmt)}`);
+        if (debtAmt > 0) parts.push(`<span style="color:${VL.debt}">負債</span> ${_fmtShort(debtAmt)}`);
+        expFlowEl.innerHTML = parts.join('&nbsp;&nbsp;');
+    }
 
-    // ③ 本月支出：聚合成 生活 / 負債 / 投資（現在 / 過去 / 未來）
+    // ─ 本月資金流向（單一主圖）─
+    // 聚合為 生活 / 負債 / 投資，回答：我的錢流向哪裡？
     const flowBuckets = { '生活': 0, '負債': 0, '投資': 0 };
     const DEBT_CATS   = new Set(['負債']);
     const INV_CATS    = new Set(['投資', '儲蓄']);
