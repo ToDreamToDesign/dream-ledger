@@ -630,7 +630,7 @@ function initSidebarToggle() {
 const LS_ACTIVE_USER  = "dream-ledger:activeUser";
 const LS_SANDBOX      = "dream-ledger:sandbox";
 const LS_RECORDS      = "dream-ledger:records";
-const SANDBOX_VERSION = "1.0";
+const SANDBOX_VERSION = "2.0";
 
 function getActiveUser() {
     return localStorage.getItem(LS_ACTIVE_USER) || 'primary';
@@ -657,10 +657,8 @@ function activateSandbox() {
     if (!data || data.version !== SANDBOX_VERSION) {
         data = sandboxSeed;
         localStorage.setItem(LS_SANDBOX, JSON.stringify(sandboxSeed));
-        // 初始化 sandbox records（如果 localStorage 中沒有）
-        if (!localStorage.getItem(LS_RECORDS + ':sandbox')) {
-            localStorage.setItem(LS_RECORDS + ':sandbox', JSON.stringify(sandboxSeed.records));
-        }
+        // 版本變更時一律重置 records（保留舊版記錄會造成角色資料錯亂）
+        localStorage.setItem(LS_RECORDS + ':sandbox', JSON.stringify(sandboxSeed.records));
     }
 
     const u = data.user;
