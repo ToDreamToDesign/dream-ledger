@@ -5,20 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DREAM Ledger</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="stylesheet" href="style.css?v=v3">
+<link rel="stylesheet" href="style.css?v=v5">
 <style>
-    /* ── Hero 欄位分流 ── */
-    .hero-container { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-    .hero-right-metrics { display: flex; gap: 40px; text-align: right; }
-    .hero-sub-metric span { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
-    .hero-sub-metric strong { font-size: 22px; font-weight: bold; }
-
     /* ── 頁面切換（單頁應用） ── */
     .page { display: none; flex-direction: column; gap: 28px; }
     .page.active { display: flex; }
 
     /* ── 資產管理頁 ── */
-    .asset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
     .asset-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--border); }
     .asset-item:last-child { border: none; }
     .asset-label { font-size: 14px; color: var(--text-muted); }
@@ -60,56 +53,13 @@
     /* Sandbox Banner */
     .sandbox-banner { display: none; align-items: center; justify-content: space-between; background: rgba(244,63,94,0.07); border: 1px solid rgba(244,63,94,0.2); border-radius: 8px; padding: 8px 16px; margin: 8px 16px; font-size: 12px; color: var(--neon-rose); }
     .sandbox-banner button { font-size: 11px; color: var(--text-muted); background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: 4px; padding: 3px 10px; cursor: pointer; }
-    /* Record Form */
-    .rec-input { width: 100%; box-sizing: border-box; background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; color: var(--text-main); font-size: 13px; outline: none; }
-    .rec-input:focus { border-color: rgba(50,212,215,0.4); }
-    .rec-row { display: flex; gap: 8px; }
-    .rec-submit { width: 100%; padding: 10px; background: rgba(50,212,215,0.08); border: 1px solid rgba(50,212,215,0.25); border-radius: 6px; color: var(--neon-cyan); font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
-    .rec-submit:hover { background: rgba(50,212,215,0.14); }
-    .rec-input option { background: #1e293b; color: #e2e8f0; }
-
-    /* ── 記帳紀錄頁 ── */
+    /* ── 記帳紀錄頁（保留非 style.css 管理的部分）── */
     .record-month-header { font-size: 12px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; padding: 8px 0; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
-    .record-row { display: flex; justify-content: space-between; align-items: center; padding: 11px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
-    .record-row:last-child { border: none; }
-    .record-name { font-size: 13px; color: var(--text-main); }
-    .record-sub  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-    .record-amt  { font-size: 15px; font-weight: 600; white-space: nowrap; }
-    .amt-in  { color: var(--neon-green); }
-    .amt-out { color: var(--neon-rose); }
-    .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0 0 0; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.08); }
+    .summary-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0 0; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.08); }
     .summary-row span  { font-size: 13px; color: var(--text-muted); }
     .summary-row strong{ font-size: 20px; font-weight: 700; }
-
-    /* ── 記帳紀錄 — 字卡統計列 ── */
-    .rec-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-    @media (max-width: 800px) { .rec-stat-grid { grid-template-columns: repeat(2, 1fr); } }
-    .rec-stat-card { display: flex; flex-direction: column; gap: 6px; }
-    .rec-stat-label { font-size: 10px; color: var(--text-muted); letter-spacing: 0.6px; text-transform: uppercase; }
-    .rec-stat-value { font-size: 1.45rem; font-weight: 700; line-height: 1.1; }
-    .rec-stat-sub   { font-size: 11px; color: var(--text-muted); }
-
-    /* ── 明細區 — 標題列 ── */
-    .rec-sec-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-    .rec-sec-title { font-size: 13px; font-weight: 600; color: var(--text-main); }
-    .rec-count-badge { font-size: 11px; color: var(--text-muted); background: rgba(255,255,255,0.04); border: 1px solid var(--border); padding: 2px 9px; border-radius: 12px; }
     .rec-hidden-item { display: none !important; }
-    .rec-see-all-btn { width: 100%; margin-top: 10px; padding: 8px; background: transparent; border: 1px dashed var(--border); border-radius: 6px; color: var(--text-muted); font-size: 12px; cursor: pointer; transition: all 0.2s; }
-    .rec-see-all-btn:hover { background: rgba(255,255,255,0.04); color: var(--text-main); border-style: solid; }
-
-    /* ── Summary Card（固定收支摘要）── */
-    .vl-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    @media (max-width: 768px) { .vl-summary-grid { grid-template-columns: 1fr; } }
-    .vl-summary-total { font-size: 1.6rem; font-weight: 700; line-height: 1.1; margin: 10px 0 14px; }
-    .vl-summary-row { display: flex; justify-content: space-between; align-items: baseline;
-        padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
-        font-size: 13px; color: var(--text-main); }
-    .vl-summary-row:last-child { border-bottom: none; }
-    .vl-summary-pct { font-size: 10px; color: var(--text-muted); margin-left: 6px; }
-    .vl-summary-amt { font-size: 13px; font-weight: 600; }
-
-    /* ── 新增記錄 + 最近紀錄 雙欄 ── */
-    .rec-main-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
+    .rec-input option  { background: #1e293b; color: #e2e8f0; }
 
     /* ── 可折疊明細卡 ── */
     .rec-toggle-hdr { cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
