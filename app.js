@@ -242,6 +242,24 @@ function recSeeAll(containerId, btn) {
     btn.style.display = 'none';
 }
 
+// 可折疊明細卡 toggle（固定收入 / 固定支出）
+function toggleRecCard(hdr) {
+    const body  = hdr.nextElementSibling;
+    const arrow = hdr.querySelector('.rec-toggle-arrow');
+    const isOpen = body.classList.toggle('open');
+    if (arrow) {
+        arrow.textContent   = isOpen ? '▲ 收起' : '▼ 展開';
+        arrow.style.color   = isOpen ? 'var(--neon-cyan)' : '';
+    }
+}
+
+// 最近紀錄展開（顯示全部）
+let _recentShowAll = false;
+function expandRecentRecords() {
+    _recentShowAll = true;
+    renderRecentRecords();
+}
+
 // 通用圓餅圖渲染（含舊實例銷毀 + 空資料狀態）
 function _renderPieChart(canvasId, wrapId, oldInstance, labels, data) {
     const ctx  = document.getElementById(canvasId);
@@ -328,7 +346,7 @@ function renderRecords() {
     const actualCashflow = i.total + mthIncTotal - e.total - mthExpTotal;
     const cfColor = actualCashflow >= 0 ? 'var(--neon-green)' : 'var(--neon-rose)';
 
-    // ─ 字卡 ─
+    // ─ 字卡（Row 1）─
     set('rs-fixed-income',    formatCurrency(i.total));
     set('rs-income-sub',      incomeItems.length + ' 項收入');
     set('rs-fixed-expense',   formatCurrency(e.total));
@@ -338,19 +356,21 @@ function renderRecords() {
     const cfEl = document.getElementById('rs-cashflow');
     if (cfEl) { cfEl.textContent = formatCurrency(actualCashflow); cfEl.style.color = cfColor; }
 
-    // ─ 明細列表渲染（通用 helper）─
-    const MAX = 3;
-    function fillList(containerId, seeBtnId, badgeId, items, isExpense) {
+    // ─ 可折疊明細卡（Row 3）─
+    set('rs-income-detail-val', formatCurrency(i.total));
+    set('rs-income-detail-sub', incomeItems.length + ' 項收入來源');
+    set('rs-expense-detail-val', formatCurrency(e.total));
+    set('rs-expense-detail-sub', expenseItems.length + ' 項支出來源');
+
+    function fillDetailList(containerId, items, isExpense) {
         const container = document.getElementById(containerId);
         if (!container) return;
-        if (items.length === 0) {
-            container.innerHTML = '<div style="color:var(--text-muted);font-size:12px;padding:8px 0">尚無資料</div>';
-        } else {
-            container.innerHTML = items.map((it, idx) => {
-                const hidden = idx >= MAX ? ' rec-hidden-item' : '';
-                const sign   = isExpense ? '-' : '+';
-                const cc     = isExpense ? 'amt-out' : 'amt-in';
-                return `<div class="record-row${hidden}">
+        container.innerHTML = items.length === 0
+            ? '<div style="color:var(--text-muted);font-size:12px;padding:8px 0">尚無資料</div>'
+            : items.map(it => {
+                const sign = isExpense ? '-' : '+';
+                const cc   = isExpense ? 'amt-out' : 'amt-in';
+                return `<div class="record-row">
                     <div>
                         <div class="record-name">${it.label}</div>
                         ${it.sub ? `<div class="record-sub">${it.sub}</div>` : ''}
@@ -358,34 +378,9 @@ function renderRecords() {
                     <div class="record-amt ${cc}">${sign}${formatCurrency(it.amount)}</div>
                 </div>`;
             }).join('');
-        }
-        const btn = document.getElementById(seeBtnId);
-        if (btn) btn.style.display = items.length > MAX ? 'block' : 'none';
-        set(badgeId, items.length + (isExpense ? ' 項' : ' 項'));
     }
-
-    fillList('rs-income-items',  'rs-income-see-all',  'rs-income-count-badge',  incomeItems, false);
-    fillList('rs-expense-items', 'rs-expense-see-all', 'rs-expense-count-badge', expenseItems, true);
-
-    // 記帳明細（全部記錄，按日期降序）
-    const ledgerEl  = document.getElementById('rs-ledger-items');
-    const ledgerBtn = document.getElementById('rs-ledger-see-all');
-    if (ledgerEl) {
-        const sorted = txRecords.slice().sort((a, b) => b.date.localeCompare(a.date));
-        ledgerEl.innerHTML = sorted.length === 0
-            ? '<div style="color:var(--text-muted);font-size:12px;padding:8px 0">尚無記帳記錄</div>'
-            : sorted.map((r, idx) => {
-                const hidden = idx >= MAX ? ' rec-hidden-item' : '';
-                const sign   = r.type === 'income' ? '+' : '-';
-                const cc     = r.type === 'income' ? 'amt-in' : 'amt-out';
-                return `<div class="record-row${hidden}">
-                    <div><div class="record-name">${r.description}</div><div class="record-sub">${r.date} · ${r.category}</div></div>
-                    <div class="record-amt ${cc}">${sign}${formatCurrency(r.amount)}</div>
-                </div>`;
-            }).join('');
-        set('rs-ledger-count-badge', txRecords.length + ' 筆');
-        if (ledgerBtn) ledgerBtn.style.display = txRecords.length > MAX ? 'block' : 'none';
-    }
+    fillDetailList('rs-income-items',  incomeItems, false);
+    fillDetailList('rs-expense-items', expenseItems, true);
 
     // ─ 圓餅圖 ─
     _chartRecIncome = _renderPieChart(
@@ -767,15 +762,23 @@ function deleteRecord(id) {
 
 function renderRecentRecords() {
     const container = document.getElementById('records-list');
+    const btn       = document.getElementById('rs-recent-see-all');
+    const badge     = document.getElementById('rs-recent-badge');
     if (!container) return;
 
     const records = loadRecords();
+    if (badge) badge.textContent = records.length + ' 筆';
+
     if (records.length === 0) {
-        container.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:16px 0;text-align:center">尚無記錄 — 使用上方表單新增第一筆</div>';
+        container.innerHTML = '<div style="color:var(--text-muted);font-size:13px;padding:16px 0;text-align:center">尚無記錄 — 使用左側表單新增第一筆</div>';
+        if (btn) btn.style.display = 'none';
         return;
     }
 
-    container.innerHTML = records.slice(0, 60).map(r => {
+    const MAX = _recentShowAll ? 999 : 5;
+    if (btn) btn.style.display = (!_recentShowAll && records.length > MAX) ? 'block' : 'none';
+
+    container.innerHTML = records.slice(0, MAX).map(r => {
         const isNote  = r.isEvent && r.amount === 0;
         const sign    = r.type === 'income' ? '+' : '-';
         const color   = r.type === 'income' ? 'var(--neon-green)' : 'var(--neon-rose)';
