@@ -401,82 +401,87 @@
                     </div>
                 </section>
 
-                <!-- ═ LAYER 2: 新增紀錄（LEFT）| 本月資金流向（RIGHT）═ -->
-                <div class="rec-operation-grid">
+                <!-- ═ LAYER 2+3: 左側工作區 | 右側觀察區 ═ -->
+                <div class="rec-work-grid">
 
-                    <!-- LEFT: 新增 / 編輯記錄 -->
-                    <div class="dark-panel">
-                        <div style="font-size:13px;font-weight:600;color:var(--text-main);margin-bottom:14px" id="rec-form-title">新增記錄</div>
-                        <div style="display:flex;flex-direction:column;gap:10px">
-                            <div class="rec-row">
-                                <input type="text"   id="rec-desc"   class="rec-input" placeholder="說明（午餐、配息、加薪...）" style="flex:2">
-                                <input type="number" id="rec-amount" class="rec-input" placeholder="金額" min="0" style="flex:1">
-                            </div>
-                            <div class="rec-row">
-                                <select id="rec-type" class="rec-input" style="flex:1">
-                                    <option value="expense">支出 / 收入</option>
-                                    <option value="expense">支出</option>
-                                    <option value="income">收入</option>
-                                </select>
-                                <select id="rec-category" class="rec-input" style="flex:1.2">
-                                    <option value="食">食</option>
-                                    <option value="住">住</option>
-                                    <option value="行">行</option>
-                                    <option value="投資">投資</option>
-                                    <option value="收入">收入</option>
-                                    <option value="負債">負債</option>
-                                    <option value="健康">健康</option>
-                                    <option value="學習">學習</option>
-                                    <option value="通訊">通訊</option>
-                                    <option value="人情">人情</option>
-                                    <option value="儲蓄">儲蓄</option>
-                                    <option value="其他">其他</option>
-                                </select>
-                                <input type="date" id="rec-date" class="rec-input" style="flex:1.2">
-                            </div>
-                            <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);cursor:pointer;user-select:none">
-                                <input type="checkbox" id="rec-is-event" style="accent-color:var(--neon-cyan);width:14px;height:14px">
-                                新增為固定項目（固定支出 / 固定收入）
-                            </label>
-                            <textarea id="rec-note" class="rec-input" placeholder="備註（選填）" rows="2" style="resize:vertical;display:none"></textarea>
-                            <div style="display:flex;gap:8px">
-                                <button class="rec-submit" id="rec-submit-btn" onclick="submitRecordForm()">+ 新增記錄</button>
-                                <button class="rec-cancel-btn" id="rec-cancel-btn" onclick="cancelEditRecord()" style="display:none">取消</button>
+                    <!-- LEFT: 工作區（新增記錄 + 最近紀錄，垂直連貫）-->
+                    <div class="rec-work-col">
+
+                        <!-- 新增 / 編輯記錄 -->
+                        <div class="dark-panel">
+                            <div style="font-size:13px;font-weight:600;color:var(--text-main);margin-bottom:14px" id="rec-form-title">新增記錄</div>
+                            <div style="display:flex;flex-direction:column;gap:10px">
+                                <div class="rec-row">
+                                    <input type="text"   id="rec-desc"   class="rec-input" placeholder="說明（午餐、配息、加薪...）" style="flex:2">
+                                    <input type="number" id="rec-amount" class="rec-input" placeholder="金額" min="0" style="flex:1">
+                                </div>
+                                <div class="rec-row">
+                                    <select id="rec-type" class="rec-input" style="flex:1">
+                                        <option value="expense">支出 / 收入</option>
+                                        <option value="expense">支出</option>
+                                        <option value="income">收入</option>
+                                    </select>
+                                    <select id="rec-category" class="rec-input" style="flex:1.2">
+                                        <option value="食">食</option>
+                                        <option value="住">住</option>
+                                        <option value="行">行</option>
+                                        <option value="投資">投資</option>
+                                        <option value="收入">收入</option>
+                                        <option value="負債">負債</option>
+                                        <option value="健康">健康</option>
+                                        <option value="學習">學習</option>
+                                        <option value="通訊">通訊</option>
+                                        <option value="人情">人情</option>
+                                        <option value="儲蓄">儲蓄</option>
+                                        <option value="其他">其他</option>
+                                    </select>
+                                    <input type="date" id="rec-date" class="rec-input" style="flex:1.2">
+                                </div>
+                                <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-muted);cursor:pointer;user-select:none">
+                                    <input type="checkbox" id="rec-is-event" style="accent-color:var(--neon-cyan);width:14px;height:14px">
+                                    新增為固定項目（固定支出 / 固定收入）
+                                </label>
+                                <textarea id="rec-note" class="rec-input" placeholder="備註（選填）" rows="2" style="resize:vertical;display:none"></textarea>
+                                <div style="display:flex;gap:8px">
+                                    <button class="rec-submit" id="rec-submit-btn" onclick="submitRecordForm()">+ 新增記錄</button>
+                                    <button class="rec-cancel-btn" id="rec-cancel-btn" onclick="cancelEditRecord()" style="display:none">取消</button>
+                                </div>
                             </div>
                         </div>
+
+                        <!-- 最近紀錄 -->
+                        <div class="dark-panel">
+                            <div class="rec-sec-hdr" style="margin-bottom:14px">
+                                <div style="display:flex;align-items:center;gap:8px">
+                                    <span class="rec-sec-title">最近紀錄</span>
+                                    <span class="rec-count-badge" id="rs-recent-badge">--</span>
+                                </div>
+                                <button class="rec-see-all-btn" id="rs-recent-see-all" style="display:none"
+                                        onclick="expandRecentRecords()">展開全部 ∧</button>
+                            </div>
+                            <div id="records-list"></div>
+                            <div style="text-align:center;padding-top:12px;border-top:1px solid var(--border);margin-top:4px">
+                                <a href="javascript:void(0)" onclick="expandRecentRecords()"
+                                   style="font-size:12px;color:var(--text-muted);text-decoration:none;transition:color 0.2s"
+                                   onmouseover="this.style.color='var(--neon-cyan)'" onmouseout="this.style.color='var(--text-muted)'">
+                                    查看全部記錄 →
+                                </a>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <!-- RIGHT: 本月資金流向（觀察區）-->
-                    <div class="dark-panel">
+                    <!-- RIGHT: 觀察區（本月資金流向，高度自動撐滿左欄）-->
+                    <div class="dark-panel rec-chart-panel">
                         <div class="section-header" style="margin-bottom:12px">
                             <h3>本月資金流向</h3>
                             <span style="font-size:12px;color:var(--text-muted)">本月</span>
                         </div>
-                        <div style="position:relative;height:220px" id="chartRecMonthlyWrap">
+                        <div style="position:relative;flex:1;min-height:200px" id="chartRecMonthlyWrap">
                             <canvas id="chartRecMonthly"></canvas>
                         </div>
                     </div>
 
-                </div>
-
-                <!-- ═ LAYER 3: 最近紀錄（全寬）═ -->
-                <div class="dark-panel">
-                    <div class="rec-sec-hdr" style="margin-bottom:14px">
-                        <div style="display:flex;align-items:center;gap:8px">
-                            <span class="rec-sec-title">最近紀錄</span>
-                            <span class="rec-count-badge" id="rs-recent-badge">--</span>
-                        </div>
-                        <button class="rec-see-all-btn" id="rs-recent-see-all" style="display:none"
-                                onclick="expandRecentRecords()">展開全部 ∧</button>
-                    </div>
-                    <div id="records-list"></div>
-                    <div style="text-align:center;padding-top:12px;border-top:1px solid var(--border);margin-top:4px">
-                        <a href="javascript:void(0)" onclick="expandRecentRecords()"
-                           style="font-size:12px;color:var(--text-muted);text-decoration:none;transition:color 0.2s"
-                           onmouseover="this.style.color='var(--neon-cyan)'" onmouseout="this.style.color='var(--text-muted)'">
-                            查看全部記錄 →
-                        </a>
-                    </div>
                 </div>
 
                 <!-- ═ LAYER 4: 固定收入明細（LEFT）| 固定支出明細（RIGHT）預設收合 ═ -->

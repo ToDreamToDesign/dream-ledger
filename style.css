@@ -574,15 +574,24 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .amt-in  { color: var(--neon-green) !important; }
 .amt-out { color: var(--neon-rose)  !important; }
 
-/* Layer 2: 新增紀錄(左) | 最近紀錄(右) */
-.rec-operation-grid {
+/* Layer 2+3: 左側工作區 | 右側觀察區 */
+.rec-work-grid {
     display: grid;
     grid-template-columns: 1.1fr 1fr;
     gap: 20px;
-    align-items: start;
+    align-items: stretch;
+}
+.rec-work-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.rec-chart-panel {
+    display: flex;
+    flex-direction: column;
 }
 
-/* Layer 3: 固定收入明細(左) | 固定支出明細(右) */
+/* Layer 4: 固定收入明細(左) | 固定支出明細(右) */
 .rec-detail-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -707,7 +716,7 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 
 /* RWD */
 @media (max-width: 960px) {
-    .rec-operation-grid { grid-template-columns: 1fr; }
+    .rec-work-grid      { grid-template-columns: 1fr; }
     .rec-detail-grid    { grid-template-columns: 1fr; }
     .rec-stat-grid      { grid-template-columns: 1fr 1fr; }
 }
