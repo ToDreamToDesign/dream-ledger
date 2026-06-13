@@ -574,10 +574,18 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .amt-in  { color: var(--neon-green) !important; }
 .amt-out { color: var(--neon-rose)  !important; }
 
-/* Layer 2: 操作區 */
+/* Layer 2: 新增紀錄(左) | 最近紀錄(右) */
 .rec-operation-grid {
     display: grid;
-    grid-template-columns: 1.15fr 1fr;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+/* Layer 3: 固定收入明細(左) | 固定支出明細(右) */
+.rec-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 20px;
     align-items: start;
 }
@@ -700,7 +708,8 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 /* RWD */
 @media (max-width: 960px) {
     .rec-operation-grid { grid-template-columns: 1fr; }
-    .rec-stat-grid { grid-template-columns: 1fr 1fr; }
+    .rec-detail-grid    { grid-template-columns: 1fr; }
+    .rec-stat-grid      { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 480px) { .rec-stat-grid { grid-template-columns: 1fr 1fr; } }
 
