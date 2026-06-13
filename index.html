@@ -401,7 +401,7 @@
                     </div>
                 </section>
 
-                <!-- ═ LAYER 2: 新增紀錄（LEFT）| 最近紀錄（RIGHT）═ -->
+                <!-- ═ LAYER 2: 新增紀錄（LEFT）| 本月資金流向（RIGHT）═ -->
                 <div class="rec-operation-grid">
 
                     <!-- LEFT: 新增 / 編輯記錄 -->
@@ -446,29 +446,40 @@
                         </div>
                     </div>
 
-                    <!-- RIGHT: 最近紀錄 -->
+                    <!-- RIGHT: 本月資金流向（觀察區）-->
                     <div class="dark-panel">
-                        <div class="rec-sec-hdr" style="margin-bottom:14px">
-                            <div style="display:flex;align-items:center;gap:8px">
-                                <span class="rec-sec-title">最近紀錄</span>
-                                <span class="rec-count-badge" id="rs-recent-badge">--</span>
-                            </div>
-                            <button class="rec-see-all-btn" id="rs-recent-see-all" style="display:none"
-                                    onclick="expandRecentRecords()">展開全部 ∧</button>
+                        <div class="section-header" style="margin-bottom:12px">
+                            <h3>本月資金流向</h3>
+                            <span style="font-size:12px;color:var(--text-muted)">本月</span>
                         </div>
-                        <div id="records-list"></div>
-                        <div style="text-align:center;padding-top:12px;border-top:1px solid var(--border);margin-top:4px">
-                            <a href="javascript:void(0)" onclick="expandRecentRecords()"
-                               style="font-size:12px;color:var(--text-muted);text-decoration:none;transition:color 0.2s"
-                               onmouseover="this.style.color='var(--neon-cyan)'" onmouseout="this.style.color='var(--text-muted)'">
-                                查看全部記錄 →
-                            </a>
+                        <div style="position:relative;height:220px" id="chartRecMonthlyWrap">
+                            <canvas id="chartRecMonthly"></canvas>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- ═ LAYER 3: 固定收入明細（LEFT）| 固定支出明細（RIGHT）預設收合 ═ -->
+                <!-- ═ LAYER 3: 最近紀錄（全寬）═ -->
+                <div class="dark-panel">
+                    <div class="rec-sec-hdr" style="margin-bottom:14px">
+                        <div style="display:flex;align-items:center;gap:8px">
+                            <span class="rec-sec-title">最近紀錄</span>
+                            <span class="rec-count-badge" id="rs-recent-badge">--</span>
+                        </div>
+                        <button class="rec-see-all-btn" id="rs-recent-see-all" style="display:none"
+                                onclick="expandRecentRecords()">展開全部 ∧</button>
+                    </div>
+                    <div id="records-list"></div>
+                    <div style="text-align:center;padding-top:12px;border-top:1px solid var(--border);margin-top:4px">
+                        <a href="javascript:void(0)" onclick="expandRecentRecords()"
+                           style="font-size:12px;color:var(--text-muted);text-decoration:none;transition:color 0.2s"
+                           onmouseover="this.style.color='var(--neon-cyan)'" onmouseout="this.style.color='var(--text-muted)'">
+                            查看全部記錄 →
+                        </a>
+                    </div>
+                </div>
+
+                <!-- ═ LAYER 4: 固定收入明細（LEFT）| 固定支出明細（RIGHT）預設收合 ═ -->
                 <div class="rec-detail-grid">
 
                     <div class="dark-panel rec-detail-section">
@@ -497,17 +508,6 @@
                         </div>
                     </div>
 
-                </div>
-
-                <!-- ═ LAYER 4: 本月資金流向（全寬，輔助）═ -->
-                <div class="dark-panel">
-                    <div class="section-header" style="margin-bottom:12px">
-                        <h3>本月資金流向</h3>
-                        <span style="font-size:12px;color:var(--text-muted)">本月</span>
-                    </div>
-                    <div style="position:relative;height:180px" id="chartRecMonthlyWrap">
-                        <canvas id="chartRecMonthly"></canvas>
-                    </div>
                 </div>
 
             </div>
