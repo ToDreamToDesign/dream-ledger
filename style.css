@@ -544,20 +544,15 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 }
 
 /* ================= 記帳紀錄頁版面系統 ================= */
+/* Records 頁四層架構 */
 .rec-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    align-items: start;
-}
-.rec-left, .rec-right {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
 }
 .rec-stat-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(4, 1fr);
     gap: 10px;
 }
 .rec-stat-card { padding: 16px !important; }
@@ -579,63 +574,13 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .amt-in  { color: var(--neon-green) !important; }
 .amt-out { color: var(--neon-rose)  !important; }
 
-/* 細項明細 Tab */
-.rec-tabs {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 14px;
-    flex-wrap: wrap;
+/* Layer 2: 操作區 */
+.rec-operation-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: 20px;
+    align-items: start;
 }
-.rec-tab {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    padding: 5px 11px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 11px;
-    transition: all 0.2s;
-    font-family: inherit;
-}
-.rec-tab:hover { border-color: rgba(50,212,215,0.3); color: var(--text-main); }
-.rec-tab-active {
-    border-color: rgba(50,212,215,0.5) !important;
-    color: var(--neon-cyan) !important;
-    background: rgba(50,212,215,0.06) !important;
-}
-.rec-detail-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 12px;
-    margin-bottom: 10px;
-}
-.rec-detail-table th {
-    color: var(--text-muted);
-    font-weight: 500;
-    padding: 5px 8px;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-    font-size: 11px;
-}
-.rec-detail-table td {
-    padding: 8px 8px;
-    color: var(--text-main);
-    border-bottom: 1px solid rgba(255,255,255,0.025);
-    vertical-align: middle;
-}
-.rec-add-row-btn {
-    background: transparent;
-    border: 1px dashed var(--border);
-    color: var(--text-muted);
-    padding: 7px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 12px;
-    width: 100%;
-    transition: all 0.2s;
-    font-family: inherit;
-}
-.rec-add-row-btn:hover { border-color: rgba(50,212,215,0.35); color: var(--neon-cyan); }
 
 /* 表單元件 */
 .rec-row { display: flex; gap: 10px; }
@@ -661,13 +606,27 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
-    width: 100%;
+    flex: 1;
     transition: all 0.2s;
     font-family: inherit;
 }
 .rec-submit:hover { background: rgba(50,212,215,0.18); }
+.rec-cancel-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 11px 18px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    flex: 0 0 auto;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+.rec-cancel-btn:hover { border-color: rgba(244,63,94,0.4); color: var(--neon-rose); }
 
-/* 最近紀錄 */
+/* Layer 3: 最近紀錄 */
 .rec-sec-hdr { display: flex; justify-content: space-between; align-items: center; }
 .rec-sec-title { font-size: 13px; font-weight: 600; color: var(--text-main); }
 .rec-count-badge {
@@ -691,7 +650,45 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 }
 .rec-see-all-btn:hover { border-color: rgba(50,212,215,0.3); color: var(--neon-cyan); }
 
-/* 明細列（舊 fillDetailList，保留向下相容） */
+/* Layer 4: 細項明細（折疊） */
+.rec-detail-section { padding: 0 !important; overflow: hidden; }
+.rec-detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+}
+.rec-detail-header:hover { background: var(--panel-hover); }
+.rec-detail-title { font-size: 13px; font-weight: 600; color: var(--text-main); }
+.rec-detail-arrow { font-size: 11px; color: var(--text-muted); transition: color 0.2s; }
+.rec-detail-header:hover .rec-detail-arrow { color: var(--neon-cyan); }
+.rec-detail-body { display: none; padding: 0 20px 16px; }
+.rec-detail-body.open { display: block; }
+.rec-detail-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+    margin-bottom: 4px;
+}
+.rec-detail-table th {
+    color: var(--text-muted);
+    font-weight: 500;
+    padding: 5px 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+}
+.rec-detail-table td {
+    padding: 8px 8px;
+    color: var(--text-main);
+    border-bottom: 1px solid rgba(255,255,255,0.025);
+    vertical-align: middle;
+}
+
+/* 明細列（保留向下相容） */
 .record-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
 .record-name { font-size: 13px; color: var(--text-main); }
 .record-sub  { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
@@ -701,8 +698,11 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .vl-summary-pct { color: var(--text-muted); font-size: 11px; }
 
 /* RWD */
-@media (max-width: 960px) { .rec-layout { grid-template-columns: 1fr; } }
-@media (max-width: 480px)  { .rec-stat-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 960px) {
+    .rec-operation-grid { grid-template-columns: 1fr; }
+    .rec-stat-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) { .rec-stat-grid { grid-template-columns: 1fr 1fr; } }
 
 /* ─────────────────────────────────────────────────────── */
 

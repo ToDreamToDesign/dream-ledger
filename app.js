@@ -261,14 +261,16 @@ function recSeeAll(containerId, btn) {
     btn.style.display = 'none';
 }
 
-// 可折疊明細卡 toggle（固定收入 / 固定支出）
-function switchDetailTab(tab, btn) {
-    ['income', 'expense', 'debt', 'cashflow'].forEach(t => {
-        const p = document.getElementById('rec-panel-' + t);
-        if (p) p.style.display = t === tab ? '' : 'none';
-    });
-    document.querySelectorAll('.rec-tab').forEach(b => b.classList.remove('rec-tab-active'));
-    if (btn) btn.classList.add('rec-tab-active');
+// Layer 4 細項明細折疊 toggle
+function toggleRecDetail(section) {
+    const body  = document.getElementById('rec-detail-' + section);
+    const arrow = document.getElementById('rec-arrow-' + section);
+    if (!body) return;
+    const isOpen = body.classList.toggle('open');
+    if (arrow) {
+        arrow.textContent = isOpen ? '▼ 收起' : '▶ 展開';
+        arrow.style.color = isOpen ? 'var(--neon-cyan)' : '';
+    }
 }
 
 function toggleRecCard(hdr) {
@@ -279,6 +281,97 @@ function toggleRecCard(hdr) {
         arrow.textContent   = isOpen ? '▲ 收起' : '▼ 展開';
         arrow.style.color   = isOpen ? 'var(--neon-cyan)' : '';
     }
+}
+
+// 記錄表單：新增 / 編輯 dispatcher
+let _editingRecordId = null;
+
+function submitRecordForm() {
+    if (_editingRecordId) saveEditedRecord();
+    else addRecord();
+}
+
+function editRecord(id) {
+    const records = loadRecords();
+    const r = records.find(rec => rec.id === id);
+    if (!r) return;
+    _editingRecordId = id;
+
+    const set = (elId, val) => { const el = document.getElementById(elId); if (el) el.value = val; };
+    set('rec-desc',     r.description || '');
+    set('rec-amount',   r.amount || '');
+    set('rec-type',     r.type || 'expense');
+    set('rec-category', r.category || '其他');
+    set('rec-date',     r.date || '');
+
+    const cb = document.getElementById('rec-is-event');
+    if (cb) { cb.checked = !!r.isEvent; cb.dispatchEvent(new Event('change')); }
+
+    const noteEl = document.getElementById('rec-note');
+    if (noteEl) { noteEl.value = r.note || ''; if (r.note) noteEl.style.display = ''; }
+
+    const titleEl = document.getElementById('rec-form-title');
+    if (titleEl) titleEl.textContent = '編輯記錄';
+    const submitBtn = document.getElementById('rec-submit-btn');
+    if (submitBtn) submitBtn.textContent = '更新記錄';
+    const cancelBtn = document.getElementById('rec-cancel-btn');
+    if (cancelBtn) cancelBtn.style.display = '';
+
+    titleEl?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function saveEditedRecord() {
+    if (!_editingRecordId) return;
+
+    const desc     = document.getElementById('rec-desc')?.value.trim();
+    const amount   = parseFloat(document.getElementById('rec-amount')?.value || '0');
+    const type     = document.getElementById('rec-type')?.value || 'expense';
+    const category = document.getElementById('rec-category')?.value || '其他';
+    const date     = document.getElementById('rec-date')?.value || new Date().toISOString().slice(0, 10);
+    const note     = document.getElementById('rec-note')?.value.trim() || '';
+    const isEvent  = document.getElementById('rec-is-event')?.checked || false;
+
+    if (!desc) return;
+    if (!isEvent && (isNaN(amount) || amount <= 0)) return;
+
+    const records = loadRecords();
+    const idx = records.findIndex(r => r.id === _editingRecordId);
+    if (idx === -1) { cancelEditRecord(); return; }
+
+    const old = records[idx];
+    if (old.id.startsWith('rec_') && !old.isEvent && old.amount > 0) {
+        if (old.type === 'income') dreamUser.realAssets.cash -= old.amount;
+        else                       dreamUser.realAssets.cash += old.amount;
+    }
+    if (!isEvent && amount > 0) {
+        if (type === 'income') dreamUser.realAssets.cash += amount;
+        else                   dreamUser.realAssets.cash -= amount;
+    }
+
+    records[idx] = { ...old, description: desc, amount: isEvent ? 0 : amount, type, category, date, isEvent, note };
+    saveRecordsToStorage(records);
+
+    cancelEditRecord();
+    renderDashboard();
+    renderAssets();
+    renderRecords();
+    renderRecentRecords();
+}
+
+function cancelEditRecord() {
+    _editingRecordId = null;
+    ['rec-desc', 'rec-amount', 'rec-note'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+    });
+    const cb = document.getElementById('rec-is-event');
+    if (cb) { cb.checked = false; cb.dispatchEvent(new Event('change')); }
+
+    const titleEl = document.getElementById('rec-form-title');
+    if (titleEl) titleEl.textContent = '新增記錄';
+    const submitBtn = document.getElementById('rec-submit-btn');
+    if (submitBtn) submitBtn.textContent = '+ 新增記錄';
+    const cancelBtn = document.getElementById('rec-cancel-btn');
+    if (cancelBtn) cancelBtn.style.display = 'none';
 }
 
 // 最近紀錄展開（顯示全部）
@@ -448,16 +541,6 @@ function renderRecords() {
         { label: '電信訂閱', sub: '', amount: e.telecomSubscription, freq: '每月' },
     ].filter(it => it.amount > 0);
 
-    // 負債支出明細
-    const debtItems = Object.keys(dreamUser.realLiabilities)
-        .map(key => {
-            const m = lMeta[key] || {};
-            if (!m.monthlyKey) return null;
-            const amt = e.loanRepayment[m.monthlyKey] || 0;
-            if (!amt) return null;
-            return { label: m.category || key, sub: m.label || '', amount: amt, freq: '每月' };
-        }).filter(Boolean);
-
     // 記帳記錄
     const records    = loadRecords();
     const txRecords  = records.filter(r => !r.isEvent && r.amount > 0);
@@ -516,29 +599,6 @@ function renderRecords() {
     }
     fillDetailTable('rs-income-items',  incomeItems,  false);
     fillDetailTable('rs-expense-items', expenseItems, true);
-    fillDetailTable('rs-debt-items',    debtItems,    true);
-
-    // ─ 現金流明細 ─
-    const cfDetailEl = document.getElementById('rs-cashflow-detail');
-    if (cfDetailEl) {
-        const incTotal = i.total;
-        const rows = [
-            { label: '固定收入', val: incTotal,    color: 'var(--neon-green)', sign: '+' },
-            { label: '固定支出', val: e.total,     color: 'var(--neon-rose)',  sign: '−' },
-            { label: '本月支出', val: mthExpTotal, color: 'var(--neon-rose)',  sign: '−' },
-        ];
-        cfDetailEl.innerHTML = `<div style="display:flex;flex-direction:column;gap:0;padding:8px 0">
-            ${rows.map(r => `
-            <div style="display:flex;justify-content:space-between;font-size:13px;padding:8px 4px;border-bottom:1px solid rgba(255,255,255,0.03)">
-                <span style="color:var(--text-muted)">${r.label}</span>
-                <span style="color:${r.color};font-weight:600">${r.sign} ${formatCurrency(r.val)}</span>
-            </div>`).join('')}
-            <div style="display:flex;justify-content:space-between;font-size:14px;padding:12px 4px 4px;border-top:1px solid var(--border);margin-top:4px">
-                <span style="font-weight:600;color:var(--text-main)">現金流</span>
-                <span style="color:${cfColor};font-weight:700;font-size:1.05rem">${formatCurrency(actualCashflow)}</span>
-            </div>
-        </div>`;
-    }
 
     // ─ 本月資金流向圓餅：生活支出 + 負債支出 + 現金流 = 固定收入 ─
     const incTotal = i.total;
@@ -944,10 +1004,13 @@ function renderRecentRecords() {
                 <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${r.date} · ${r.category}</div>
                 ${noteEl}
             </div>
-            <div style="display:flex;align-items:center;gap:12px;margin-left:12px;flex-shrink:0">
+            <div style="display:flex;align-items:center;gap:10px;margin-left:12px;flex-shrink:0">
                 ${amtEl}
-                <span style="font-size:12px;color:var(--text-muted);cursor:pointer;opacity:0.5;transition:opacity 0.2s"
-                      onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.5'"
+                <span style="font-size:13px;color:var(--text-muted);cursor:pointer;opacity:0.45;transition:opacity 0.2s"
+                      onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.45'"
+                      onclick="editRecord('${r.id}')">✎</span>
+                <span style="font-size:12px;color:var(--text-muted);cursor:pointer;opacity:0.45;transition:opacity 0.2s"
+                      onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.45'"
                       onclick="deleteRecord('${r.id}')">✕</span>
             </div>
         </div>`;
