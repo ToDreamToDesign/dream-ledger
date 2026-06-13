@@ -149,37 +149,52 @@ The Hero always shows the most important single number for that page. Stats show
 
 **Purpose:** Living / Present layer. Day-to-day income and expense tracking.
 
+The page is structured as four layers, ordered by decision priority: overview → action → audit → reference.
+
 ```
 ┌──────────────────────────────────┐
-│  STAT GRID (4 cards)             │
+│  LAYER 1 — STAT GRID (4 cards)   │
 │  Fixed Income │ Fixed Expense    │
 │  Monthly Exp  │ Actual Cashflow  │
 └──────────────────────────────────┘
 ┌──────────────────────────────────┐
-│  BREAKDOWN GRID (2-column)       │
-│  Income Detail │ Expense Detail  │
-│  (collapsible) │ (collapsible)   │
+│  LAYER 2 — OPERATION GRID        │
+│  New Record Form │ Cashflow Chart │
+│  (LEFT, locked)  │ (Doughnut)    │
 └──────────────────────────────────┘
 ┌──────────────────────────────────┐
-│  MAIN GRID (2-column)  ← FIXED  │
-│  New Record Form │ Recent Records│
-│  (Left)          │ (Right)       │
+│  LAYER 3 — AUDIT STRIP           │
+│  Recent Records (3 entries)      │
+│  [▼ 查看更多 → full history]      │
 └──────────────────────────────────┘
 ┌──────────────────────────────────┐
-│  VL SUMMARY GRID                 │
-│  [income / expense totals]       │
+│  LAYER 4 — DETAIL GRID           │
+│  ▶ 固定收入明細 (collapsed)       │
+│  ▶ 固定支出明細 (collapsed)       │
 └──────────────────────────────────┘
 ```
 
+**Why four layers:**
+
+Each layer serves a different cognitive mode:
+- Layer 1 answers: "Where do I stand this month?"
+- Layer 2 answers: "What am I doing right now?"
+- Layer 3 answers: "Did my last entry land correctly?"
+- Layer 4 answers: "What is my structural baseline?"
+
+The chart in Layer 2 is not decoration — it provides immediate visual feedback after each record entry.
+
 **Governance rules:**
 
-The Main Grid layout is **locked**:
+Layer 2 Operation Grid layout is **locked**:
 - LEFT = New Record entry form. Always left. Always visible.
-- RIGHT = Recent Records list. Always right. Never moved below the form.
+- RIGHT = Cashflow visualization (Doughnut chart or equivalent). Always right.
 
 This layout reflects a workflow: input on the left, immediate feedback on the right. Reversing it breaks the workflow.
 
 **Do not move the record form below the recent list.** This has been explicitly decided.
+
+Layer 4 Detail Grid is **collapsed by default.** The structural income/expense breakdown is reference information, not the primary action. Displaying it expanded duplicates the stat cards and adds visual noise without adding decision value.
 
 ---
 
@@ -275,5 +290,6 @@ This page is not functional. It is narrative.
 
 | Date | Change | Reason |
 |------|--------|--------|
+| 2026-06-13 v3 | Records page redesigned to 4-layer architecture | Remove information duplication; connect chart to workflow |
 | 2026-06-13 v2 | Full Information Architecture audit | Lock page structures before UI expansion |
 | 2026-06-13 v1 | Initial draft | Document governance before UI expansion |

@@ -16,6 +16,7 @@ Establish the governance chain before any further implementation.
 - [x] `docs/domain-model.md` — Entity definitions and relationships
 - [x] `docs/AI_WORKFLOW.md` — Collaboration boundaries
 - [x] `docs/semantic-color-migration-plan.md` — CSS migration audit and plan
+- [x] `docs/decision-architecture.md` — Core model: Question → Decision → Fact → Reflection → Wisdom
 
 **Status:** Complete. Documents are the authority. Code follows.
 
@@ -64,10 +65,16 @@ Steps (from `docs/semantic-color-migration-plan.md`):
 
 Complete the Living / Present layer of the system.
 
+**Records page information architecture (4 layers):**
+- [ ] Layer 1 — Stat Grid: 4 cards (固定收入 / 固定支出 / 本月支出 / 現金流)
+- [ ] Layer 2 — Operation Grid: New Record Form (LEFT, locked) | Cashflow Doughnut Chart (RIGHT)
+- [ ] Layer 3 — Audit Strip: Recent Records (3 entries, expandable to full history)
+- [ ] Layer 4 — Detail Grid: 固定收入明細 / 固定支出明細 (collapsible, default closed)
+
+**Living layer persistence and workflow:**
 - [ ] Persist Records across sessions (currently in-browser only)
 - [ ] Monthly cashflow summary by category
 - [ ] Record → LifeEvent promotion workflow
-- [ ] Fixed income / expense vs. variable expense separation in UI
 
 ---
 
