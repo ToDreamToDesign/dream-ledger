@@ -224,7 +224,7 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     -webkit-mask-composite: xor;
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
-    animation: card-border-spin 3s linear infinite;
+    animation: card-border-spin 8s linear infinite;
     pointer-events: none;
     z-index: 1;
 }
@@ -246,6 +246,7 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .card-expense strong { color: var(--neon-expense) !important; }
 .card-passive-income { border: 1px solid rgba(252, 164, 78, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(252, 164, 78, 0.04)) !important; box-shadow: 0 0 26px rgba(252,164,78,0.09); }
 .card-passive-income strong { color: var(--neon-passive-warm) !important; }
+.card-passive-assets { border: 1px solid rgba(252, 164, 78, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(252, 164, 78, 0.04)) !important; box-shadow: 0 0 26px rgba(252,164,78,0.09); }
 .card-passive-assets strong { color: var(--neon-passive-warm) !important; opacity: 0.9; }
 
 /* ================= 5. 工作區排版 (桌機預設 2:1) ================= */
