@@ -165,6 +165,12 @@ function renderLiabilities() {
         cardInstallment: '#7c3aed',  // 深紫
         personalLoan:    '#c084fc',  // 粉紫
     };
+    const LIAB_SHEENS = {
+        creditLoan:      'rgba(220,38,38,1)',
+        studentLoan:     'rgba(248,113,113,1)',
+        cardInstallment: 'rgba(124,58,237,1)',
+        personalLoan:    'rgba(192,132,252,1)',
+    };
     const allItems = LIAB_ORDER.map(key => {
         const m          = meta[key] || {};
         const monthlyKey = m.monthlyKey;
@@ -190,8 +196,9 @@ function renderLiabilities() {
             const valColor   = isEmpty ? 'var(--text-muted)' : hex;
             const borderRgba = isEmpty ? 'rgba(255,255,255,0.04)' : hex + '45';
             const bgRgba     = isEmpty ? '' : hex + '0d';
+            const sheen = LIAB_SHEENS[item.key] || 'rgba(255,255,255,0.9)';
             return `
-            <div class="card dark-panel" style="border-color:${borderRgba}!important;background:linear-gradient(180deg,var(--panel),${bgRgba})!important;box-shadow:0 0 22px ${hex}18">
+            <div class="card dark-panel" style="--sheen:${sheen};border-color:${borderRgba}!important;background:linear-gradient(180deg,var(--panel),${bgRgba})!important;box-shadow:0 0 22px ${hex}18">
                 <span style="font-size:12px">${item.category}</span>
                 ${item.label ? `<span style="font-size:10px;color:var(--text-muted);display:block;margin-bottom:6px">${item.label}</span>` : ''}
                 <strong style="color:${valColor};text-shadow:0 0 12px ${hex}66">${isEmpty ? '$0' : formatCurrency(item.amount)}</strong>

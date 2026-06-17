@@ -207,24 +207,26 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 @keyframes card-border-spin {
     to { --card-angle: 360deg; }
 }
+.card {
+    --sheen: rgba(255, 255, 255, 0.9); /* 預設白光，可由 inline style 覆蓋 */
+}
 .card::before {
     content: '';
     position: absolute;
     inset: -1px;
     border-radius: 14px;
     padding: 2px;
-    --sheen: rgba(255, 255, 255, 0.9);
     background: conic-gradient(
         from var(--card-angle) at 50% 50%,
         var(--sheen) 0%,
-        transparent 25%,
+        transparent 8%,
         transparent 100%
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
-    animation: card-border-spin 8s linear infinite;
+    animation: card-border-spin 10s linear infinite;
     pointer-events: none;
     z-index: 1;
 }
