@@ -1,7 +1,7 @@
 /**
  * DREAM Ledger - 創作者配置與真實財務實體數據庫
  * 範式版本: Ontology v1 (Reality First)
- * 最後審計: 2026-06-09 (由創作者 DREAM 君親自核對修正)
+ * 最後審計: 2026-06-18 (Reality Check — 搬遷完成，現金更新，押金列入資產)
  */
  
 const dreamUser = {
@@ -18,7 +18,8 @@ const dreamUser = {
  
     // 1. 基礎核心資產 (真實持有實體，已完全沖銷錯誤的富邦項目)
     realAssets: {
-        cash: 52000,         // 現金
+        cash: 50548,         // 現金（2026-06-18 核對）
+        deposit: 30000,      // 房屋押金（新租屋，屬資產轉移非支出）
         kgiPolicy: 923221,   // 凱基配息型保單 (核心被動資產，一次性投入，無需持續繳費)
         andaTwd: 17281,      // 安達台幣保單 (前6期 5000/月，第7期起調整為 2000/月)
         botSavings: 132500   // 台銀儲蓄保單 (暫以累積投入金額為保單價值；長照險無解約價值故不列入)
@@ -34,7 +35,7 @@ const dreamUser = {
  
     // 3. 即時動態財務指標計算 (打破硬編碼，數據驅動 Dashboard)
     getters: {
-        // 總資產合計：$1,125,002
+        // 總資產合計：$1,153,550
         getTotalAssets() {
             return Object.values(dreamUser.realAssets).reduce((a, b) => a + b, 0);
         },
@@ -44,7 +45,7 @@ const dreamUser = {
             return Object.values(dreamUser.realLiabilities).reduce((a, b) => a + b, 0);
         },
  
-        // 真實淨值：$-134,653 (DREAM Ledger 為你升起的第一面事實旗幟)
+        // 真實淨值：$-106,105
         getNetWorth() {
             return this.getTotalAssets() - this.getTotalLiabilities();
         },
