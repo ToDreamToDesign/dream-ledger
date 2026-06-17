@@ -104,7 +104,7 @@ function renderDashboard() {
     const crEl = document.getElementById("coverageRatio");
     if (crEl) {
         crEl.textContent = formatPercentage(coverageRatio);
-        crEl.style.color = coverageRatio >= 0.1 ? "var(--neon-passive-warm)" : "var(--text-main)";
+        crEl.style.color = "#fbbf24";
     }
 }
 

@@ -247,7 +247,7 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .card-expense { border: 1px solid rgba(220, 38, 38, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(220, 38, 38, 0.04)) !important; box-shadow: 0 0 26px rgba(220,38,38,0.09); }
 .card-expense strong { color: #dc2626 !important; }
 .card-passive-income { border: 1px solid rgba(252, 164, 78, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(252, 164, 78, 0.04)) !important; box-shadow: 0 0 26px rgba(252,164,78,0.09); }
-.card-passive-income strong { color: var(--neon-passive-warm) !important; }
+.card-passive-income strong { color: var(--neon-passive-warm); }
 .card-passive-assets { border: 1px solid rgba(252, 164, 78, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(252, 164, 78, 0.04)) !important; box-shadow: 0 0 26px rgba(252,164,78,0.09); }
 .card-passive-assets strong { color: var(--neon-passive-warm) !important; opacity: 0.9; }
 
