@@ -215,7 +215,7 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     position: absolute;
     inset: -1px;
     border-radius: 14px;
-    padding: 3px;
+    padding: 2px;
     background: conic-gradient(
         from var(--card-angle) at 50% 50%,
         var(--sheen) 0%,
