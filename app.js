@@ -1302,8 +1302,12 @@ function setRecordMode(mode) {
         // 切回快速記帳：取消勾選 isEvent，收起備註欄
         const cb = document.getElementById('rec-is-event');
         if (cb && cb.checked) { cb.checked = false; cb.dispatchEvent(new Event('change')); }
-        // panel 收起 transition 結束後，通知 Chart.js 重新計算尺寸
-        setTimeout(() => window.dispatchEvent(new Event('resize')), 380);
+        // panel 收起 transition 結束後，清掉 canvas inline 尺寸再 resize，讓容器正確縮回
+        setTimeout(() => {
+            const canvas = document.getElementById('chartRecMonthly');
+            if (canvas) { canvas.style.height = ''; canvas.style.width = ''; }
+            if (_chartRecMonthly) _chartRecMonthly.resize();
+        }, 380);
     }
 }
 

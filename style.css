@@ -753,7 +753,6 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .rec-chart-panel {
     display: flex;
     flex-direction: column;
-    align-self: start;
 }
 
 /* Layer 4: 固定收入明細(左) | 固定支出明細(右) */
