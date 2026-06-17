@@ -542,17 +542,18 @@
                     </div>
                 </div>
 
-                <!-- Origin -->
-                <div class="dark-panel">
-                    <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px">Why It Exists</div>
-                    <div style="font-size:0.9rem;color:var(--text-muted);line-height:2">
-                        This project was not born from a desire to get rich.<br><br>
-                        It began with watching a grandfather decline after a fall — being a university student with no income, no savings, and no ability to help.<br><br>
-                        Then a grandmother. Then military service. Then debt. Then responsibility.<br><br>
-                        Each experience left the same question unanswered until it couldn't be ignored anymore:<br><br>
-                        <span style="color:var(--text-main);font-style:italic">"If the people I care about need help — do I have the ability to provide it?"</span><br><br>
-                        DREAM Ledger is the answer being built.
+                <!-- Origin pointer -->
+                <div class="dark-panel" style="display:flex;justify-content:space-between;align-items:center">
+                    <div>
+                        <div style="font-size:11px;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Why It Exists</div>
+                        <div style="font-size:0.88rem;color:var(--text-muted)">建立這個系統的個人故事與信念</div>
                     </div>
+                    <button onclick="document.querySelector('[data-page=philosophy]').click()"
+                            style="background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:7px 14px;border-radius:8px;cursor:pointer;font-size:12px;white-space:nowrap;transition:all 0.2s;font-family:inherit"
+                            onmouseover="this.style.borderColor='rgba(50,212,215,0.4)';this.style.color='var(--neon-cyan)'"
+                            onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-muted)'">
+                        見 Philosophy →
+                    </button>
                 </div>
 
                 <!-- Core Principles -->
