@@ -413,8 +413,8 @@ function expandRecentRecords() {
 // 色彩哲學：投資=未來(Cyan)、負債=過去(Amber)、生活=現在(Slate)
 // 視覺層級：投資最亮（未來）→ 負債中亮（過去）→ 生活極暗（現在退後）
 const VL = {
-    investment: '#2EF5E0',   // neon teal — 最高存在感，面積小但最亮
-    debt:       '#D4944A',   // warm amber — 中高存在感
+    investment: '#22d3ee',   // 同步 --neon-cyan，最高存在感
+    debt:       '#fbbf24',   // 同步 --neon-amber，謹慎但不驚恐
     // 生活色貼近背景，讓大面積反而消失在畫布中
     _living:    ['#29354A', '#2D3A50', '#313E55', '#354259', '#39465D'],
 };
@@ -509,8 +509,8 @@ function _renderPieChart(canvasId, wrapId, oldInstance, labels, data, opts = {})
             datasets: [{
                 data,
                 backgroundColor: colors,
-                borderColor: 'rgba(255,255,255,0.06)',
-                borderWidth: 1.5,
+                borderColor: 'rgba(5,5,7,0.65)',
+                borderWidth: 2,
                 hoverOffset: 6
             }]
         },
