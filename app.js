@@ -447,10 +447,13 @@ function cancelEditRecord() {
     const cb = document.getElementById('rec-is-event');
     if (cb) { cb.checked = false; cb.dispatchEvent(new Event('change')); }
 
+    ['rec-ev-title', 'rec-ev-reason', 'rec-ev-thought', 'rec-ev-impact'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.value = '';
+    });
     const titleEl = document.getElementById('rec-form-title');
     if (titleEl) titleEl.textContent = '新增記錄';
     const submitBtn = document.getElementById('rec-submit-btn');
-    if (submitBtn) submitBtn.textContent = '+ 新增記錄';
+    if (submitBtn) submitBtn.textContent = _recordMode === 'event' ? '+ 新增事件記錄' : '+ 新增記錄';
     const cancelBtn = document.getElementById('rec-cancel-btn');
     if (cancelBtn) cancelBtn.style.display = 'none';
 }
@@ -1177,6 +1180,22 @@ function addRecord() {
         renderRecords();
     }
 
+    // 事件模式：暫存 archaeology 欄位（未來接 Timeline）
+    if (_recordMode === 'event') {
+        const evTitle   = document.getElementById('rec-ev-title')?.value.trim() || '';
+        const evReason  = document.getElementById('rec-ev-reason')?.value.trim() || '';
+        const evThought = document.getElementById('rec-ev-thought')?.value.trim() || '';
+        const evImpact  = document.getElementById('rec-ev-impact')?.value.trim() || '';
+        if (evTitle || evReason || evThought || evImpact) {
+            const drafts = JSON.parse(localStorage.getItem('dream_event_drafts') || '[]');
+            drafts.unshift({ id: 'rec_' + Date.now(), date, title: evTitle, reason: evReason, thought: evThought, impact: evImpact });
+            localStorage.setItem('dream_event_drafts', JSON.stringify(drafts.slice(0, 50)));
+        }
+        ['rec-ev-title', 'rec-ev-reason', 'rec-ev-thought', 'rec-ev-impact'].forEach(id => {
+            const el = document.getElementById(id); if (el) el.value = '';
+        });
+    }
+
     // 清空表單
     ['rec-desc', 'rec-amount', 'rec-note'].forEach(id => {
         const el = document.getElementById(id);
@@ -1254,6 +1273,35 @@ function renderRecentRecords() {
     }).join('');
 }
 
+// ── 記帳模式切換（快速記帳 / 事件記錄）─────────────────────────
+let _recordMode = 'quick'; // 'quick' | 'event'
+
+function setRecordMode(mode) {
+    _recordMode = mode;
+    const quickBtn = document.getElementById('rec-mode-quick');
+    const eventBtn = document.getElementById('rec-mode-event');
+    const archPanel = document.getElementById('rec-archaeology-panel');
+    const amountEl = document.getElementById('rec-amount');
+    const submitBtn = document.getElementById('rec-submit-btn');
+
+    if (mode === 'event') {
+        quickBtn?.classList.remove('active');
+        eventBtn?.classList.add('active');
+        archPanel?.classList.add('open');
+        if (amountEl) amountEl.placeholder = '金額（選填）';
+        if (submitBtn) submitBtn.textContent = '+ 新增事件記錄';
+        // 事件模式預設為 isEvent
+        const cb = document.getElementById('rec-is-event');
+        if (cb && !cb.checked) { cb.checked = true; cb.dispatchEvent(new Event('change')); }
+    } else {
+        quickBtn?.classList.add('active');
+        eventBtn?.classList.remove('active');
+        archPanel?.classList.remove('open');
+        if (amountEl) amountEl.placeholder = '金額';
+        if (submitBtn) submitBtn.textContent = '+ 新增記錄';
+    }
+}
+
 function initRecordForm() {
     const checkbox = document.getElementById('rec-is-event');
     const textarea = document.getElementById('rec-note');
@@ -1261,7 +1309,9 @@ function initRecordForm() {
     if (checkbox && textarea) {
         checkbox.addEventListener('change', () => {
             textarea.style.display = checkbox.checked ? 'block' : 'none';
-            if (amountInput) amountInput.style.display = checkbox.checked ? 'none' : '';
+            if (amountInput && _recordMode === 'quick') {
+                amountInput.style.display = checkbox.checked ? 'none' : '';
+            }
         });
     }
     const dateInput = document.getElementById('rec-date');

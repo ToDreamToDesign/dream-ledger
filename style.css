@@ -807,6 +807,63 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 }
 .rec-cancel-btn:hover { border-color: rgba(244,63,94,0.4); color: var(--neon-rose); }
 
+/* 模式切換 Toggle */
+.rec-mode-toggle {
+    display: flex;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+}
+.rec-mode-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+.rec-mode-btn.active {
+    background: rgba(0,242,254,0.1);
+    color: var(--neon-cyan);
+    border: 1px solid rgba(0,242,254,0.25);
+}
+.rec-mode-btn:not(.active):hover { color: var(--text-main); }
+
+/* Decision Archaeology 展開面板 */
+.rec-archaeology-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: max-height 0.35s ease, opacity 0.25s ease, margin-top 0.25s ease;
+    margin-top: 0;
+}
+.rec-archaeology-panel.open {
+    max-height: 600px;
+    opacity: 1;
+    margin-top: 4px;
+}
+.rec-archaeology-divider {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--neon-cyan);
+    padding: 10px 0 4px;
+    border-top: 1px solid rgba(0,242,254,0.12);
+    opacity: 0.8;
+}
+
 /* Layer 3: 最近紀錄 */
 .rec-sec-hdr { display: flex; justify-content: space-between; align-items: center; }
 .rec-sec-title { font-size: 13px; font-weight: 600; color: var(--text-main); }

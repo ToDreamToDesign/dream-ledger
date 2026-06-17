@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DREAM Ledger</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="stylesheet" href="style.css?v=v19">
+<link rel="stylesheet" href="style.css?v=v20">
 <style>
     /* ── 頁面切換（單頁應用） ── */
     .page { display: none; flex-direction: column; gap: 28px; }
@@ -470,7 +470,14 @@
 
                         <!-- 新增 / 編輯記錄 -->
                         <div class="dark-panel">
-                            <div style="font-size:13px;font-weight:600;color:var(--text-main);margin-bottom:14px" id="rec-form-title">新增記錄</div>
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+                                <div style="font-size:13px;font-weight:600;color:var(--text-main)" id="rec-form-title">新增記錄</div>
+                                <!-- 模式切換 Toggle -->
+                                <div class="rec-mode-toggle" id="rec-mode-toggle">
+                                    <button class="rec-mode-btn active" id="rec-mode-quick" onclick="setRecordMode('quick')">快速記帳</button>
+                                    <button class="rec-mode-btn" id="rec-mode-event" onclick="setRecordMode('event')">事件記錄</button>
+                                </div>
+                            </div>
                             <div style="display:flex;flex-direction:column;gap:10px">
                                 <div class="rec-row">
                                     <input type="text"   id="rec-desc"   class="rec-input" placeholder="說明（午餐、配息、加薪...）" style="flex:2">
@@ -503,6 +510,16 @@
                                     新增為固定項目（固定支出 / 固定收入）
                                 </label>
                                 <textarea id="rec-note" class="rec-input" placeholder="備註（選填）" rows="2" style="resize:vertical;display:none"></textarea>
+
+                                <!-- 事件記錄：Decision Archaeology 展開區 -->
+                                <div class="rec-archaeology-panel" id="rec-archaeology-panel">
+                                    <div class="rec-archaeology-divider">Decision Archaeology</div>
+                                    <input type="text" id="rec-ev-title" class="rec-input" placeholder="事件標題（例：富邦 90 萬信貸投入凱基保單）">
+                                    <textarea id="rec-ev-reason" class="rec-input" rows="2" placeholder="原因 — Fact / Context：發生了什麼，背景是什麼？" style="resize:vertical"></textarea>
+                                    <textarea id="rec-ev-thought" class="rec-input" rows="2" placeholder="當下想法 — Question / Reflection：你當時怎麼想的？" style="resize:vertical"></textarea>
+                                    <textarea id="rec-ev-impact" class="rec-input" rows="2" placeholder="預期影響 — Decision / Expected Outcome：你預期這個決定帶來什麼？" style="resize:vertical"></textarea>
+                                </div>
+
                                 <div style="display:flex;gap:8px">
                                     <button class="rec-submit" id="rec-submit-btn" onclick="submitRecordForm()">+ 新增記錄</button>
                                     <button class="rec-cancel-btn" id="rec-cancel-btn" onclick="cancelEditRecord()" style="display:none">取消</button>
