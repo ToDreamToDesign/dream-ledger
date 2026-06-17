@@ -75,6 +75,14 @@ function renderDashboard() {
         nwEl.style.color = netWorth < 0 ? "var(--neon-rose)" : "var(--neon-green)";
     }
 
+    const statusEl = document.getElementById("networth-status");
+    if (statusEl) {
+        const now = new Date();
+        const ym  = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
+        statusEl.textContent = netWorth < 0 ? `${ym}  ·  財務重建中` : `${ym}  ·  淨值轉正`;
+        statusEl.style.color = netWorth < 0 ? 'var(--text-muted)' : 'var(--neon-green)';
+    }
+
     const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
     set("totalAssets",      formatCurrency(totalAssets));
     set("totalLiabilities", formatCurrency(totalLiab));
