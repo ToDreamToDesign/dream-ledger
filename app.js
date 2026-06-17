@@ -92,6 +92,7 @@ function renderDashboard() {
     set("debt",             formatCurrency(totalLiab));
     set("d-assets2",        formatCurrency(totalAssets));
     set("d-liab2",          formatCurrency(totalLiab));
+    set("d-kgiInvested",    formatCurrency(dreamUser.realAssets.kgiPolicyInvested || 0));
     set("passiveIncome",    formatCurrency(passiveIncome));
 
     const crEl = document.getElementById("coverageRatio");

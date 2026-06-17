@@ -182,19 +182,25 @@
                 </div>
             </section>
 
-            <!-- 第一行：現金流三卡 -->
-            <section class="stats">
-                <div class="card dark-panel card-income">
-                    <span>總現金流入 (月)</span>
-                    <strong id="income">--</strong>
-                </div>
-                <div class="card dark-panel card-expense">
-                    <span>總支出 (月)</span>
-                    <strong id="expense">--</strong>
-                </div>
-                <div class="card dark-panel card-cashflow">
-                    <span>自由現金流</span>
-                    <strong id="cashflow">--</strong>
+            <!-- 第一行：現金流合併橫向卡（冰火交融雙色旋轉邊框） -->
+            <section class="stats" style="grid-template-columns:1fr">
+                <div class="card dark-panel card-ice-fire">
+                    <div style="display:flex;align-items:flex-end;gap:0">
+                        <div style="flex:1">
+                            <span style="font-size:11px;color:var(--text-muted)">總現金流入 (月)</span>
+                            <strong id="income" style="display:block;font-size:1.7rem;margin-top:4px;color:var(--neon-green)">--</strong>
+                        </div>
+                        <div style="padding:0 24px 10px;color:var(--text-muted);font-size:1.3rem;flex-shrink:0;opacity:0.5">−</div>
+                        <div style="flex:1;text-align:center">
+                            <span style="font-size:11px;color:var(--text-muted)">總支出 (月)</span>
+                            <strong id="expense" style="display:block;font-size:1.7rem;margin-top:4px;color:#dc2626">--</strong>
+                        </div>
+                        <div style="padding:0 24px 10px;color:var(--text-muted);font-size:1.3rem;flex-shrink:0;opacity:0.5">=</div>
+                        <div style="flex:1;text-align:right">
+                            <span style="font-size:11px;color:var(--text-muted)">自由現金流</span>
+                            <strong id="cashflow" style="display:block;font-size:1.7rem;margin-top:4px;color:#3b82f6">--</strong>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -213,14 +219,18 @@
                     </div>
                 </div>
                 <div class="card dark-panel card-passive-income">
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px">
-                        <div>
-                            <span style="font-size:12px">被動保單配息</span>
-                            <strong id="passiveIncome" style="display:block;margin-top:6px;font-size:1.4rem">--</strong>
+                    <div style="display:flex;justify-content:space-between;gap:12px">
+                        <div style="flex:1">
+                            <span style="font-size:11px;color:var(--text-muted)">實際投入本金</span>
+                            <strong id="d-kgiInvested" style="display:block;margin-top:6px;font-size:1.25rem;color:var(--neon-passive-warm)">--</strong>
                         </div>
-                        <div style="text-align:right">
-                            <span style="font-size:12px">被動配息覆蓋率</span>
-                            <strong id="coverageRatio" style="display:block;margin-top:6px;font-size:1.4rem">--</strong>
+                        <div style="flex:1;text-align:center">
+                            <span style="font-size:11px;color:var(--text-muted)">被動保單配息</span>
+                            <strong id="passiveIncome" style="display:block;margin-top:6px;font-size:1.25rem">--</strong>
+                        </div>
+                        <div style="flex:1;text-align:right">
+                            <span style="font-size:11px;color:var(--text-muted)">被動配息覆蓋率</span>
+                            <strong id="coverageRatio" style="display:block;margin-top:6px;font-size:1.25rem">--</strong>
                         </div>
                     </div>
                 </div>

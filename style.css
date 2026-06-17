@@ -251,6 +251,20 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .card-passive-assets { border: 1px solid rgba(252, 164, 78, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(252, 164, 78, 0.04)) !important; box-shadow: 0 0 26px rgba(252,164,78,0.09); }
 .card-passive-assets strong { color: var(--neon-passive-warm) !important; opacity: 0.9; }
 
+/* 冰火交融雙色邊框 — 青(0°) + 紅(180°) 兩光點同步旋轉 */
+.card-ice-fire {
+    border-color: rgba(120,120,160,0.15) !important;
+    box-shadow: 0 0 28px rgba(34,211,238,0.07), 0 0 28px rgba(220,38,38,0.07);
+}
+.card-ice-fire::before {
+    background: conic-gradient(
+        from var(--card-angle) at 50% 50%,
+        rgba(34,211,238,0.9) 0%, transparent 8%,
+        transparent 47%, rgba(220,38,38,0.9) 50%, transparent 58%,
+        transparent 100%
+    );
+}
+
 /* ================= 5. 工作區排版 (桌機預設 2:1) ================= */
 .main-grid {
     display: grid;
