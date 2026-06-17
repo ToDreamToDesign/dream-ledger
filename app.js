@@ -109,7 +109,7 @@ function renderAssets() {
     set("a-totalAssets2",   formatCurrency(totalAssets));
     set("a-dividend",       formatCurrency(dividend));
     set("a-coverage",       formatPercentage(dividend / expense));
-    set("a-fubonMonthly",   formatCurrency(dreamUser.cashflowModel.expense.loanRepayment.fubon));
+    set("a-fubonMonthly",   formatCurrency(dreamUser.cashflowModel.expense.loanRepayment.creditLoan));
 
     const nwEl = document.getElementById("a-netWorth");
     if (nwEl) nwEl.style.color = netWorth < 0 ? "var(--neon-rose)" : "var(--neon-green)";
