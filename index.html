@@ -25,10 +25,10 @@
     /* ── 負債管理頁 ── */
     .debt-bar-wrap { margin-top: 8px; }
     .debt-bar-bg { background: rgba(255,255,255,0.05); border-radius: 4px; height: 6px; margin-top: 10px; }
-    .debt-bar-fill { height: 6px; border-radius: 4px; background: var(--neon-rose); transition: width 0.6s ease; }
+    .debt-bar-fill { height: 6px; border-radius: 4px; background: var(--neon-liability); transition: width 0.6s ease; }
     .debt-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 5px; }
     .badge { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; letter-spacing: 0.5px; }
-    .badge-active { background: rgba(244,63,94,0.12); color: var(--neon-rose); border: 1px solid rgba(244,63,94,0.2); }
+    .badge-active { background: rgba(255,77,109,0.12); color: var(--neon-liability); border: 1px solid rgba(255,77,109,0.2); }
     .badge-soon    { background: rgba(251,191,36,0.1);  color: var(--neon-amber); border: 1px solid rgba(251,191,36,0.2); }
 
     /* ── 人生事件頁 ── */
@@ -314,40 +314,54 @@
                 <div class="hero-container">
                     <div class="hero-left">
                         <span>真實總負債 Total Liabilities</span>
-                        <h1 id="l-totalLiabilities" style="color: var(--neon-rose)">--</h1>
+                        <h1 id="l-totalLiabilities" style="color: var(--neon-liability)">--</h1>
                     </div>
                     <div class="hero-right-metrics">
                         <div class="hero-sub-metric">
                             <span>每月還款合計</span>
-                            <strong id="l-monthlyRepay" style="color:var(--neon-amber)">--</strong>
+                            <strong id="l-monthlyRepay" style="color:var(--neon-liability)">--</strong>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- 動態產生：各負債金額字卡（由 renderLiabilities() 填入，類別名稱來自 liabilityMeta） -->
+            <!-- 四張負債字卡 -->
             <section class="stats" id="liab-stat-grid" style="grid-template-columns: repeat(4,1fr)"></section>
 
-            <section class="stats" style="grid-template-columns: 1fr 1fr; margin-top: 0">
-                <div class="card dark-panel">
-                    <span>負債收入比 Debt to Income</span>
-                    <strong id="l-debtToIncome">--</strong>
-                    <div style="font-size:11px;color:var(--text-muted);margin-top:6px">總負債 ÷ 月收入</div>
+            <!-- 2 欄：左=負債結構，右=壓力指標（對齊資產頁佈局） -->
+            <section class="asset-grid">
+                <div class="dark-panel">
+                    <div class="section-header">
+                        <h3>⚠️ 負債結構</h3>
+                        <span>各項佔比與清償進度</span>
+                    </div>
+                    <div id="debt-breakdown"></div>
                 </div>
-                <div class="card dark-panel">
-                    <span>月還款壓力 Payment Ratio</span>
-                    <strong id="l-paymentRatio">--</strong>
-                    <div style="font-size:11px;color:var(--text-muted);margin-top:6px">月還款 ÷ 月收入</div>
+                <div class="dark-panel">
+                    <div class="section-header">
+                        <h3>📊 還款壓力指標</h3>
+                        <span>每月現金流壓力</span>
+                    </div>
+                    <div class="asset-item">
+                        <div>
+                            <div class="asset-label">負債收入比</div>
+                            <div class="asset-note">總負債 ÷ 月收入</div>
+                        </div>
+                        <div class="asset-value" id="l-debtToIncome">--</div>
+                    </div>
+                    <div class="asset-item">
+                        <div>
+                            <div class="asset-label">月還款壓力</div>
+                            <div class="asset-note">月還款 ÷ 月收入</div>
+                        </div>
+                        <div class="asset-value" id="l-paymentRatio">--</div>
+                    </div>
+                    <div class="section-total" style="margin-top:auto">
+                        <span>月還款合計</span>
+                        <strong id="l-monthlyRepay-2" style="color:var(--neon-liability)">--</strong>
+                    </div>
                 </div>
             </section>
-
-            <div class="dark-panel">
-                <div class="section-header">
-                    <h3>負債結構分析</h3>
-                    <span>各項佔比與月還款明細</span>
-                </div>
-                <div id="debt-breakdown"></div>
-            </div>
         </div>
 
         <!-- ════════════════ PAGE: 人生事件 ════════════════ -->

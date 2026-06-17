@@ -191,29 +191,32 @@ function renderLiabilities() {
         }).join('');
     }
 
-    // 負債結構分析（只顯示有餘額的項目）
+    // 右欄月還款合計副本
+    const mr2 = document.getElementById('l-monthlyRepay-2');
+    if (mr2) mr2.textContent = formatCurrency(monthlyRepay);
+
+    // 負債結構分析（只顯示有餘額的項目，樣式對齊 asset-item）
     const container = document.getElementById('debt-breakdown');
     if (!container) return;
     container.innerHTML = activeItems.map(item => {
         const pct        = (item.amount / totalLiab * 100).toFixed(1);
         const badgeClass = item.badge === 'soon' ? 'badge-soon' : 'badge-active';
         const badgeText  = item.badge === 'soon' ? '即將清償' : '還款中';
+        const noteLine   = [item.label, item.note].filter(Boolean).join(' · ');
         return `
-        <div style="margin-bottom:20px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div class="asset-item" style="align-items:flex-start;flex-direction:column;gap:0;padding-bottom:0">
+            <div style="display:flex;justify-content:space-between;width:100%;align-items:flex-start">
                 <div>
-                    <span style="font-size:14px;color:var(--text-main);font-weight:500">${item.category}</span>
-                    ${item.label ? `<span style="font-size:11px;color:var(--text-muted);margin-left:6px">${item.label}</span>` : ''}
-                    <span class="badge ${badgeClass}" style="margin-left:8px">${badgeText}</span>
+                    <div class="asset-label">${item.category} <span class="badge ${badgeClass}" style="margin-left:4px">${badgeText}</span></div>
+                    ${noteLine ? `<div class="asset-note">${noteLine}</div>` : ''}
                 </div>
                 <div style="text-align:right">
-                    <div style="font-size:16px;font-weight:600;color:var(--neon-liability)">${formatCurrency(item.amount)}</div>
-                    ${item.monthly ? `<div style="font-size:11px;color:var(--text-muted)">月付 ${formatCurrency(item.monthly)}</div>` : ''}
+                    <div class="asset-value" style="color:var(--neon-liability)">${formatCurrency(item.amount)}</div>
+                    ${item.monthly ? `<div style="font-size:11px;color:var(--text-muted);margin-top:2px">月付 ${formatCurrency(item.monthly)}</div>` : ''}
                 </div>
             </div>
-            ${item.note ? `<div style="font-size:11px;color:var(--text-muted);margin-bottom:6px">${item.note}</div>` : ''}
-            <div class="debt-bar-bg"><div class="debt-bar-fill" style="width:${pct}%"></div></div>
-            <div class="debt-meta"><span>佔總負債</span><span>${pct}%</span></div>
+            <div class="debt-bar-bg" style="width:100%;margin-top:10px"><div class="debt-bar-fill" style="width:${pct}%"></div></div>
+            <div class="debt-meta" style="width:100%"><span>佔總負債</span><span>${pct}%</span></div>
         </div>`;
     }).join('');
 }
