@@ -334,70 +334,6 @@ function recSeeAll(containerId, btn) {
 
 // Layer 4 細項明細折疊 toggle
 // ── 流光邊框等速動畫（SVG stroke-dashoffset，沿邊框弧長等速移動）──────────
-// ── 流光邊框等速動畫（animateMotion 沿圓角矩形路徑，圓點光暈，無固定長度）──
-let _cbfResizeTimer = null;
-
-function initCardBorderFlow() {
-    document.querySelectorAll('.card-border-svg').forEach(el => el.remove());
-
-    const colorMap = [
-        ['card-income',         'rgba(74,222,128,1)'],
-        ['card-cashflow',       'rgba(93,176,254,1)'],
-        ['card-debt',           'rgba(255,77,109,1)'],
-        ['card-expense',        'rgba(220,38,38,1)'],
-        ['card-passive-income', 'rgba(252,164,78,1)'],
-        ['card-passive-assets', 'rgba(252,164,78,0.85)'],
-    ];
-
-    document.querySelectorAll('.card').forEach(card => {
-        const W = card.offsetWidth, H = card.offsetHeight;
-        if (!W || !H) return;
-
-        const r = 14;
-        let color = 'rgba(0,242,254,0.9)';
-        for (const [cls, col] of colorMap) {
-            if (card.classList.contains(cls)) { color = col; break; }
-        }
-
-        const ns = 'http://www.w3.org/2000/svg';
-        const svg = document.createElementNS(ns, 'svg');
-        svg.classList.add('card-border-svg');
-        svg.setAttribute('width', W);
-        svg.setAttribute('height', H);
-        svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-        svg.style.cssText = `position:absolute;top:0;left:0;pointer-events:none;z-index:2;overflow:visible`;
-
-        // 圓角矩形路徑（順時針，從頂邊起點）
-        const path = `M ${r} 0 H ${W-r} Q ${W} 0 ${W} ${r} V ${H-r} Q ${W} ${H} ${W-r} ${H} H ${r} Q 0 ${H} 0 ${H-r} V ${r} Q 0 0 ${r} 0 Z`;
-
-        // Glow filter — 大範圍柔光
-        const defs = document.createElementNS(ns, 'defs');
-        const filtId = 'cbff' + Math.random().toString(36).slice(2, 6);
-        defs.innerHTML = `<filter id="${filtId}" x="-400%" y="-400%" width="900%" height="900%">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="b"/>
-            <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-        </filter>`;
-        svg.append(defs);
-
-        // 發光點（無長度，純光暈）
-        const dot = document.createElementNS(ns, 'circle');
-        dot.setAttribute('r', '2.5');
-        dot.setAttribute('fill', color);
-        dot.setAttribute('filter', `url(#${filtId})`);
-
-        const anim = document.createElementNS(ns, 'animateMotion');
-        anim.setAttribute('dur', '10s');
-        anim.setAttribute('repeatCount', 'indefinite');
-        anim.setAttribute('calcMode', 'linear');
-        anim.setAttribute('path', path);
-        anim.setAttribute('rotate', 'auto');
-
-        dot.append(anim);
-        svg.append(dot);
-        card.style.overflow = 'visible';
-        card.append(svg);
-    });
-}
 
 function togglePhilSection(el) {
     const body = el.querySelector('.phil-collapsible-body');
@@ -1371,18 +1307,6 @@ document.addEventListener("DOMContentLoaded", () => {
     renderEventAccordion();
     renderAssetChart();
     renderRecentRecords();
-
-    // 等兩幀確保卡片 layout 完成後注入 SVG 等速流光
-    requestAnimationFrame(() => requestAnimationFrame(initCardBorderFlow));
-
-    // 視窗縮放時重新對齊 SVG（debounce 200ms 避免頻繁觸發）
-    if (window.ResizeObserver) {
-        const ro = new ResizeObserver(() => {
-            clearTimeout(_cbfResizeTimer);
-            _cbfResizeTimer = setTimeout(() => requestAnimationFrame(initCardBorderFlow), 200);
-        });
-        document.querySelectorAll('.stats, .asset-grid').forEach(el => ro.observe(el));
-    }
 
     console.log(`🚀 [DREAM Ledger v4] 啟動完成，模式：${activeUser}`);
 });
