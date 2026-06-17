@@ -688,12 +688,41 @@ function renderEventAccordion(containerId = 'event-list', filterCat = 'all') {
     el.innerHTML = "";
 
     const isDashboard = containerId === 'event-list';
+    const isTimeline  = containerId === 'timeline-list';
     let events = filterCat === 'all' ? lifeEvents : lifeEvents.filter(e => e.category === filterCat);
     if (isDashboard) events = [...events].sort((a, b) => b.year - a.year);
-    events.forEach(event => {
+
+    // Timeline 年份分組
+    let appendList = events;
+    if (isTimeline) {
+        const years = [], byYear = {};
+        events.forEach(e => {
+            if (!byYear[e.year]) { years.push(e.year); byYear[e.year] = []; }
+            byYear[e.year].push(e);
+        });
+        appendList = [];
+        years.forEach((year, yi) => {
+            appendList.push({ _yearHeader: year, _first: yi === 0 });
+            byYear[year].forEach(e => appendList.push(e));
+        });
+    }
+
+    appendList.forEach(event => {
+        // 年份章節標題
+        if (event._yearHeader) {
+            const hdr = document.createElement('div');
+            hdr.className = 'timeline-year-header';
+            if (event._first) hdr.style.marginTop = '4px';
+            hdr.innerHTML = `<span>${event._yearHeader}</span>`;
+            el.appendChild(hdr);
+            return;
+        }
+
         const catColor = CAT_COLOR[event.category] || 'var(--text-muted)';
+        const isPivot  = event.pivot === true;
         const card = document.createElement("div");
-        card.className = "collapsible-event";
+        card.className = "collapsible-event" + (isPivot ? " is-pivot" : "");
+        if (isPivot) card.style.borderLeftColor = catColor;
         card.innerHTML = `
             <div class="event-summary">
                 <div>
