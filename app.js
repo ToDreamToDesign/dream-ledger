@@ -211,7 +211,7 @@ function renderLiabilities() {
                     ${noteLine ? `<div class="asset-note">${noteLine}</div>` : ''}
                 </div>
                 <div style="text-align:right">
-                    <div class="asset-value" style="color:var(--neon-cyan)">${formatCurrency(item.amount)}</div>
+                    <div class="asset-value" style="color:var(--neon-cyan);text-shadow:0 0 14px rgba(34,211,238,0.55)">${formatCurrency(item.amount)}</div>
                     ${item.monthly ? `<div style="font-size:11px;color:var(--text-muted);margin-top:2px">月付 ${formatCurrency(item.monthly)}</div>` : ''}
                 </div>
             </div>
