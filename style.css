@@ -254,8 +254,9 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     display: grid;
     grid-template-columns: 2fr 1fr;
     gap: 28px;
+    align-items: start;
 }
-.chart-card { display: flex; flex-direction: column; min-height: 280px; }
+.chart-card { display: flex; flex-direction: column; }
 .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
 .section-header h3 { font-size: 1.1rem; font-weight: 600; }
 .section-header span { color: var(--text-muted); font-size: 0.8rem; }

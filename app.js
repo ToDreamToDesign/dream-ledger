@@ -700,6 +700,15 @@ function renderEventAccordion(containerId = 'event-list', filterCat = 'all') {
                 el.style.maxHeight = 'none';
                 if (wrap) wrap.style.display = 'none';
             }
+            // 第二幀：event-card 高度已穩定，同步給 chart-card
+            requestAnimationFrame(() => {
+                const eventCard = document.getElementById('panel-events');
+                const chartCard = document.querySelector('.chart-card');
+                if (eventCard && chartCard) {
+                    chartCard.style.height = eventCard.offsetHeight + 'px';
+                    if (_assetChartInstance) _assetChartInstance.resize();
+                }
+            });
         });
     }
 }
