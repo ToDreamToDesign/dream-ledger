@@ -1,13 +1,13 @@
 :root {
-    --bg: #05070a;
-    --panel: rgba(11, 19, 32, 0.78);
-    --panel-hover: rgba(20, 35, 55, 0.80);
-    --bg-card: rgba(11, 19, 32, 0.42);
-    --border: rgba(0, 242, 254, 0.09);
-    --border-glow: rgba(0, 242, 254, 0.22);
+    --bg: #060913;
+    --panel: rgba(10, 16, 29, 0.82);
+    --panel-hover: rgba(16, 26, 46, 0.85);
+    --bg-card: rgba(10, 16, 29, 0.45);
+    --border: rgba(0, 242, 254, 0.05);
+    --border-glow: rgba(0, 242, 254, 0.18);
 
-    --text-main: #f1f5f9;
-    --text-muted: #94a3b8;
+    --text-main: #f8fafc;
+    --text-muted: #64748b;
 
     --neon-cyan: #00f2fe;
     --neon-green: #4ade80;
@@ -28,9 +28,9 @@
 body {
     background-color: var(--bg) !important;
     background-image:
-        radial-gradient(ellipse 90% 70% at 10% 10%, rgba(0, 242, 254, 0.18) 0%, transparent 55%),
-        radial-gradient(ellipse 80% 60% at 90% 90%, rgba(255, 90, 121, 0.14) 0%, transparent 55%),
-        radial-gradient(ellipse 60% 50% at 50% 0%,  rgba(0, 242, 254, 0.10) 0%, transparent 50%);
+        radial-gradient(ellipse 80% 60% at 8% 12%,  rgba(0, 242, 254, 0.09) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 55% at 92% 88%, rgba(255, 90, 121, 0.07) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 45% at 50% 0%,  rgba(0, 242, 254, 0.05) 0%, transparent 50%);
     color: var(--text-main) !important;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
     min-height: 100vh;
@@ -94,22 +94,23 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     padding: 10px 16px;
     background: transparent;
     border: none;
-    color: var(--text-muted);
+    color: #64748b;
     text-align: left;
     cursor: pointer;
     border-radius: 8px;
-    transition: all 0.2s;
+    transition: color 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     gap: 2px;
 }
 .nav-zh { font-size: 0.875rem; font-weight: 500; line-height: 1; }
-.nav-en { font-size: 0.68rem; letter-spacing: 0.6px; text-transform: uppercase; opacity: 0.45; line-height: 1; }
+.nav-en { font-size: 0.68rem; letter-spacing: 0.6px; text-transform: uppercase; opacity: 0.4; line-height: 1; transition: opacity 0.25s ease; }
 
-.nav-btn:hover { background-color: rgba(255, 255, 255, 0.02); color: var(--text-main); }
+.nav-btn:hover { background-color: rgba(255,255,255,0.02); color: #ffffff; }
+.nav-btn:hover .nav-en { opacity: 0.6; }
 .nav-btn.active {
-    background-color: rgba(50, 212, 215, 0.06);
-    border: 1px solid rgba(50, 212, 215, 0.15);
+    background-color: rgba(0, 242, 254, 0.05);
+    border: 1px solid rgba(0, 242, 254, 0.12);
     color: var(--neon-cyan);
 }
 .nav-btn.active .nav-en { opacity: 0.65; }
@@ -172,12 +173,12 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 
 .dark-panel {
     background: var(--bg-card) !important;
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid rgba(0, 242, 254, 0.14) !important;
+    backdrop-filter: blur(24px) saturate(160%);
+    -webkit-backdrop-filter: blur(24px) saturate(160%);
+    border: 1px solid rgba(0, 242, 254, 0.05) !important;
     border-radius: 14px;
     padding: 28px;
-    box-shadow: 0 0 0 0.5px rgba(0,242,254,0.06) inset, 0 8px 40px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255,255,255,0.06);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.02), 0 8px 32px rgba(0,0,0,0.4);
 }
 
 /* ================= 3. Hero 總資產區 ================= */
@@ -377,24 +378,24 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 }
 
 .collapsible-event {
-    background: rgba(20, 28, 42, 0.45);
+    background: rgba(10, 16, 29, 0.45);
     backdrop-filter: blur(10px) saturate(140%);
     -webkit-backdrop-filter: blur(10px) saturate(140%);
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.04);
     border-radius: 10px;
     margin-bottom: 10px;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,0.02), 0 4px 16px rgba(0,0,0,0.35);
+    transition: border-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 .collapsible-event:hover {
-    border-color: rgba(0, 242, 254, 0.28);
-    box-shadow: 0 0 18px rgba(0, 242, 254, 0.07), 0 8px 24px rgba(0, 0, 0, 0.4);
+    border-color: rgba(0, 242, 254, 0.15);
+    box-shadow: 0 0 14px rgba(0, 242, 254, 0.05), 0 8px 24px rgba(0,0,0,0.4);
     transform: translateY(-1px);
 }
 .collapsible-event.is-open {
-    border-color: rgba(0, 242, 254, 0.3);
-    background: rgba(0, 242, 254, 0.025);
-    box-shadow: 0 0 20px rgba(0, 242, 254, 0.06), 0 8px 24px rgba(0, 0, 0, 0.4);
+    border-color: rgba(0, 242, 254, 0.18);
+    background: rgba(0, 242, 254, 0.015);
+    box-shadow: 0 0 16px rgba(0, 242, 254, 0.04), 0 8px 24px rgba(0,0,0,0.4);
 }
 .event-summary {
     padding: 16px 20px;
@@ -991,6 +992,7 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     padding: 18px 20px !important;
     border-radius: 8px !important;
     border-left-width: 3px !important;
+    background: rgba(8, 12, 22, 0.5) !important;
 }
 
 /* 節點標籤（FACT / CONTEXT / QUESTION / DECISION） */
@@ -1002,6 +1004,8 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     text-transform: uppercase !important;
     display: block !important;
     margin-bottom: 10px !important;
+    color: #f8fafc !important;
+    text-shadow: 0 0 12px rgba(255,255,255,0.10) !important;
 }
 
 /* 節點區塊整體間距 */
