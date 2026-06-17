@@ -1304,12 +1304,7 @@ function setRecordMode(mode) {
         // 切回快速記帳：取消勾選 isEvent，收起備註欄
         const cb = document.getElementById('rec-is-event');
         if (cb && cb.checked) { cb.checked = false; cb.dispatchEvent(new Event('change')); }
-        // panel 收起 transition 結束後，清掉 canvas inline 尺寸再 resize，讓容器正確縮回
-        setTimeout(() => {
-            const canvas = document.getElementById('chartRecMonthly');
-            if (canvas) { canvas.style.height = ''; canvas.style.width = ''; }
-            if (_chartRecMonthly) _chartRecMonthly.resize();
-        }, 380);
+        // 快速記帳收起後，ResizeObserver 會自動偵測左欄高度變化並同步圖表
     }
 }
 
@@ -1328,6 +1323,19 @@ function initRecordForm() {
     const dateInput = document.getElementById('rec-date');
     if (dateInput && !dateInput.value) {
         dateInput.value = new Date().toISOString().slice(0, 10);
+    }
+
+    // 左欄高度變動時同步圖表面板高度（三種模式都對齊）
+    const leftCol    = document.querySelector('.rec-work-col');
+    const chartPanel = document.querySelector('.rec-chart-panel');
+    if (leftCol && chartPanel && typeof ResizeObserver !== 'undefined') {
+        new ResizeObserver(entries => {
+            const h = entries[0].contentRect.height;
+            if (h > 0) {
+                chartPanel.style.height = h + 'px';
+                if (_chartRecMonthly) _chartRecMonthly.resize();
+            }
+        }).observe(leftCol);
     }
 }
 

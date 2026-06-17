@@ -743,7 +743,7 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     display: grid;
     grid-template-columns: 1.1fr 1fr;
     gap: 20px;
-    align-items: stretch;
+    align-items: start;
 }
 .rec-work-col {
     display: flex;
