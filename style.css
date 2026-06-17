@@ -1087,12 +1087,12 @@ nav { display: flex; flex-direction: column; gap: 6px; }
         0 8px 28px rgba(0, 0, 0, 0.42);
 }
 
-/* Why This Exists — 幾乎無光：環境底色 */
+/* Why This Exists — 最低調：有存在感但不搶戲 */
 .phil-why {
-    background: rgba(10, 16, 29, 0.28);
+    background: rgba(10, 16, 29, 0.32);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 242, 254, 0.07);
     border-radius: 14px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
+    box-shadow: 0 0 8px rgba(0, 242, 254, 0.02), 0 8px 24px rgba(0, 0, 0, 0.38);
 }
