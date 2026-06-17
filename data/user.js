@@ -19,8 +19,7 @@ const dreamUser = {
     // 1. 基礎核心資產 (真實持有實體，已完全沖銷錯誤的富邦項目)
     realAssets: {
         cash: 52000,         // 現金
-        kgiPolicy: 923221,       // 凱基配息型保單 (核心被動資產，一次性投入，無需持續繳費)
-        kgiPolicyInvested: 900000, // 凱基保單實際投入本金
+        kgiPolicy: 923221,   // 凱基配息型保單 (核心被動資產，一次性投入，無需持續繳費)
         andaTwd: 17281,      // 安達台幣保單 (前6期 5000/月，第7期起調整為 2000/月)
         botSavings: 132500   // 台銀儲蓄保單 (暫以累積投入金額為保單價值；長照險無解約價值故不列入)
     },
@@ -56,7 +55,10 @@ const dreamUser = {
         }
     },
  
-    // 4. 負債顯示元數據 — category（系統通用類別）+ label（個人自訂名稱）
+    // 4. 投資元數據（不計入資產總值，僅供 Dashboard 顯示參考）
+    kgiPolicyInvested: 900000,  // 凱基保單實際投入本金
+
+    // 5. 負債顯示元數據 — category（系統通用類別）+ label（個人自訂名稱）
     //    Dashboard 預設顯示 category，展開後顯示 label
     liabilityMeta: {
         creditLoan:      { category: '信用貸款',  label: '富邦信貸',   monthlyKey: 'creditLoan',      badge: 'active', note: '84 期分期，核心槓桿負債' },

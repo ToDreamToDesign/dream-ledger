@@ -98,7 +98,7 @@ function renderDashboard() {
         nw2El.style.color = netWorth < 0 ? "#f9a8d4" : "#93c5fd";
         nw2El.style.textShadow = netWorth < 0 ? "0 0 12px rgba(249,168,212,0.5)" : "0 0 12px rgba(147,197,253,0.5)";
     }
-    set("d-kgiInvested",    formatCurrency(dreamUser.realAssets.kgiPolicyInvested || 0));
+    set("d-kgiInvested",    formatCurrency(dreamUser.kgiPolicyInvested || 0));
     set("passiveIncome",    formatCurrency(passiveIncome));
 
     const crEl = document.getElementById("coverageRatio");
