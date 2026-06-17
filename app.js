@@ -95,8 +95,8 @@ function renderDashboard() {
     const nw2El = document.getElementById("d-networth2");
     if (nw2El) {
         nw2El.textContent = formatCurrency(netWorth);
-        nw2El.style.color = netWorth < 0 ? "var(--neon-rose)" : "var(--neon-green)";
-        nw2El.style.textShadow = netWorth < 0 ? "0 0 12px rgba(251,65,133,0.5)" : "0 0 12px rgba(74,222,128,0.5)";
+        nw2El.style.color = netWorth < 0 ? "#f9a8d4" : "#93c5fd";
+        nw2El.style.textShadow = netWorth < 0 ? "0 0 12px rgba(249,168,212,0.5)" : "0 0 12px rgba(147,197,253,0.5)";
     }
     set("d-kgiInvested",    formatCurrency(dreamUser.realAssets.kgiPolicyInvested || 0));
     set("passiveIncome",    formatCurrency(passiveIncome));
