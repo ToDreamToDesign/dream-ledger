@@ -248,7 +248,7 @@ function initTimelineFilter() {
         btn.addEventListener('click', () => {
             document.querySelectorAll('#cat-filter .filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            renderTimeline(btn.dataset.cat);
+            renderEventAccordion('timeline-list', btn.dataset.cat);
         });
     });
 }
@@ -617,13 +617,14 @@ function renderRecords() {
 }
 
 // ── 8. Dashboard 手風琴事件列表 ──────────────────────────────
-function renderEventAccordion() {
+function renderEventAccordion(containerId = 'event-list', filterCat = 'all') {
     if (typeof lifeEvents === 'undefined') return;
-    const el = document.getElementById("event-list");
+    const el = document.getElementById(containerId);
     if (!el) return;
     el.innerHTML = "";
 
-    lifeEvents.forEach(event => {
+    const events = filterCat === 'all' ? lifeEvents : lifeEvents.filter(e => e.category === filterCat);
+    events.forEach(event => {
         const card = document.createElement("div");
         card.className = "collapsible-event";
         card.innerHTML = `
@@ -1066,7 +1067,7 @@ document.addEventListener("DOMContentLoaded", () => {
     renderDashboard();
     renderAssets();
     renderLiabilities();
-    renderTimeline();
+    renderEventAccordion('timeline-list');
     renderRecords();
     renderEventAccordion();
     renderAssetChart();
