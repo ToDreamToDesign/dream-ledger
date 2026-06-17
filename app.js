@@ -213,7 +213,7 @@ function renderLiabilities() {
             const isEmpty = item.amount === 0;
             const hex     = LIAB_COLORS[item.key] || '#ff4d6d';
             const valColor   = isEmpty ? 'var(--text-muted)' : hex;
-            const borderRgba = isEmpty ? 'rgba(255,255,255,0.04)' : hex + '45';
+            const borderRgba = isEmpty ? 'rgba(255,255,255,0.08)' : hex + '72';
             const bgRgba     = isEmpty ? '' : hex + '0d';
             const sheen = LIAB_SHEENS[item.key] || 'rgba(255,255,255,0.9)';
             return `
