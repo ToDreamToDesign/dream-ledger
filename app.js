@@ -784,9 +784,10 @@ function renderAssetChart() {
     if (!ctx) return;
 
     const hasSS = typeof snapshotSystem !== 'undefined';
-    const labels       = hasSS ? snapshotSystem.getLabels()          : ['2026-06'];
-    const assetData    = hasSS ? snapshotSystem.getAssetSeries()      : [1125002];
-    const netWorthData = hasSS ? snapshotSystem.getNetWorthSeries()   : [-134653];
+    const labels        = hasSS ? snapshotSystem.getLabels()                          : ['2026-06'];
+    const assetData     = hasSS ? snapshotSystem.getAssetSeries()                     : [1125002];
+    const netWorthData  = hasSS ? snapshotSystem.getNetWorthSeries()                  : [-134653];
+    const liabData      = hasSS ? snapshots.map(s => s.liabilities ?? 0)             : [1259655];
 
     // 更新審計標注
     const metaEl = document.getElementById('chart-snapshot-meta');
@@ -844,6 +845,24 @@ function renderAssetChart() {
                     }),
                     pointHoverRadius: 7,
                     fill: false
+                },
+                {
+                    label: '真實負債',
+                    data: liabData,
+                    borderColor: '#f9a8d4',
+                    backgroundColor: 'rgba(249,168,212,0.03)',
+                    borderWidth: 2, tension: 0.2,
+                    borderDash: [6, 4],
+                    pointBackgroundColor: liabData.map((_, i) => {
+                        const snap = snapshots?.[i];
+                        return snap?.note?.startsWith('audited') ? '#f9a8d4' : 'rgba(249,168,212,0.4)';
+                    }),
+                    pointRadius: liabData.map((_, i) => {
+                        const snap = snapshots?.[i];
+                        return snap?.note?.startsWith('audited') ? 6 : 3;
+                    }),
+                    pointHoverRadius: 7,
+                    fill: false
                 }
             ]
         },
@@ -855,7 +874,7 @@ function renderAssetChart() {
                 tooltip: {
                     callbacks: {
                         label: ctx => {
-                            const prefix = ctx.datasetIndex === 0 ? '總資產' : '淨資產';
+                            const prefix = ['總資產', '淨資產', '真實負債'][ctx.datasetIndex] || '';
                             const snap   = snapshots?.[ctx.dataIndex];
                             const tag    = snap?.note?.startsWith('audited') ? ' ✓' : ' ~';
                             return `${prefix}: $${ctx.parsed.y.toLocaleString()}${tag}`;
