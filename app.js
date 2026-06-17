@@ -700,14 +700,19 @@ function renderEventAccordion(containerId = 'event-list', filterCat = 'all') {
     let events = filterCat === 'all' ? lifeEvents : lifeEvents.filter(e => e.category === filterCat);
     if (isDashboard) events = [...events].sort((a, b) => b.year - a.year);
 
-    // Timeline 年份分組
+    // Timeline 年份分組（倒敘排列）
     let appendList = events;
     if (isTimeline) {
+        // 清除上一次的展開按鈕
+        const oldBtn = document.getElementById('tl-expand-btn');
+        if (oldBtn) oldBtn.remove();
+
         const years = [], byYear = {};
         events.forEach(e => {
             if (!byYear[e.year]) { years.push(e.year); byYear[e.year] = []; }
             byYear[e.year].push(e);
         });
+        years.sort((a, b) => Number(b) - Number(a)); // 倒敘
         appendList = [];
         years.forEach((year, yi) => {
             appendList.push({ _yearHeader: year, _first: yi === 0 });
@@ -773,6 +778,62 @@ function renderEventAccordion(containerId = 'event-list', filterCat = 'all') {
         });
         el.appendChild(card);
     });
+
+    if (isTimeline) {
+        requestAnimationFrame(() => {
+            const allChildren = Array.from(el.children);
+            const eventItems  = Array.from(el.querySelectorAll('.collapsible-event'));
+            if (eventItems.length <= 4) return;
+
+            // 找第 5 筆 event 的 DOM 位置
+            let evCount = 0, cutIdx4 = allChildren.length;
+            allChildren.forEach((child, i) => {
+                if (child.classList.contains('collapsible-event')) evCount++;
+                if (evCount === 5 && cutIdx4 === allChildren.length) cutIdx4 = i;
+            });
+
+            // 預設隱藏第 5 筆以後
+            allChildren.forEach((child, i) => {
+                if (i >= cutIdx4) child.classList.add('tl-hidden');
+            });
+
+            // 展開按鈕
+            const remaining = eventItems.length - 4;
+            const btn = document.createElement('button');
+            btn.id = 'tl-expand-btn';
+            btn.className = 'timeline-expand-btn';
+            btn.innerHTML = `展開更多 <span class="tl-btn-count">${remaining} 筆</span> ↓`;
+            btn.dataset.phase = 'collapsed';
+            el.insertAdjacentElement('afterend', btn);
+
+            btn.addEventListener('click', () => {
+                if (btn.dataset.phase === 'collapsed') {
+                    // 顯示全部 → 量測第 8 筆高度後加滾輪
+                    allChildren.forEach(child => child.classList.remove('tl-hidden'));
+                    requestAnimationFrame(() => {
+                        const eList = el.querySelectorAll('.collapsible-event');
+                        if (eList.length > 8) {
+                            const h = eList[7].offsetTop + eList[7].offsetHeight + 24;
+                            el.style.maxHeight = h + 'px';
+                        }
+                        el.style.overflowY = 'auto';
+                        el.style.paddingRight = '4px';
+                    });
+                    btn.textContent = '收起 ↑';
+                    btn.dataset.phase = 'expanded';
+                } else {
+                    allChildren.forEach((child, i) => {
+                        if (i >= cutIdx4) child.classList.add('tl-hidden');
+                    });
+                    el.style.maxHeight = '';
+                    el.style.overflowY = '';
+                    el.style.paddingRight = '';
+                    btn.innerHTML = `展開更多 <span class="tl-btn-count">${remaining} 筆</span> ↓`;
+                    btn.dataset.phase = 'collapsed';
+                }
+            });
+        });
+    }
 
     if (isDashboard) {
         requestAnimationFrame(() => {
