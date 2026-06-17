@@ -198,7 +198,8 @@ function renderLiabilities() {
             key,
             category: m.category || key,
             label:    m.label    || '',
-            amount:   l[key] || 0,
+            amount:         l[key] || 0,
+            originalAmount: m.originalAmount || 0,
             monthly,
             badge:    m.badge || 'active',
             note:     m.note  || '',
@@ -234,24 +235,27 @@ function renderLiabilities() {
     const container = document.getElementById('debt-breakdown');
     if (!container) return;
     container.innerHTML = activeItems.map(item => {
-        const pct        = (item.amount / totalLiab * 100).toFixed(1);
-        const badgeClass = item.badge === 'soon' ? 'badge-soon' : 'badge-active';
-        const badgeText  = item.badge === 'soon' ? '即將清償' : '還款中';
-        const noteLine   = [item.label, item.note].filter(Boolean).join(' · ');
+        const badgeClass   = item.badge === 'soon' ? 'badge-soon' : 'badge-active';
+        const badgeText    = item.badge === 'soon' ? '即將清償' : '還款中';
+        const noteLine     = [item.label, item.note].filter(Boolean).join(' · ');
+        const orig         = item.originalAmount || item.amount;
+        const paid         = Math.max(0, orig - item.amount);
+        const repayPct     = orig > 0 ? (paid / orig * 100).toFixed(1) : '0.0';
         return `
         <div class="asset-item" style="align-items:flex-start;flex-direction:column;gap:0;padding-bottom:0">
             <div style="display:flex;justify-content:space-between;width:100%;align-items:flex-start">
                 <div>
                     <div class="asset-label">${item.category} <span class="badge ${badgeClass}" style="margin-left:4px">${badgeText}</span></div>
                     ${noteLine ? `<div class="asset-note">${noteLine}</div>` : ''}
+                    ${paid > 0 ? `<div style="font-size:11px;color:var(--neon-cyan);margin-top:4px">已還款 ${formatCurrency(paid)}</div>` : ''}
                 </div>
                 <div style="text-align:right">
-                    <div class="asset-value" style="color:var(--neon-cyan);text-shadow:0 0 14px rgba(34,211,238,0.55)">${formatCurrency(item.amount)}</div>
-                    ${item.monthly ? `<div style="font-size:11px;color:var(--text-muted);margin-top:2px">月付 ${formatCurrency(item.monthly)}</div>` : ''}
+                    <div class="asset-value" style="color:var(--neon-liability);text-shadow:0 0 14px rgba(249,168,212,0.45)">${formatCurrency(orig)}</div>
+                    ${item.monthly ? `<div style="font-size:11px;color:var(--text-muted);margin-top:2px">剩 ${formatCurrency(item.amount)}　月付 ${formatCurrency(item.monthly)}</div>` : `<div style="font-size:11px;color:var(--text-muted);margin-top:2px">剩 ${formatCurrency(item.amount)}</div>`}
                 </div>
             </div>
-            <div class="debt-bar-bg" style="width:100%;margin-top:10px"><div class="debt-bar-fill" style="width:${pct}%"></div></div>
-            <div class="debt-meta" style="width:100%"><span>佔總負債</span><span>${pct}%</span></div>
+            <div class="debt-bar-bg" style="width:100%;margin-top:10px"><div class="debt-bar-fill" style="width:${repayPct}%"></div></div>
+            <div class="debt-meta" style="width:100%"><span>已還清</span><span>${repayPct}%</span></div>
         </div>`;
     }).join('');
 }

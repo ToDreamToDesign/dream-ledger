@@ -61,10 +61,10 @@ const dreamUser = {
     // 5. 負債顯示元數據 — category（系統通用類別）+ label（個人自訂名稱）
     //    Dashboard 預設顯示 category，展開後顯示 label
     liabilityMeta: {
-        creditLoan:      { category: '信用貸款',  label: '富邦信貸',   monthlyKey: 'creditLoan',      badge: 'active', note: '84 期分期，核心槓桿負債' },
-        studentLoan:     { category: '學生貸款',  label: '教育部學貸', monthlyKey: 'student',         badge: 'active', note: '長期低利政府貸款' },
-        personalLoan:    { category: '個人借款',  label: '朋友借款',   monthlyKey: null,              badge: 'soon',   note: '預計 2026/07 全額償還' },
-        cardInstallment: { category: '信用卡分期', label: '按摩椅分期', monthlyKey: 'cardInstallment', badge: 'active', note: '信用卡分期，餘額遞減中' },
+        creditLoan:      { category: '信用貸款',  label: '富邦信貸',   monthlyKey: 'creditLoan',      badge: 'active', note: '84 期分期，核心槓桿負債', originalAmount: 900000 },
+        studentLoan:     { category: '學生貸款',  label: '教育部學貸', monthlyKey: 'student',         badge: 'active', note: '長期低利政府貸款',         originalAmount: 400000 },
+        personalLoan:    { category: '個人借款',  label: '朋友借款',   monthlyKey: null,              badge: 'soon',   note: '預計 2026/07 全額償還',    originalAmount: 55000  },
+        cardInstallment: { category: '信用卡分期', label: '按摩椅分期', monthlyKey: 'cardInstallment', badge: 'active', note: '信用卡分期，餘額遞減中',     originalAmount: 30000  },
     },
 
     // 5. 收入顯示元數據 — category（系統通用）+ label（個人自訂）
