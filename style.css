@@ -1,18 +1,20 @@
 :root {
-    --bg: #050507;
-    --panel: #0d1117;
-    --panel-hover: #141c24;
-    --border: rgba(255, 255, 255, 0.04);
+    --bg: #0b0f17;
+    --panel: #141c2a;
+    --panel-hover: rgba(30, 42, 60, 0.7);
+    --bg-card: rgba(20, 28, 42, 0.55);
+    --border: rgba(255, 255, 255, 0.06);
+    --border-glow: rgba(0, 242, 254, 0.18);
 
     --text-main: #f1f5f9;
     --text-muted: #64748b;
 
-    --neon-cyan: #22d3ee;
+    --neon-cyan: #00f2fe;
     --neon-green: #4ade80;
     --neon-rose: #fb4185;
     --neon-amber: #fbbf24;
 
-    --neon-liability:    #f9a8d4;
+    --neon-liability:    #ff5a79;
     --neon-expense:      #f472b6;
     --neon-passive-warm: #fca44e;
 }
@@ -25,6 +27,9 @@
 
 body {
     background-color: var(--bg) !important;
+    background-image:
+        radial-gradient(ellipse at 15% 20%, rgba(0, 242, 254, 0.04) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 80%, rgba(255, 90, 121, 0.04) 0%, transparent 55%);
     color: var(--text-main) !important;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
     min-height: 100vh;
@@ -41,7 +46,7 @@ body {
 /* ================= 1. Sidebar 側邊欄 (桌機預設) ================= */
 .sidebar {
     width: 260px;
-    background-color: #06090c;
+    background-color: #080c14;
     border-right: 1px solid var(--border);
     padding: 32px 24px;
     display: flex;
@@ -165,11 +170,13 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 }
 
 .dark-panel {
-    background-color: var(--panel) !important;
-    border: 1px solid var(--border) !important;
+    background: var(--bg-card) !important;
+    backdrop-filter: blur(20px) saturate(160%);
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.07) !important;
     border-radius: 16px;
     padding: 28px;
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255,255,255,0.04);
 }
 
 /* ================= 3. Hero 總資產區 ================= */
@@ -297,9 +304,10 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     align-items: center;
     gap: 12px;
     margin: 28px 0 12px;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
     font-size: 11px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 2.5px;
     color: var(--neon-cyan);
     text-transform: uppercase;
 }
@@ -321,18 +329,24 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 }
 
 .collapsible-event {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    background: rgba(20, 28, 42, 0.45);
+    backdrop-filter: blur(10px) saturate(140%);
+    -webkit-backdrop-filter: blur(10px) saturate(140%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
     margin-bottom: 10px;
-    transition: border-color 0.2s ease;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 .collapsible-event:hover {
-    border-color: rgba(50, 212, 215, 0.2);
+    border-color: rgba(0, 242, 254, 0.28);
+    box-shadow: 0 0 18px rgba(0, 242, 254, 0.07), 0 8px 24px rgba(0, 0, 0, 0.4);
+    transform: translateY(-1px);
 }
 .collapsible-event.is-open {
-    border-color: rgba(50, 212, 215, 0.3);
-    background: rgba(50, 212, 215, 0.02);
+    border-color: rgba(0, 242, 254, 0.3);
+    background: rgba(0, 242, 254, 0.025);
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.06), 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 .event-summary {
     padding: 14px 16px;
@@ -350,17 +364,19 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 }
 .event-tag {
     font-size: 10px;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
     color: var(--text-muted);
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid var(--border);
-    padding: 2px 7px;
+    padding: 2px 8px;
     border-radius: 4px;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
     text-transform: uppercase;
 }
 .event-title {
     font-size: 13px;
     font-weight: 600;
+    letter-spacing: 0.03em;
     color: var(--text-main);
     margin: 0;
 }
@@ -386,10 +402,11 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 }
 .ontology-node strong {
     display: block;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
     font-size: 10px;
-    letter-spacing: 0.8px;
+    letter-spacing: 1px;
     text-transform: uppercase;
-    margin-bottom: 4px;
+    margin-bottom: 5px;
 }
 .ontology-node p {
     font-size: 12px;
