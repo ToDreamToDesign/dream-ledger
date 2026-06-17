@@ -333,6 +333,72 @@ function recSeeAll(containerId, btn) {
 }
 
 // Layer 4 細項明細折疊 toggle
+// ── 流光邊框等速動畫（SVG stroke-dashoffset，沿邊框弧長等速移動）──────────
+function initCardBorderFlow() {
+    // 清除舊 SVG 與舊 keyframe style
+    document.querySelectorAll('.card-border-svg').forEach(el => el.remove());
+    document.querySelectorAll('style[data-cbf]').forEach(el => el.remove());
+
+    const colorMap = [
+        ['card-income',         'rgba(74,222,128,1)'],
+        ['card-cashflow',       'rgba(93,176,254,1)'],
+        ['card-debt',           'rgba(255,77,109,1)'],
+        ['card-expense',        'rgba(220,38,38,1)'],
+        ['card-passive-income', 'rgba(252,164,78,1)'],
+        ['card-passive-assets', 'rgba(252,164,78,0.85)'],
+    ];
+
+    document.querySelectorAll('.card').forEach(card => {
+        const W = card.offsetWidth, H = card.offsetHeight;
+        if (!W || !H) return;
+
+        const r = 13; // border-radius (match CSS 14px - 1px stroke)
+        // 圓角矩形弧長精確公式
+        const P = 2 * (W + H) + (2 * Math.PI - 8) * r;
+        const beam = 64; // 光束長度 px
+
+        let color = 'rgba(0,242,254,0.9)';
+        for (const [cls, col] of colorMap) {
+            if (card.classList.contains(cls)) { color = col; break; }
+        }
+
+        const id = 'cbf' + Math.random().toString(36).slice(2, 7);
+        const ns = 'http://www.w3.org/2000/svg';
+
+        const svg = document.createElementNS(ns, 'svg');
+        svg.classList.add('card-border-svg');
+        svg.setAttribute('width', W);
+        svg.setAttribute('height', H);
+        svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+        svg.style.cssText = `position:absolute;top:0;left:0;width:${W}px;height:${H}px;pointer-events:none;z-index:2;overflow:visible`;
+        svg.style.filter = `drop-shadow(0 0 4px ${color}) drop-shadow(0 0 2px ${color})`;
+
+        const rect = document.createElementNS(ns, 'rect');
+        rect.setAttribute('x', 1);
+        rect.setAttribute('y', 1);
+        rect.setAttribute('width', W - 2);
+        rect.setAttribute('height', H - 2);
+        rect.setAttribute('rx', r);
+        rect.setAttribute('ry', r);
+        rect.setAttribute('fill', 'none');
+        rect.setAttribute('stroke', color);
+        rect.setAttribute('stroke-width', '1.5');
+        rect.setAttribute('stroke-dasharray', `${beam} ${P - beam}`);
+        rect.setAttribute('stroke-linecap', 'round');
+        rect.classList.add(id);
+
+        svg.append(rect);
+        card.style.overflow = 'visible';
+        card.append(svg);
+
+        // CSS keyframe — 從 P 遞減到 0 = 等速沿邊框正向移動
+        const style = document.createElement('style');
+        style.setAttribute('data-cbf', '');
+        style.textContent = `@keyframes ${id}{from{stroke-dashoffset:${P.toFixed(1)}}to{stroke-dashoffset:0}}.${id}{animation:${id} 10s linear infinite}`;
+        document.head.append(style);
+    });
+}
+
 function togglePhilSection(el) {
     const body = el.querySelector('.phil-collapsible-body');
     const hint = el.querySelector('.phil-toggle-hint');
@@ -1305,6 +1371,9 @@ document.addEventListener("DOMContentLoaded", () => {
     renderEventAccordion();
     renderAssetChart();
     renderRecentRecords();
+
+    // 等兩幀確保卡片 layout 完成後注入 SVG 等速流光
+    requestAnimationFrame(() => requestAnimationFrame(initCardBorderFlow));
 
     console.log(`🚀 [DREAM Ledger v4] 啟動完成，模式：${activeUser}`);
 });
