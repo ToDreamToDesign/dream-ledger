@@ -140,12 +140,12 @@ function renderAssets() {
     set("a-fubonMonthly",   formatCurrency(dreamUser.cashflowModel.expense.loanRepayment.creditLoan));
 
     const nwEl = document.getElementById("a-netWorth");
-    if (nwEl) nwEl.style.color = netWorth < 0 ? "var(--neon-rose)" : "var(--neon-green)";
+    if (nwEl) nwEl.style.color = netWorth < 0 ? "#f9a8d4" : "#93c5fd";
 
     const divEl = document.getElementById("a-dividend");
-    if (divEl) divEl.style.color = "var(--neon-passive-warm)";
+    if (divEl) divEl.style.color = "#fdba74";
     const covEl = document.getElementById("a-coverage");
-    if (covEl) covEl.style.color = dividend / expense >= 0.1 ? "var(--neon-passive-warm)" : "var(--text-muted)";
+    if (covEl) covEl.style.color = "#fbbf24";
 }
 
 // ── 5. 負債管理頁渲染 ─────────────────────────────────────────
@@ -813,12 +813,12 @@ function renderAssetChart() {
                 {
                     label: '總資產',
                     data: assetData,
-                    borderColor: '#32d4d7',
-                    backgroundColor: 'rgba(50,212,215,0.04)',
+                    borderColor: '#6ee7b7',
+                    backgroundColor: 'rgba(110,231,183,0.04)',
                     borderWidth: 2, tension: 0.2,
                     pointBackgroundColor: assetData.map((_, i) => {
                         const snap = snapshots?.[i];
-                        return snap?.note?.startsWith('audited') ? '#32d4d7' : 'rgba(50,212,215,0.4)';
+                        return snap?.note?.startsWith('audited') ? '#6ee7b7' : 'rgba(110,231,183,0.4)';
                     }),
                     pointRadius: assetData.map((_, i) => {
                         const snap = snapshots?.[i];
@@ -830,13 +830,13 @@ function renderAssetChart() {
                 {
                     label: '淨資產',
                     data: netWorthData,
-                    borderColor: '#f43f5e',
-                    backgroundColor: 'rgba(244,63,94,0.03)',
+                    borderColor: '#93c5fd',
+                    backgroundColor: 'rgba(147,197,253,0.03)',
                     borderWidth: 2, tension: 0.2,
                     borderDash: [4, 3],
                     pointBackgroundColor: netWorthData.map((_, i) => {
                         const snap = snapshots?.[i];
-                        return snap?.note?.startsWith('audited') ? '#f43f5e' : 'rgba(244,63,94,0.4)';
+                        return snap?.note?.startsWith('audited') ? '#93c5fd' : 'rgba(147,197,253,0.4)';
                     }),
                     pointRadius: netWorthData.map((_, i) => {
                         const snap = snapshots?.[i];
