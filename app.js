@@ -95,8 +95,8 @@ function renderDashboard() {
     const nw2El = document.getElementById("d-networth2");
     if (nw2El) {
         nw2El.textContent = formatCurrency(netWorth);
-        nw2El.style.color = netWorth < 0 ? "#f9a8d4" : "#93c5fd";
-        nw2El.style.textShadow = netWorth < 0 ? "0 0 12px rgba(249,168,212,0.5)" : "0 0 12px rgba(147,197,253,0.5)";
+        nw2El.style.color = "#93c5fd";
+        nw2El.style.textShadow = "0 0 12px rgba(147,197,253,0.5)";
     }
     set("d-kgiInvested",    formatCurrency(dreamUser.kgiPolicyInvested || 0));
     set("passiveIncome",    formatCurrency(passiveIncome));
@@ -140,7 +140,7 @@ function renderAssets() {
     set("a-fubonMonthly",   formatCurrency(dreamUser.cashflowModel.expense.loanRepayment.creditLoan));
 
     const nwEl = document.getElementById("a-netWorth");
-    if (nwEl) nwEl.style.color = netWorth < 0 ? "#f9a8d4" : "#93c5fd";
+    if (nwEl) nwEl.style.color = "#93c5fd";
 
     const divEl = document.getElementById("a-dividend");
     if (divEl) divEl.style.color = "#fdba74";
