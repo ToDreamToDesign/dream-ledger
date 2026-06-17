@@ -27,6 +27,7 @@ const PAGE_LABELS = {
     events:      'DREAM LEDGER // 人生事件',
     records:     'DREAM LEDGER // 記帳紀錄',
     about:       'DREAM LEDGER // About',
+    philosophy:  'DREAM LEDGER // Philosophy',
 };
 
 function navigateTo(pageId) {
