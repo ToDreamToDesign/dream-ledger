@@ -106,6 +106,20 @@ function renderDashboard() {
         crEl.textContent = formatPercentage(coverageRatio);
         crEl.style.color = "#fbbf24";
     }
+
+    // 現金流比例 bar
+    if (income > 0) {
+        const expPct  = Math.min(100, expense  / income * 100).toFixed(1);
+        const freePct = Math.max(0,   cashflow / income * 100).toFixed(1);
+        const expBar  = document.getElementById("cf-bar-exp");
+        const freeBar = document.getElementById("cf-bar-free");
+        const expLbl  = document.getElementById("cf-bar-exp-label");
+        const freeLbl = document.getElementById("cf-bar-free-label");
+        if (expBar)  expBar.style.width  = expPct  + "%";
+        if (freeBar) freeBar.style.width = freePct + "%";
+        if (expLbl)  expLbl.textContent  = "支出 " + expPct  + "%";
+        if (freeLbl) freeLbl.textContent = "現金流 " + freePct + "%";
+    }
 }
 
 // ── 4. 資產管理頁渲染 ─────────────────────────────────────────
