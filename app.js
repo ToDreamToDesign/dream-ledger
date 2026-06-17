@@ -631,8 +631,8 @@ function renderRecords() {
     const expFlowEl = document.getElementById('rs-expense-flow');
     if (expFlowEl) {
         const parts = [];
-        if (liveAmt > 0) parts.push(`<span style="color:#6B7A8D">生活</span> ${_fmtShort(liveAmt)}`);
-        if (debtAmt > 0) parts.push(`<span style="color:${VL.debt}">負債</span> ${_fmtShort(debtAmt)}`);
+        if (liveAmt > 0) parts.push(`<span style="color:#f87171">生活</span> ${_fmtShort(liveAmt)}`);
+        if (debtAmt > 0) parts.push(`<span style="color:#f9a8d4">負債</span> ${_fmtShort(debtAmt)}`);
         expFlowEl.innerHTML = parts.join('&nbsp;&nbsp;');
     }
 
