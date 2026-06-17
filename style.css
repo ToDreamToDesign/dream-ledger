@@ -865,5 +865,38 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     line-height: 1.6;
     padding-left: 20px;
     border-left: 3px solid var(--neon-cyan);
-    margin-bottom: 32px;
+    margin-bottom: 20px;
+}
+
+/* 折疊式 Philosophy section */
+.phil-collapsible {
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+}
+.phil-collapsible:hover {
+    background: rgba(255,255,255,0.015);
+}
+.phil-toggle-hint {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    margin-top: 4px;
+    margin-bottom: 0;
+    transition: color 0.2s;
+}
+.phil-collapsible:hover .phil-toggle-hint {
+    color: var(--neon-cyan);
+}
+.phil-collapsible-body {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.3s ease;
+    margin-top: 0;
+}
+.phil-collapsible-body.open {
+    max-height: 800px;
+    opacity: 1;
+    margin-top: 28px;
 }

@@ -333,6 +333,14 @@ function recSeeAll(containerId, btn) {
 }
 
 // Layer 4 細項明細折疊 toggle
+function togglePhilSection(el) {
+    const body = el.querySelector('.phil-collapsible-body');
+    const hint = el.querySelector('.phil-toggle-hint');
+    if (!body) return;
+    const isOpen = body.classList.toggle('open');
+    if (hint) hint.textContent = isOpen ? '收起 ∧' : '展開全文 ∨';
+}
+
 function toggleRecDetail(section) {
     const body  = document.getElementById('rec-detail-' + section);
     const arrow = document.getElementById('rec-arrow-' + section);
