@@ -131,6 +131,7 @@ function renderAssets() {
     set("a-totalAssets",  formatCurrency(totalAssets));
     set("a-netWorth",     formatCurrency(netWorth));
     set("a-cash",         formatCurrency(a.cash));
+    set("a-deposit",      formatCurrency(a.deposit || 0));
     set("a-kgi",          formatCurrency(a.kgiPolicy));
     set("a-anda",         formatCurrency(a.andaTwd));
     set("a-bot",          formatCurrency(a.botSavings));
