@@ -183,9 +183,8 @@
                     </div>
                     <!-- 比例圖表 -->
                     <div style="margin-top:14px">
-                        <div style="display:flex;height:6px;border-radius:6px;overflow:hidden;background:rgba(255,255,255,0.05);gap:2px">
-                            <div id="cf-bar-exp" style="height:100%;background:linear-gradient(90deg,#b91c1c,#dc2626);border-radius:5px 0 0 5px;transition:width 0.8s ease;width:0%"></div>
-                            <div id="cf-bar-free" style="height:100%;background:linear-gradient(90deg,#2563eb,#3b82f6);border-radius:0 5px 5px 0;transition:width 0.8s ease;width:0%"></div>
+                        <div id="cf-gradient-bar" style="position:relative;height:6px;border-radius:6px;overflow:hidden;background:linear-gradient(90deg,#7f1d1d,#dc2626 40%,#1d4ed8 60%,#93c5fd)">
+                            <div style="position:absolute;top:0;left:0;width:22%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,245,250,0.7),transparent);animation:bar-flow 6s linear infinite"></div>
                         </div>
                         <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-muted);margin-top:5px">
                             <span id="cf-bar-exp-label"></span>
