@@ -971,3 +971,70 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     opacity: 1;
     margin-top: 28px;
 }
+
+/* ==========================================================================
+   TYPOGRAPHY ENFORCEMENT — 強制覆蓋舊權重
+   ========================================================================== */
+
+/* 本體論四節點：內文（最核心的閱讀問題） */
+.ontology-node p {
+    font-size: 0.93rem !important;
+    font-weight: 400 !important;
+    color: #94a3b8 !important;
+    line-height: 1.85 !important;
+    letter-spacing: 0.03em !important;
+    margin: 0 !important;
+}
+
+/* 本體論節點容器：呼吸感 */
+.ontology-node {
+    padding: 18px 20px !important;
+    border-radius: 8px !important;
+    border-left-width: 3px !important;
+}
+
+/* 節點標籤（FACT / CONTEXT / QUESTION / DECISION） */
+.ontology-node strong {
+    font-size: 0.68rem !important;
+    font-family: 'JetBrains Mono', 'Courier New', monospace !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.12em !important;
+    text-transform: uppercase !important;
+    display: block !important;
+    margin-bottom: 10px !important;
+}
+
+/* 節點區塊整體間距 */
+.ontology-block {
+    gap: 16px !important;
+    padding-top: 18px !important;
+}
+
+/* 展開後的 event-details 內邊距 */
+.event-details {
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+}
+
+/* Philosophy 閱讀頁 prose */
+.phil-prose {
+    font-size: 1.0rem !important;
+    line-height: 2.2 !important;
+    color: #94a3b8 !important;
+    letter-spacing: 0.02em !important;
+}
+.phil-prose .hi {
+    color: #f1f5f9 !important;
+}
+
+/* Philosophy 引言 */
+.phil-quote {
+    font-size: 1.35rem !important;
+    line-height: 1.65 !important;
+    color: var(--text-main) !important;
+}
+
+/* Philosophy section 間距 */
+.phil-section {
+    padding: 40px 32px !important;
+}
