@@ -1,16 +1,16 @@
 :root {
-    --bg: #090d10;                   
-    --panel: #11171e;                
-    --panel-hover: #161f29;          
-    --border: rgba(255, 255, 255, 0.05); 
-    
-    --text-main: #f1f5f9;            
-    --text-muted: #64748b;           
-    
-    --neon-cyan: #32d4d7;            
-    --neon-green: #34d399;           
-    --neon-rose: #f43f5e;            
-    --neon-amber: #fbbf24;           
+    --bg: #050507;
+    --panel: #0d1117;
+    --panel-hover: #141c24;
+    --border: rgba(255, 255, 255, 0.04);
+
+    --text-main: #e2e8f0;
+    --text-muted: #64748b;
+
+    --neon-cyan: #00b4d8;
+    --neon-green: #34d399;
+    --neon-rose: #f43f5e;
+    --neon-amber: #e76f51;
 }
 
 * {
