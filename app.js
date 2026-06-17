@@ -159,11 +159,18 @@ function renderLiabilities() {
 
     // 固定四類別順序：學生貸款 → 信用貸款 → 信用卡分期 → 個人借款
     const LIAB_ORDER = ['studentLoan', 'creditLoan', 'cardInstallment', 'personalLoan'];
+    const LIAB_COLORS = {
+        creditLoan:      '#dc2626',  // 深紅
+        studentLoan:     '#f87171',  // 淺紅
+        cardInstallment: '#7c3aed',  // 深紫
+        personalLoan:    '#c084fc',  // 粉紫
+    };
     const allItems = LIAB_ORDER.map(key => {
         const m          = meta[key] || {};
         const monthlyKey = m.monthlyKey;
         const monthly    = monthlyKey ? (loan[monthlyKey] || 0) : 0;
         return {
+            key,
             category: m.category || key,
             label:    m.label    || '',
             amount:   l[key] || 0,
@@ -178,14 +185,16 @@ function renderLiabilities() {
     const statGrid = document.getElementById('liab-stat-grid');
     if (statGrid) {
         statGrid.innerHTML = allItems.map(item => {
-            const isEmpty    = item.amount === 0;
-            const badgeColor = isEmpty ? 'rgba(255,255,255,0.04)' : item.badge === 'soon' ? 'rgba(251,191,36,0.15)' : 'rgba(230,57,70,0.12)';
-            const valColor   = isEmpty ? 'var(--text-muted)' : item.badge === 'soon' ? 'var(--neon-amber)' : 'var(--neon-liability)';
+            const isEmpty = item.amount === 0;
+            const hex     = LIAB_COLORS[item.key] || '#ff4d6d';
+            const valColor   = isEmpty ? 'var(--text-muted)' : hex;
+            const borderRgba = isEmpty ? 'rgba(255,255,255,0.04)' : hex + '45';
+            const bgRgba     = isEmpty ? '' : hex + '0d';
             return `
-            <div class="card dark-panel" style="border-color:${badgeColor}!important">
-                <span>${item.category}</span>
-                ${item.label ? `<span style="font-size:10px;color:var(--text-muted);display:block;margin-bottom:4px">${item.label}</span>` : ''}
-                <strong style="color:${valColor}">${isEmpty ? '$0' : formatCurrency(item.amount)}</strong>
+            <div class="card dark-panel" style="border-color:${borderRgba}!important;background:linear-gradient(180deg,var(--panel),${bgRgba})!important;box-shadow:0 0 22px ${hex}18">
+                <span style="font-size:12px">${item.category}</span>
+                ${item.label ? `<span style="font-size:10px;color:var(--text-muted);display:block;margin-bottom:6px">${item.label}</span>` : ''}
+                <strong style="color:${valColor};text-shadow:0 0 12px ${hex}66">${isEmpty ? '$0' : formatCurrency(item.amount)}</strong>
                 ${isEmpty ? '<div style="font-size:10px;color:var(--text-muted);margin-top:4px">無負債</div>' : ''}
             </div>`;
         }).join('');
