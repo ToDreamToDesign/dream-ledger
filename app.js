@@ -200,6 +200,7 @@ function renderLiabilities() {
             label:    m.label    || '',
             amount:         l[key] || 0,
             originalAmount: m.originalAmount || 0,
+            totalPeriods:   m.totalPeriods   || null,
             monthly,
             badge:    m.badge || 'active',
             note:     m.note  || '',
@@ -241,13 +242,17 @@ function renderLiabilities() {
         const orig         = item.originalAmount || item.amount;
         const paid         = Math.max(0, orig - item.amount);
         const repayPct     = orig > 0 ? (paid / orig * 100).toFixed(1) : '0.0';
+        const paidPeriods  = (item.monthly > 0 && paid > 0) ? Math.round(paid / item.monthly) : 0;
+        const periodLabel  = item.totalPeriods
+            ? `　${paidPeriods} / ${item.totalPeriods} 期`
+            : '';
         return `
         <div class="asset-item" style="align-items:flex-start;flex-direction:column;gap:0;padding-bottom:0">
             <div style="display:flex;justify-content:space-between;width:100%;align-items:flex-start">
                 <div>
                     <div class="asset-label">${item.category} <span class="badge ${badgeClass}" style="margin-left:4px">${badgeText}</span></div>
                     ${noteLine ? `<div class="asset-note">${noteLine}</div>` : ''}
-                    ${paid > 0 ? `<div style="font-size:11px;color:var(--neon-cyan);margin-top:4px">已還款 ${formatCurrency(paid)}</div>` : ''}
+                    ${paid > 0 ? `<div style="font-size:11px;color:var(--neon-cyan);margin-top:4px">已還款 ${formatCurrency(paid)}${periodLabel}</div>` : ''}
                 </div>
                 <div style="text-align:right">
                     <div class="asset-value" style="color:var(--neon-liability);text-shadow:0 0 14px rgba(249,168,212,0.45)">${formatCurrency(orig)}</div>
