@@ -4,17 +4,17 @@
     --panel-hover: #141c24;
     --border: rgba(255, 255, 255, 0.04);
 
-    --text-main: #e2e8f0;
+    --text-main: #f1f5f9;
     --text-muted: #64748b;
 
-    --neon-cyan: #06b6d4;
-    --neon-green: #34d399;
-    --neon-rose: #f43f5e;
-    --neon-amber: #f59e0b;
+    --neon-cyan: #22d3ee;
+    --neon-green: #4ade80;
+    --neon-rose: #fb4185;
+    --neon-amber: #fbbf24;
 
-    --neon-liability:    #f43f5e;
-    --neon-expense:      #fb7185;
-    --neon-passive-warm: #fb923c;
+    --neon-liability:    #ff4d6d;
+    --neon-expense:      #f472b6;
+    --neon-passive-warm: #fca44e;
 }
 
 * {
@@ -193,43 +193,50 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 }
 .asset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-.card { position: relative; overflow: hidden; transition: border-color 0.25s, box-shadow 0.25s; }
+.card { position: relative; isolation: isolate; transition: border-color 0.25s, box-shadow 0.25s; }
 .card span { color: var(--text-muted); font-size: 0.85rem; font-weight: 500; }
 .card strong { display: block; margin-top: 14px; font-size: 1.8rem; font-weight: 600; }
+.card > * { position: relative; z-index: 2; }
 
-/* 流光掃描動畫 */
-@keyframes card-sheen {
-    0%   { transform: translateX(-220%); }
-    100% { transform: translateX(420%); }
+/* 流光邊框動畫（conic-gradient 旋轉 + mask 限定在邊框軌跡） */
+@keyframes border-trace {
+    to { transform: rotate(360deg); }
 }
 .card::before {
     content: '';
     position: absolute;
-    top: 0; left: 0;
-    width: 45%; height: 100%;
-    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.055) 50%, transparent 100%);
-    animation: card-sheen 6s ease-in-out infinite;
+    inset: -1px;
+    border-radius: 14px;
+    padding: 1px;
+    --sheen: rgba(255, 255, 255, 0.6);
+    background: conic-gradient(from 0deg at 50% 50%, transparent 0%, var(--sheen) 4%, transparent 9%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    animation: border-trace 3s linear infinite;
     pointer-events: none;
     z-index: 1;
 }
-.card-cashflow::before       { animation-delay: -1.4s; }
-.card-debt::before           { animation-delay: -3.2s; }
-.card-expense::before        { animation-delay: -0.6s; }
-.card-passive-income::before { animation-delay: -4.8s; }
-.card-passive-assets::before { animation-delay: -2.1s; }
+.card-income::before        { --sheen: rgba(74, 222, 128, 1); }
+.card-cashflow::before      { --sheen: rgba(34, 211, 238, 1); }
+.card-debt::before          { --sheen: rgba(255, 77, 109, 1); }
+.card-expense::before       { --sheen: rgba(244, 114, 182, 1); }
+.card-passive-income::before { --sheen: rgba(252, 164, 78, 1); }
+.card-passive-assets::before { --sheen: rgba(252, 164, 78, 0.8); }
 
 /* 卡片渲染控色 */
-.card-income { border: 1px solid rgba(52, 211, 153, 0.24) !important; background: linear-gradient(180deg, var(--panel), rgba(52, 211, 153, 0.03)) !important; box-shadow: 0 0 22px rgba(52,211,153,0.06); }
+.card-income { border: 1px solid rgba(74, 222, 128, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(74, 222, 128, 0.04)) !important; box-shadow: 0 0 26px rgba(74,222,128,0.09); }
 .card-income strong { color: var(--neon-green) !important; }
-.card-cashflow { border: 1px solid rgba(6, 182, 212, 0.24) !important; background: linear-gradient(180deg, var(--panel), rgba(6, 182, 212, 0.03)) !important; box-shadow: 0 0 22px rgba(6,182,212,0.06); }
+.card-cashflow { border: 1px solid rgba(34, 211, 238, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(34, 211, 238, 0.04)) !important; box-shadow: 0 0 26px rgba(34,211,238,0.09); }
 .card-cashflow strong { color: var(--neon-cyan) !important; }
-.card-debt { border: 1px solid rgba(244, 63, 94, 0.24) !important; background: linear-gradient(180deg, var(--panel), rgba(244, 63, 94, 0.03)) !important; box-shadow: 0 0 22px rgba(244,63,94,0.06); }
+.card-debt { border: 1px solid rgba(255, 77, 109, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(255, 77, 109, 0.04)) !important; box-shadow: 0 0 26px rgba(255,77,109,0.09); }
 .card-debt strong { color: var(--neon-liability) !important; }
-.card-expense { border: 1px solid rgba(251, 113, 133, 0.22) !important; background: linear-gradient(180deg, var(--panel), rgba(251, 113, 133, 0.02)) !important; box-shadow: 0 0 22px rgba(251,113,133,0.05); }
+.card-expense { border: 1px solid rgba(244, 114, 182, 0.26) !important; background: linear-gradient(180deg, var(--panel), rgba(244, 114, 182, 0.03)) !important; box-shadow: 0 0 26px rgba(244,114,182,0.08); }
 .card-expense strong { color: var(--neon-expense) !important; }
-.card-passive-income { border: 1px solid rgba(251, 146, 60, 0.24) !important; background: linear-gradient(180deg, var(--panel), rgba(251, 146, 60, 0.03)) !important; box-shadow: 0 0 22px rgba(251,146,60,0.06); }
+.card-passive-income { border: 1px solid rgba(252, 164, 78, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(252, 164, 78, 0.04)) !important; box-shadow: 0 0 26px rgba(252,164,78,0.09); }
 .card-passive-income strong { color: var(--neon-passive-warm) !important; }
-.card-passive-assets strong { color: var(--neon-passive-warm) !important; opacity: 0.85; }
+.card-passive-assets strong { color: var(--neon-passive-warm) !important; opacity: 0.9; }
 
 /* ================= 5. 工作區排版 (桌機預設 2:1) ================= */
 .main-grid {
