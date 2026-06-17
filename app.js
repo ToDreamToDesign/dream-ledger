@@ -631,7 +631,7 @@ function renderRecords() {
     const expFlowEl = document.getElementById('rs-expense-flow');
     if (expFlowEl) {
         const parts = [];
-        if (liveAmt > 0) parts.push(`<span style="color:#f87171">基本開銷</span> ${_fmtShort(liveAmt)}`);
+        if (liveAmt > 0) parts.push(`<span style="color:#dc2626">基本開銷</span> ${_fmtShort(liveAmt)}`);
         if (debtAmt > 0) parts.push(`<span style="color:#f9a8d4">負債</span> ${_fmtShort(debtAmt)}`);
         expFlowEl.innerHTML = parts.join('&nbsp;&nbsp;');
     }
@@ -659,7 +659,7 @@ function renderRecords() {
     // ─ 本月資金流向圓餅：生活支出 + 負債支出 + 現金流 = 固定收入 ─
     const incTotal = i.total;
     const flowSegments = [
-        { label: '基本開銷', amount: liveAmt,                      color: '#f87171'     },
+        { label: '基本開銷', amount: liveAmt,                      color: '#dc2626'     },
         { label: '負債支出', amount: debtAmt,                      color: '#f9a8d4'     },
         { label: '現金流',   amount: Math.max(0, actualCashflow),  color: '#3b82f6'      },
     ].filter(s => s.amount > 0);
