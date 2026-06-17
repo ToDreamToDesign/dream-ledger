@@ -11,6 +11,10 @@
     --neon-green: #34d399;
     --neon-rose: #f43f5e;
     --neon-amber: #e76f51;
+
+    --neon-liability:    #e63946;
+    --neon-expense:      #cc7a8b;
+    --neon-passive-warm: #f4a261;
 }
 
 * {
@@ -198,11 +202,13 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .card-income strong { color: var(--neon-green) !important; }
 .card-cashflow { border: 1px solid rgba(50, 212, 215, 0.16) !important; background: linear-gradient(180deg, var(--panel), rgba(50, 212, 215, 0.02)) !important;}
 .card-cashflow strong { color: var(--neon-cyan) !important; }
-.card-debt { border: 1px solid rgba(244, 63, 94, 0.12) !important; background: linear-gradient(180deg, var(--panel), rgba(244, 63, 94, 0.01)) !important;}
-.card-debt strong { color: var(--neon-rose) !important; }
-.card-passive-income { border: 1px solid rgba(251, 191, 36, 0.1) !important; background: linear-gradient(180deg, var(--panel), rgba(251, 191, 36, 0.01)) !important;}
-.card-passive-income strong { color: var(--neon-amber) !important; }
-.card-passive-assets strong { color: var(--neon-cyan) !important; opacity: 0.85; }
+.card-debt { border: 1px solid rgba(230, 57, 70, 0.14) !important; background: linear-gradient(180deg, var(--panel), rgba(230, 57, 70, 0.02)) !important;}
+.card-debt strong { color: var(--neon-liability) !important; }
+.card-expense { border: 1px solid rgba(204, 122, 139, 0.10) !important; background: linear-gradient(180deg, var(--panel), rgba(204, 122, 139, 0.01)) !important;}
+.card-expense strong { color: var(--neon-expense) !important; }
+.card-passive-income { border: 1px solid rgba(244, 162, 97, 0.12) !important; background: linear-gradient(180deg, var(--panel), rgba(244, 162, 97, 0.01)) !important;}
+.card-passive-income strong { color: var(--neon-passive-warm) !important; }
+.card-passive-assets strong { color: var(--neon-passive-warm) !important; opacity: 0.85; }
 
 /* ================= 5. 工作區排版 (桌機預設 2:1) ================= */
 .main-grid {

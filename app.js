@@ -95,7 +95,7 @@ function renderDashboard() {
     const crEl = document.getElementById("coverageRatio");
     if (crEl) {
         crEl.textContent = formatPercentage(coverageRatio);
-        crEl.style.color = coverageRatio >= 0.1 ? "var(--neon-green)" : "var(--text-main)";
+        crEl.style.color = coverageRatio >= 0.1 ? "var(--neon-passive-warm)" : "var(--text-main)";
     }
 }
 
@@ -174,8 +174,8 @@ function renderLiabilities() {
     if (statGrid) {
         statGrid.innerHTML = allItems.map(item => {
             const isEmpty    = item.amount === 0;
-            const badgeColor = isEmpty ? 'rgba(255,255,255,0.04)' : item.badge === 'soon' ? 'rgba(251,191,36,0.15)' : 'rgba(244,63,94,0.12)';
-            const valColor   = isEmpty ? 'var(--text-muted)' : item.badge === 'soon' ? 'var(--neon-amber)' : 'var(--neon-rose)';
+            const badgeColor = isEmpty ? 'rgba(255,255,255,0.04)' : item.badge === 'soon' ? 'rgba(251,191,36,0.15)' : 'rgba(230,57,70,0.12)';
+            const valColor   = isEmpty ? 'var(--text-muted)' : item.badge === 'soon' ? 'var(--neon-amber)' : 'var(--neon-liability)';
             return `
             <div class="card dark-panel" style="border-color:${badgeColor}!important">
                 <span>${item.category}</span>
@@ -202,7 +202,7 @@ function renderLiabilities() {
                     <span class="badge ${badgeClass}" style="margin-left:8px">${badgeText}</span>
                 </div>
                 <div style="text-align:right">
-                    <div style="font-size:16px;font-weight:600;color:var(--neon-rose)">${formatCurrency(item.amount)}</div>
+                    <div style="font-size:16px;font-weight:600;color:var(--neon-liability)">${formatCurrency(item.amount)}</div>
                     ${item.monthly ? `<div style="font-size:11px;color:var(--text-muted)">月付 ${formatCurrency(item.monthly)}</div>` : ''}
                 </div>
             </div>
