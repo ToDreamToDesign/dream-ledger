@@ -7,14 +7,14 @@
     --text-main: #e2e8f0;
     --text-muted: #64748b;
 
-    --neon-cyan: #00b4d8;
+    --neon-cyan: #06b6d4;
     --neon-green: #34d399;
     --neon-rose: #f43f5e;
-    --neon-amber: #e76f51;
+    --neon-amber: #f59e0b;
 
-    --neon-liability:    #e63946;
-    --neon-expense:      #cc7a8b;
-    --neon-passive-warm: #f4a261;
+    --neon-liability:    #f43f5e;
+    --neon-expense:      #fb7185;
+    --neon-passive-warm: #fb923c;
 }
 
 * {
@@ -193,20 +193,41 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 }
 .asset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-.card { position: relative; transition: border-color 0.25s, box-shadow 0.25s; }
+.card { position: relative; overflow: hidden; transition: border-color 0.25s, box-shadow 0.25s; }
 .card span { color: var(--text-muted); font-size: 0.85rem; font-weight: 500; }
 .card strong { display: block; margin-top: 14px; font-size: 1.8rem; font-weight: 600; }
 
+/* 流光掃描動畫 */
+@keyframes card-sheen {
+    0%   { transform: translateX(-220%); }
+    100% { transform: translateX(420%); }
+}
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 45%; height: 100%;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.055) 50%, transparent 100%);
+    animation: card-sheen 6s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+.card-cashflow::before       { animation-delay: -1.4s; }
+.card-debt::before           { animation-delay: -3.2s; }
+.card-expense::before        { animation-delay: -0.6s; }
+.card-passive-income::before { animation-delay: -4.8s; }
+.card-passive-assets::before { animation-delay: -2.1s; }
+
 /* 卡片渲染控色 */
-.card-income { border: 1px solid rgba(52, 211, 153, 0.12) !important; background: linear-gradient(180deg, var(--panel), rgba(52, 211, 153, 0.01)) !important;}
+.card-income { border: 1px solid rgba(52, 211, 153, 0.24) !important; background: linear-gradient(180deg, var(--panel), rgba(52, 211, 153, 0.03)) !important; box-shadow: 0 0 22px rgba(52,211,153,0.06); }
 .card-income strong { color: var(--neon-green) !important; }
-.card-cashflow { border: 1px solid rgba(50, 212, 215, 0.16) !important; background: linear-gradient(180deg, var(--panel), rgba(50, 212, 215, 0.02)) !important;}
+.card-cashflow { border: 1px solid rgba(6, 182, 212, 0.24) !important; background: linear-gradient(180deg, var(--panel), rgba(6, 182, 212, 0.03)) !important; box-shadow: 0 0 22px rgba(6,182,212,0.06); }
 .card-cashflow strong { color: var(--neon-cyan) !important; }
-.card-debt { border: 1px solid rgba(230, 57, 70, 0.14) !important; background: linear-gradient(180deg, var(--panel), rgba(230, 57, 70, 0.02)) !important;}
+.card-debt { border: 1px solid rgba(244, 63, 94, 0.24) !important; background: linear-gradient(180deg, var(--panel), rgba(244, 63, 94, 0.03)) !important; box-shadow: 0 0 22px rgba(244,63,94,0.06); }
 .card-debt strong { color: var(--neon-liability) !important; }
-.card-expense { border: 1px solid rgba(204, 122, 139, 0.10) !important; background: linear-gradient(180deg, var(--panel), rgba(204, 122, 139, 0.01)) !important;}
+.card-expense { border: 1px solid rgba(251, 113, 133, 0.22) !important; background: linear-gradient(180deg, var(--panel), rgba(251, 113, 133, 0.02)) !important; box-shadow: 0 0 22px rgba(251,113,133,0.05); }
 .card-expense strong { color: var(--neon-expense) !important; }
-.card-passive-income { border: 1px solid rgba(244, 162, 97, 0.12) !important; background: linear-gradient(180deg, var(--panel), rgba(244, 162, 97, 0.01)) !important;}
+.card-passive-income { border: 1px solid rgba(251, 146, 60, 0.24) !important; background: linear-gradient(180deg, var(--panel), rgba(251, 146, 60, 0.03)) !important; box-shadow: 0 0 22px rgba(251,146,60,0.06); }
 .card-passive-income strong { color: var(--neon-passive-warm) !important; }
 .card-passive-assets strong { color: var(--neon-passive-warm) !important; opacity: 0.85; }
 
