@@ -361,7 +361,7 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     box-shadow: 0 0 20px rgba(0, 242, 254, 0.06), 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 .event-summary {
-    padding: 14px 16px;
+    padding: 16px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -375,22 +375,25 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     margin-bottom: 5px;
 }
 .event-tag {
-    font-size: 10px;
+    font-size: 0.67rem;
     font-family: 'JetBrains Mono', 'Courier New', monospace;
-    color: var(--text-muted);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid var(--border);
-    padding: 2px 8px;
+    font-weight: 500;
+    color: #00f2fe;
+    background: rgba(0, 242, 254, 0.07);
+    border: 1px solid rgba(0, 242, 254, 0.22);
+    padding: 3px 10px;
     border-radius: 4px;
-    letter-spacing: 0.8px;
+    letter-spacing: 0.07em;
     text-transform: uppercase;
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.06);
 }
 .event-title {
-    font-size: 13px;
+    font-size: 0.875rem;
     font-weight: 600;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.05em;
     color: var(--text-main);
     margin: 0;
+    line-height: 1.5;
 }
 .toggle-icon {
     font-size: 11px;
@@ -403,37 +406,40 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .ontology-block {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding-top: 12px;
-    border-top: 1px dashed var(--border);
+    gap: 14px;
+    padding: 16px 0 4px;
+    border-top: 1px solid rgba(0, 242, 254, 0.08);
 }
 .ontology-node {
-    padding: 10px 12px;
-    border-radius: 6px;
-    border-left: 2px solid transparent;
+    padding: 16px 20px;
+    border-radius: 8px;
+    border-left: 3px solid transparent;
 }
 .ontology-node strong {
     display: block;
     font-family: 'JetBrains Mono', 'Courier New', monospace;
-    font-size: 10px;
-    letter-spacing: 1px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 .ontology-node p {
-    font-size: 12px;
-    color: var(--text-main);
-    line-height: 1.6;
+    font-size: 0.93rem;
+    font-weight: 400;
+    color: #cbd5e1;
+    line-height: 1.78;
+    letter-spacing: 0.02em;
     margin: 0;
 }
-.node-fact     { background: rgba(100, 116, 139, 0.06); border-left-color: #64748b; }
-.node-fact strong     { color: #64748b; }
-.node-context  { background: rgba(50, 212, 215, 0.04); border-left-color: var(--neon-cyan); }
-.node-context strong  { color: var(--neon-cyan); }
-.node-question { background: rgba(251, 191, 36, 0.04); border-left-color: var(--neon-amber); }
-.node-question strong { color: var(--neon-amber); }
-.node-decision { background: rgba(52, 211, 153, 0.05); border-left-color: var(--neon-green); }
-.node-decision strong { color: var(--neon-green); }
+.node-fact     { background: rgba(100, 116, 139, 0.09); border-left-color: #64748b; }
+.node-fact strong     { color: #8899b4; text-shadow: 0 0 10px rgba(100,116,139,0.5); }
+.node-context  { background: rgba(0, 242, 254, 0.06); border-left-color: var(--neon-cyan); }
+.node-context strong  { color: var(--neon-cyan); text-shadow: 0 0 12px rgba(0,242,254,0.55); }
+.node-question { background: rgba(251, 191, 36, 0.06); border-left-color: var(--neon-amber); }
+.node-question strong { color: var(--neon-amber); text-shadow: 0 0 12px rgba(251,191,36,0.5); }
+.node-decision { background: rgba(52, 211, 153, 0.07); border-left-color: var(--neon-green); }
+.node-decision strong { color: var(--neon-green); text-shadow: 0 0 12px rgba(52,211,153,0.5); }
 
 
 /* ==========================================================================
