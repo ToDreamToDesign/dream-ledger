@@ -843,7 +843,7 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     margin-bottom: 32px;
 }
 .phil-prose {
-    font-size: 0.93rem;
+    font-size: 1.05rem;
     color: var(--text-muted);
     line-height: 2.3;
 }
