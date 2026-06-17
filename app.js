@@ -158,7 +158,7 @@ function renderLiabilities() {
     }
 
     // 固定四類別順序：學生貸款 → 信用貸款 → 信用卡分期 → 個人借款
-    const LIAB_ORDER = ['studentLoan', 'creditLoan', 'cardInstallment', 'personalLoan'];
+    const LIAB_ORDER = ['creditLoan', 'studentLoan', 'cardInstallment', 'personalLoan'];
     const LIAB_COLORS = {
         creditLoan:      '#dc2626',  // 深紅
         studentLoan:     '#f87171',  // 淺紅
