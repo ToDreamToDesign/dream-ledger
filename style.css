@@ -231,21 +231,21 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     z-index: 1;
 }
 .card-income::before         { --sheen: rgba(74, 222, 128, 1); }
-.card-cashflow::before       { --sheen: rgba(34, 211, 238, 1); }
+.card-cashflow::before       { --sheen: rgba(59, 130, 246, 1); }
 .card-debt::before           { --sheen: rgba(255, 77, 109, 1); }
-.card-expense::before        { --sheen: rgba(244, 114, 182, 1); }
+.card-expense::before        { --sheen: rgba(220, 38, 38, 1); }
 .card-passive-income::before  { --sheen: rgba(252, 164, 78, 1); }
 .card-passive-assets::before  { --sheen: rgba(252, 164, 78, 0.85); }
 
 /* 卡片渲染控色 */
 .card-income { border: 1px solid rgba(74, 222, 128, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(74, 222, 128, 0.04)) !important; box-shadow: 0 0 26px rgba(74,222,128,0.09); }
 .card-income strong { color: var(--neon-green) !important; }
-.card-cashflow { border: 1px solid rgba(34, 211, 238, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(34, 211, 238, 0.04)) !important; box-shadow: 0 0 26px rgba(34,211,238,0.09); }
-.card-cashflow strong { color: var(--neon-cyan) !important; }
+.card-cashflow { border: 1px solid rgba(59, 130, 246, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(59, 130, 246, 0.04)) !important; box-shadow: 0 0 26px rgba(59,130,246,0.09); }
+.card-cashflow strong { color: #3b82f6 !important; }
 .card-debt { border: 1px solid rgba(255, 77, 109, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(255, 77, 109, 0.04)) !important; box-shadow: 0 0 26px rgba(255,77,109,0.09); }
 .card-debt strong { color: var(--neon-liability) !important; }
-.card-expense { border: 1px solid rgba(244, 114, 182, 0.26) !important; background: linear-gradient(180deg, var(--panel), rgba(244, 114, 182, 0.03)) !important; box-shadow: 0 0 26px rgba(244,114,182,0.08); }
-.card-expense strong { color: var(--neon-expense) !important; }
+.card-expense { border: 1px solid rgba(220, 38, 38, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(220, 38, 38, 0.04)) !important; box-shadow: 0 0 26px rgba(220,38,38,0.09); }
+.card-expense strong { color: #dc2626 !important; }
 .card-passive-income { border: 1px solid rgba(252, 164, 78, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(252, 164, 78, 0.04)) !important; box-shadow: 0 0 26px rgba(252,164,78,0.09); }
 .card-passive-income strong { color: var(--neon-passive-warm) !important; }
 .card-passive-assets { border: 1px solid rgba(252, 164, 78, 0.28) !important; background: linear-gradient(180deg, var(--panel), rgba(252, 164, 78, 0.04)) !important; box-shadow: 0 0 26px rgba(252,164,78,0.09); }

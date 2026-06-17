@@ -90,6 +90,8 @@ function renderDashboard() {
     set("expense",          formatCurrency(expense));
     set("cashflow",         formatCurrency(cashflow));
     set("debt",             formatCurrency(totalLiab));
+    set("d-assets2",        formatCurrency(totalAssets));
+    set("d-liab2",          formatCurrency(totalLiab));
     set("passiveIncome",    formatCurrency(passiveIncome));
 
     const crEl = document.getElementById("coverageRatio");
