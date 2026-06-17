@@ -162,26 +162,6 @@
         <!-- ════════════════ PAGE: Dashboard ════════════════ -->
         <div class="page active" id="page-dashboard">
 
-            <section class="hero dark-panel">
-                <div class="hero-container">
-                    <div class="hero-left">
-                        <span>真實淨資產 Net Worth</span>
-                        <h1 id="networth">--</h1>
-                        <div id="networth-status" style="font-size:0.8rem;margin-top:6px;letter-spacing:0.4px;opacity:0.75"></div>
-                    </div>
-                    <div class="hero-right-metrics">
-                        <div class="hero-sub-metric">
-                            <span>總資產 Total Assets</span>
-                            <strong id="totalAssets" style="color: var(--neon-cyan);">--</strong>
-                        </div>
-                        <div class="hero-sub-metric">
-                            <span>總負債 Total Liabilities</span>
-                            <strong id="totalLiabilities" style="color: var(--neon-rose);">--</strong>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             <!-- 第一行：現金流合併橫向卡（冰火交融雙色旋轉邊框） -->
             <section class="stats" style="grid-template-columns:1fr">
                 <div class="card dark-panel card-ice-fire">
@@ -207,14 +187,18 @@
             <!-- 第二行：資產負債合一 + 被動配息合一 -->
             <section class="stats" style="grid-template-columns:1fr 1fr;margin-top:0">
                 <div class="card dark-panel" style="--sheen:rgba(96,165,250,0.85);border-color:rgba(96,165,250,0.18)!important;box-shadow:0 0 24px rgba(96,165,250,0.07)">
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px">
-                        <div>
-                            <span style="font-size:12px">總資產 Total Assets</span>
-                            <strong id="d-assets2" style="display:block;margin-top:6px;font-size:1.4rem;color:#60a5fa;text-shadow:0 0 12px rgba(96,165,250,0.5)">--</strong>
+                    <div style="display:flex;justify-content:space-between;gap:12px">
+                        <div style="flex:1">
+                            <span style="font-size:11px;color:var(--text-muted)">總資產 Total Assets</span>
+                            <strong id="d-assets2" style="display:block;margin-top:6px;font-size:1.25rem;color:#60a5fa;text-shadow:0 0 12px rgba(96,165,250,0.5)">--</strong>
                         </div>
-                        <div style="text-align:right">
-                            <span style="font-size:12px">真實總負債</span>
-                            <strong id="d-liab2" style="display:block;margin-top:6px;font-size:1.4rem;color:#f87171;text-shadow:0 0 12px rgba(248,113,113,0.5)">--</strong>
+                        <div style="flex:1;text-align:center">
+                            <span style="font-size:11px;color:var(--text-muted)">真實總負債</span>
+                            <strong id="d-liab2" style="display:block;margin-top:6px;font-size:1.25rem;color:#f87171;text-shadow:0 0 12px rgba(248,113,113,0.5)">--</strong>
+                        </div>
+                        <div style="flex:1;text-align:right">
+                            <span style="font-size:11px;color:var(--text-muted)">真實淨資產 Net Worth</span>
+                            <strong id="d-networth2" style="display:block;margin-top:6px;font-size:1.25rem">--</strong>
                         </div>
                     </div>
                 </div>

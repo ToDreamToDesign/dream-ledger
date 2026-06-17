@@ -92,6 +92,12 @@ function renderDashboard() {
     set("debt",             formatCurrency(totalLiab));
     set("d-assets2",        formatCurrency(totalAssets));
     set("d-liab2",          formatCurrency(totalLiab));
+    const nw2El = document.getElementById("d-networth2");
+    if (nw2El) {
+        nw2El.textContent = formatCurrency(netWorth);
+        nw2El.style.color = netWorth < 0 ? "var(--neon-rose)" : "var(--neon-green)";
+        nw2El.style.textShadow = netWorth < 0 ? "0 0 12px rgba(251,65,133,0.5)" : "0 0 12px rgba(74,222,128,0.5)";
+    }
     set("d-kgiInvested",    formatCurrency(dreamUser.realAssets.kgiPolicyInvested || 0));
     set("passiveIncome",    formatCurrency(passiveIncome));
 
