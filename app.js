@@ -574,6 +574,7 @@ function _renderPieChart(canvasId, wrapId, oldInstance, labels, data, opts = {})
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            devicePixelRatio: window.devicePixelRatio || 2,
             plugins: {
                 legend: { position: 'bottom', labels: { color: '#64748b', font: { size: 10 }, padding: 8, boxWidth: 10 } },
                 tooltip: { callbacks: { label: ctx => {
@@ -980,6 +981,7 @@ function renderAssetChart() {
         },
         options: {
             responsive: true, maintainAspectRatio: false,
+            devicePixelRatio: window.devicePixelRatio || 2,
             interaction: { mode: 'index', intersect: false },
             plugins: {
                 legend: { display: false },
