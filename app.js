@@ -590,19 +590,13 @@ function renderRecords() {
         const color = isExpense ? 'var(--neon-rose)' : 'var(--neon-green)';
         const sign  = isExpense ? '−' : '+';
         tbody.innerHTML = items.length === 0
-            ? `<tr><td colspan="4" style="color:var(--text-muted);padding:12px 8px;text-align:center">尚無資料</td></tr>`
+            ? `<tr><td colspan="3" style="color:var(--text-muted);padding:12px 8px;text-align:center">尚無資料</td></tr>`
             : items.map(it => {
                 const sub = it.sub ? `<div style="font-size:10px;color:var(--text-muted)">${it.sub}</div>` : '';
                 return `<tr>
                     <td>${it.label}${sub}</td>
                     <td style="color:var(--text-muted);font-size:11px">${it.freq || '每月'}</td>
                     <td style="color:${color};font-weight:600;white-space:nowrap">${sign}${formatCurrency(it.amount)}</td>
-                    <td style="white-space:nowrap;text-align:right">
-                        <span style="color:var(--text-muted);cursor:pointer;font-size:13px;margin-right:8px;opacity:0.55;transition:opacity 0.2s"
-                              onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.55'">✎</span>
-                        <span style="color:var(--text-muted);cursor:pointer;font-size:12px;opacity:0.55;transition:opacity 0.2s"
-                              onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.55'">✕</span>
-                    </td>
                 </tr>`;
             }).join('');
     }
