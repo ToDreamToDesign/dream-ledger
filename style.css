@@ -238,17 +238,17 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .card-passive-assets::before  { --sheen: rgba(252, 164, 78, 0.85); }
 
 /* 卡片渲染控色 */
-.card-income { border: 1.5px solid rgba(74, 222, 128, 0.45) !important; background: linear-gradient(180deg, var(--panel), rgba(74, 222, 128, 0.04)) !important; box-shadow: 0 0 26px rgba(74,222,128,0.09); }
+.card-income { border: 2px solid rgba(74, 222, 128, 0.45) !important; background: linear-gradient(180deg, var(--panel), rgba(74, 222, 128, 0.04)) !important; box-shadow: 0 0 26px rgba(74,222,128,0.09); }
 .card-income strong { color: var(--neon-green) !important; }
-.card-cashflow { border: 1.5px solid rgba(59, 130, 246, 0.45) !important; background: linear-gradient(180deg, var(--panel), rgba(59, 130, 246, 0.04)) !important; box-shadow: 0 0 26px rgba(59,130,246,0.09); }
+.card-cashflow { border: 2px solid rgba(59, 130, 246, 0.45) !important; background: linear-gradient(180deg, var(--panel), rgba(59, 130, 246, 0.04)) !important; box-shadow: 0 0 26px rgba(59,130,246,0.09); }
 .card-cashflow strong { color: #3b82f6 !important; }
-.card-debt { border: 1.5px solid rgba(255, 77, 109, 0.45) !important; background: linear-gradient(180deg, var(--panel), rgba(255, 77, 109, 0.04)) !important; box-shadow: 0 0 26px rgba(255,77,109,0.09); }
+.card-debt { border: 2px solid rgba(255, 77, 109, 0.45) !important; background: linear-gradient(180deg, var(--panel), rgba(255, 77, 109, 0.04)) !important; box-shadow: 0 0 26px rgba(255,77,109,0.09); }
 .card-debt strong { color: var(--neon-liability) !important; }
-.card-expense { border: 1.5px solid rgba(220, 38, 38, 0.45) !important; background: linear-gradient(180deg, var(--panel), rgba(220, 38, 38, 0.04)) !important; box-shadow: 0 0 26px rgba(220,38,38,0.09); }
+.card-expense { border: 2px solid rgba(220, 38, 38, 0.45) !important; background: linear-gradient(180deg, var(--panel), rgba(220, 38, 38, 0.04)) !important; box-shadow: 0 0 26px rgba(220,38,38,0.09); }
 .card-expense strong { color: #dc2626 !important; }
-.card-passive-income { border: 1.5px solid rgba(252, 164, 78, 0.45) !important; background: linear-gradient(180deg, var(--panel), rgba(252, 164, 78, 0.04)) !important; box-shadow: 0 0 26px rgba(252,164,78,0.09); }
+.card-passive-income { border: 2px solid rgba(252, 164, 78, 0.45) !important; background: linear-gradient(180deg, var(--panel), rgba(252, 164, 78, 0.04)) !important; box-shadow: 0 0 26px rgba(252,164,78,0.09); }
 .card-passive-income strong { color: var(--neon-passive-warm); }
-.card-passive-assets { border: 1.5px solid rgba(252, 164, 78, 0.45) !important; background: linear-gradient(180deg, var(--panel), rgba(252, 164, 78, 0.04)) !important; box-shadow: 0 0 26px rgba(252,164,78,0.09); }
+.card-passive-assets { border: 2px solid rgba(252, 164, 78, 0.45) !important; background: linear-gradient(180deg, var(--panel), rgba(252, 164, 78, 0.04)) !important; box-shadow: 0 0 26px rgba(252,164,78,0.09); }
 .card-passive-assets strong { color: var(--neon-passive-warm) !important; opacity: 0.9; }
 
 /* 冰火交融雙色邊框 — 青(0°) + 紅(180°) 兩光點同步旋轉 */

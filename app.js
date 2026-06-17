@@ -217,7 +217,7 @@ function renderLiabilities() {
             const bgRgba     = isEmpty ? '' : hex + '0d';
             const sheen = LIAB_SHEENS[item.key] || 'rgba(255,255,255,0.9)';
             return `
-            <div class="card dark-panel" style="--sheen:${sheen};border-color:${borderRgba}!important;background:linear-gradient(180deg,var(--panel),${bgRgba})!important;box-shadow:0 0 22px ${hex}18">
+            <div class="card dark-panel" style="--sheen:${sheen};border:2px solid ${borderRgba}!important;background:linear-gradient(180deg,var(--panel),${bgRgba})!important;box-shadow:0 0 22px ${hex}18">
                 <span style="font-size:12px">${item.category}</span>
                 ${item.label ? `<span style="font-size:10px;color:var(--text-muted);display:block;margin-bottom:6px">${item.label}</span>` : ''}
                 <strong style="color:${valColor};text-shadow:0 0 12px ${hex}66">${isEmpty ? '$0' : formatCurrency(item.amount)}</strong>
