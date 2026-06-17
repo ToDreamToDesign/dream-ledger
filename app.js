@@ -122,6 +122,11 @@ function renderAssets() {
 
     const nwEl = document.getElementById("a-netWorth");
     if (nwEl) nwEl.style.color = netWorth < 0 ? "var(--neon-rose)" : "var(--neon-green)";
+
+    const divEl = document.getElementById("a-dividend");
+    if (divEl) divEl.style.color = "var(--neon-passive-warm)";
+    const covEl = document.getElementById("a-coverage");
+    if (covEl) covEl.style.color = dividend / expense >= 0.1 ? "var(--neon-passive-warm)" : "var(--text-muted)";
 }
 
 // ── 5. 負債管理頁渲染 ─────────────────────────────────────────
