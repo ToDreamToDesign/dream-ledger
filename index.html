@@ -210,7 +210,10 @@
                         <h3>歷史決策考古河流</h3>
                         <span style="font-size:12px;color:var(--text-muted)">點擊卡片解鎖細節</span>
                     </div>
-                    <div class="panel-body" id="event-list" style="margin-top:15px"></div>
+                    <div class="panel-body" id="event-list" style="margin-top:15px;overflow:hidden;transition:max-height 0.4s ease"></div>
+                    <div id="event-expand-wrap" style="display:none;padding-top:10px">
+                        <button id="event-expand-btn" onclick="toggleEventList()" class="collapse-panel-btn" style="width:100%;padding:7px 0;letter-spacing:0.5px">展開全部 ▼</button>
+                    </div>
                 </div>
             </section>
 

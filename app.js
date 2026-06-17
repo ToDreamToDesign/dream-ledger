@@ -635,7 +635,9 @@ function renderEventAccordion(containerId = 'event-list', filterCat = 'all') {
     if (!el) return;
     el.innerHTML = "";
 
-    const events = filterCat === 'all' ? lifeEvents : lifeEvents.filter(e => e.category === filterCat);
+    const isDashboard = containerId === 'event-list';
+    let events = filterCat === 'all' ? lifeEvents : lifeEvents.filter(e => e.category === filterCat);
+    if (isDashboard) events = [...events].sort((a, b) => b.year - a.year);
     events.forEach(event => {
         const catColor = CAT_COLOR[event.category] || 'var(--text-muted)';
         const card = document.createElement("div");
@@ -682,6 +684,46 @@ function renderEventAccordion(containerId = 'event-list', filterCat = 'all') {
         });
         el.appendChild(card);
     });
+
+    if (isDashboard) {
+        requestAnimationFrame(() => {
+            const items = el.querySelectorAll('.collapsible-event');
+            const wrap  = document.getElementById('event-expand-wrap');
+            if (items.length > 3) {
+                let h = 0;
+                for (let i = 0; i < 3; i++) h += items[i].offsetHeight + 10;
+                el.style.maxHeight = h + 'px';
+                el.dataset.collapsedHeight = h;
+                el.dataset.expanded = 'false';
+                if (wrap) wrap.style.display = 'block';
+            } else {
+                el.style.maxHeight = 'none';
+                if (wrap) wrap.style.display = 'none';
+            }
+        });
+    }
+}
+
+function toggleEventList() {
+    const el  = document.getElementById('event-list');
+    const btn = document.getElementById('event-expand-btn');
+    if (!el || !btn) return;
+
+    if (el.dataset.expanded === 'true') {
+        el.style.maxHeight = el.dataset.collapsedHeight + 'px';
+        el.style.overflowY = 'hidden';
+        el.dataset.expanded = 'false';
+        btn.textContent = '展開全部 ▼';
+    } else {
+        const items = el.querySelectorAll('.collapsible-event');
+        const limit = Math.min(items.length, 8);
+        let h = 0;
+        for (let i = 0; i < limit; i++) h += items[i].offsetHeight + 10;
+        el.style.maxHeight = h + 'px';
+        el.style.overflowY = items.length > 8 ? 'auto' : 'hidden';
+        el.dataset.expanded = 'true';
+        btn.textContent = '收起 ▲';
+    }
 }
 
 // ── 9. Chart.js 雙曲線（資產 + 淨值）+ 審計標注 ────────────
