@@ -214,6 +214,16 @@ function renderLiabilities() {
 }
 
 // ── 6. 人生事件頁渲染（時間軸） ──────────────────────────────
+const CAT_COLOR = {
+    Career:            'var(--neon-green)',
+    Family:            'var(--neon-rose)',
+    Cognition:         '#a78bfa',
+    Life:              'var(--neon-amber)',
+    Investment:        'var(--neon-cyan)',
+    Protection:        '#60a5fa',
+    Leverage:          '#f97316',
+    'Asset Allocation': '#94a3b8',
+};
 const DOT_CLASS = {
     Investment:       '',
     Protection:       '',
@@ -627,6 +637,7 @@ function renderEventAccordion(containerId = 'event-list', filterCat = 'all') {
 
     const events = filterCat === 'all' ? lifeEvents : lifeEvents.filter(e => e.category === filterCat);
     events.forEach(event => {
+        const catColor = CAT_COLOR[event.category] || 'var(--text-muted)';
         const card = document.createElement("div");
         card.className = "collapsible-event";
         card.innerHTML = `
@@ -634,7 +645,7 @@ function renderEventAccordion(containerId = 'event-list', filterCat = 'all') {
                 <div>
                     <div class="event-meta">
                         <span class="event-year">${event.year}</span>
-                        <span class="event-tag">${event.category}</span>
+                        <span class="event-tag" style="color:${catColor};border-color:${catColor}33">${event.category}</span>
                     </div>
                     <h4 class="event-title">${event.title}</h4>
                 </div>
