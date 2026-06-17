@@ -1297,8 +1297,11 @@ function setRecordMode(mode) {
         quickBtn?.classList.add('active');
         eventBtn?.classList.remove('active');
         archPanel?.classList.remove('open');
-        if (amountEl) amountEl.placeholder = '金額';
+        if (amountEl) { amountEl.placeholder = '金額'; amountEl.style.display = ''; }
         if (submitBtn) submitBtn.textContent = '+ 新增記錄';
+        // 切回快速記帳：取消勾選 isEvent，收起備註欄
+        const cb = document.getElementById('rec-is-event');
+        if (cb && cb.checked) { cb.checked = false; cb.dispatchEvent(new Event('change')); }
     }
 }
 
