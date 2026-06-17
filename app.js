@@ -659,8 +659,8 @@ function renderRecords() {
     // ─ 本月資金流向圓餅：生活支出 + 負債支出 + 現金流 = 固定收入 ─
     const incTotal = i.total;
     const flowSegments = [
-        { label: '生活支出', amount: liveAmt,                      color: VL._living[1] },
-        { label: '負債支出', amount: debtAmt,                      color: VL.debt        },
+        { label: '生活支出', amount: liveAmt,                      color: '#f87171'     },
+        { label: '負債支出', amount: debtAmt,                      color: '#f9a8d4'     },
         { label: '現金流',   amount: Math.max(0, actualCashflow),  color: '#3b82f6'      },
     ].filter(s => s.amount > 0);
     _chartRecMonthly = _renderPieChart(
