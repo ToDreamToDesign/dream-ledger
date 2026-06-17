@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DREAM Ledger</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="stylesheet" href="style.css?v=v15">
+<link rel="stylesheet" href="style.css?v=v16">
 <style>
     /* ── 頁面切換（單頁應用） ── */
     .page { display: none; flex-direction: column; gap: 28px; }
@@ -639,7 +639,7 @@
         <!-- ════════════════ PHILOSOPHY ════════════════ -->
         <div class="page" id="page-philosophy">
 
-            <section class="hero dark-panel phil-collapsible" style="padding:40px 32px 40px" onclick="togglePhilSection(this)">
+            <section class="hero dark-panel phil-collapsible phil-hero" style="padding:40px 32px 40px" onclick="togglePhilSection(this)">
                 <div>
                     <span style="color:var(--text-muted);font-size:11px;letter-spacing:2px;text-transform:uppercase">Philosophy</span>
                     <div style="margin-top:16px;font-size:1.3rem;font-weight:600;color:var(--neon-cyan);letter-spacing:0.02em;line-height:1.4">
@@ -671,7 +671,7 @@
             <div class="phil-body">
 
                 <!-- Why This Exists（可折疊） -->
-                <div class="phil-section phil-collapsible" onclick="togglePhilSection(this)">
+                <div class="phil-section phil-collapsible phil-why" onclick="togglePhilSection(this)">
                     <div class="phil-label">Why This Exists</div>
                     <div class="phil-quote">
                         有些事情只有親身經歷過，<br>才會明白它的重要。
@@ -690,7 +690,7 @@
                 </div>
 
                 <!-- Core Belief（可折疊） -->
-                <div class="phil-section phil-collapsible" onclick="togglePhilSection(this)">
+                <div class="phil-section phil-collapsible phil-core" onclick="togglePhilSection(this)">
                     <div class="phil-label">Core Belief</div>
                     <div class="phil-quote">
                         財務規劃的目的不是累積。
@@ -703,7 +703,7 @@
                 </div>
 
                 <!-- Foundational Belief（可折疊） -->
-                <div class="phil-section phil-collapsible" onclick="togglePhilSection(this)">
+                <div class="phil-section phil-collapsible phil-found" onclick="togglePhilSection(this)">
                     <div class="phil-label">Foundational Belief</div>
                     <div class="phil-quote">
                         人生的成長取決於所經歷的。

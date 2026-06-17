@@ -1008,7 +1008,61 @@ nav { display: flex; flex-direction: column; gap: 6px; }
     color: var(--text-main) !important;
 }
 
-/* Philosophy section 間距 */
+/* Philosophy section 基本間距 */
 .phil-section {
     padding: 40px 32px !important;
+}
+
+/* phil-body 各區塊之間的垂直呼吸感 */
+.phil-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* ── Philosophy 容器分級（發光強度梯度）── */
+
+/* Hero — 100%：舞台主燈 */
+.phil-hero {
+    border: 1px solid rgba(0, 242, 254, 0.28) !important;
+    background: rgba(10, 16, 29, 0.72) !important;
+    box-shadow:
+        0 0 52px rgba(0, 242, 254, 0.11),
+        inset 0 1px 0 rgba(255, 255, 255, 0.07),
+        0 20px 56px rgba(0, 0, 0, 0.55) !important;
+}
+
+/* Core Belief — 60%：第二焦點 */
+.phil-core {
+    background: rgba(10, 16, 29, 0.55);
+    backdrop-filter: blur(20px) saturate(130%);
+    -webkit-backdrop-filter: blur(20px) saturate(130%);
+    border: 1px solid rgba(0, 242, 254, 0.16);
+    border-radius: 14px;
+    box-shadow:
+        0 0 28px rgba(0, 242, 254, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.04),
+        0 12px 40px rgba(0, 0, 0, 0.48);
+}
+
+/* Foundational Belief — 30%：背景支撐 */
+.phil-found {
+    background: rgba(10, 16, 29, 0.40);
+    backdrop-filter: blur(14px) saturate(115%);
+    -webkit-backdrop-filter: blur(14px) saturate(115%);
+    border: 1px solid rgba(0, 242, 254, 0.08);
+    border-radius: 14px;
+    box-shadow:
+        0 0 14px rgba(0, 242, 254, 0.03),
+        0 8px 28px rgba(0, 0, 0, 0.42);
+}
+
+/* Why This Exists — 幾乎無光：環境底色 */
+.phil-why {
+    background: rgba(10, 16, 29, 0.28);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.32);
 }
