@@ -222,35 +222,57 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 @keyframes card-border-spin {
     to { --card-angle: 360deg; }
 }
+
+/* 雙層逆向微光 — 順時針主流 (9s) + 逆時針副流 (14s) */
 .card {
-    --sheen: rgba(255, 255, 255, 0.9);
+    --sheen: rgba(255, 255, 255, 0.65);
 }
+/* 各卡片顏色設在元素本身，::before 和 ::after 同時繼承 */
+.card-income        { --sheen: rgba(74,  222, 128, 0.82); }
+.card-cashflow      { --sheen: rgba(59,  130, 246, 0.82); }
+.card-debt          { --sheen: rgba(255,  77, 109, 0.82); }
+.card-expense       { --sheen: rgba(220,  38,  38, 0.82); }
+.card-passive-income{ --sheen: rgba(252, 164,  78, 0.82); }
+.card-passive-assets{ --sheen: rgba(252, 164,  78, 0.70); }
+
+/* 順時針主流光：較亮，9s */
 .card::before {
     content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: 14px;
-    padding: 2px;
+    position: absolute; inset: -1px; border-radius: 14px; padding: 2px;
     background: conic-gradient(
         from var(--card-angle) at 50% 50%,
-        var(--sheen) 0%,
-        transparent 8%,
+        transparent 0%,
+        var(--sheen) 3%,
+        transparent 9%,
         transparent 100%
     );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
-    animation: card-border-spin 10s linear infinite;
-    pointer-events: none;
-    z-index: 1;
+    animation: card-border-spin 9s linear infinite;
+    pointer-events: none; z-index: 1;
 }
-.card-income::before          { --sheen: rgba(74, 222, 128, 1); }
-.card-cashflow::before        { --sheen: rgba(59, 130, 246, 1); }
-.card-debt::before            { --sheen: rgba(255, 77, 109, 1); }
-.card-expense::before         { --sheen: rgba(220, 38, 38, 1); }
-.card-passive-income::before  { --sheen: rgba(252, 164, 78, 1); }
-.card-passive-assets::before  { --sheen: rgba(252, 164, 78, 0.85); }
+
+/* 逆時針副流光：較暗，14s，交會時產生疊亮 */
+.card::after {
+    content: '';
+    position: absolute; inset: -1px; border-radius: 14px; padding: 2px;
+    background: conic-gradient(
+        from var(--card-angle) at 50% 50%,
+        transparent 0%,
+        var(--sheen) 3%,
+        transparent 9%,
+        transparent 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    animation: card-border-spin 14s linear infinite reverse;
+    pointer-events: none; z-index: 1;
+    opacity: 0.42;
+}
 
 /* 卡片渲染控色 */
 .card-income { border: 2px solid rgba(74, 222, 128, 0.45) !important; background: linear-gradient(160deg, rgba(16,24,40,0.85), rgba(74, 222, 128, 0.06)) !important; box-shadow: 0 4px 24px rgba(74,222,128,0.12), 0 8px 32px rgba(0,0,0,0.4); }
