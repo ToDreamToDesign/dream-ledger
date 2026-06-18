@@ -213,21 +213,8 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .card strong { display: block; margin-top: 14px; font-size: 1.8rem; font-weight: 600; }
 .card > * { position: relative; z-index: 2; }
 
-/* 流光邊框動畫 — @property 讓 conic-gradient 起始角平滑插值 */
-@property --card-angle {
-    syntax: '<angle>';
-    initial-value: 0deg;
-    inherits: false;
-}
-@keyframes card-border-spin {
-    to { --card-angle: 360deg; }
-}
-
-/* 雙層逆向微光 — 順時針主流 (9s) + 逆時針副流 (14s) */
-.card {
-    --sheen: rgba(255, 255, 255, 0.65);
-}
-/* 各卡片顏色設在元素本身，::before 和 ::after 同時繼承 */
+/* 流光邊框動畫 — offset-path 真實等線速繞行（JS 動態計算圓角矩形路徑）*/
+.card { --sheen: rgba(255, 255, 255, 0.65); }
 .card-income        { --sheen: rgba(74,  222, 128, 0.82); }
 .card-cashflow      { --sheen: rgba(59,  130, 246, 0.82); }
 .card-debt          { --sheen: rgba(255,  77, 109, 0.82); }
@@ -235,44 +222,24 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .card-passive-income{ --sheen: rgba(252, 164,  78, 0.82); }
 .card-passive-assets{ --sheen: rgba(252, 164,  78, 0.70); }
 
-/* 順時針主流光：較亮，9s */
-.card::before {
-    content: '';
-    position: absolute; inset: -1px; border-radius: 14px; padding: 2px;
-    background: conic-gradient(
-        from var(--card-angle) at 50% 50%,
-        transparent 0%,
-        var(--sheen) 3%,
-        transparent 9%,
-        transparent 100%
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    animation: card-border-spin 9s linear infinite;
-    pointer-events: none; z-index: 1;
+/* 流光小段：隨路徑方向旋轉，blur 讓它柔和 */
+.card > .card-flow-light {
+    position: absolute;
+    top: 0; left: 0;
+    width: 70px; height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, transparent 0%, var(--sheen) 50%, transparent 100%);
+    filter: blur(3px);
+    offset-distance: 0%;
+    offset-rotate: auto;
+    pointer-events: none;
+    z-index: 1;
+    will-change: offset-distance;
 }
+.card-flow-fwd { animation: card-flow-travel  9s linear infinite; }
+.card-flow-rev { animation: card-flow-travel 14s linear infinite reverse; opacity: 0.42; }
 
-/* 逆時針副流光：較暗，14s，交會時產生疊亮 */
-.card::after {
-    content: '';
-    position: absolute; inset: -1px; border-radius: 14px; padding: 2px;
-    background: conic-gradient(
-        from var(--card-angle) at 50% 50%,
-        transparent 0%,
-        var(--sheen) 3%,
-        transparent 9%,
-        transparent 100%
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    animation: card-border-spin 14s linear infinite reverse;
-    pointer-events: none; z-index: 1;
-    opacity: 0.42;
-}
+@keyframes card-flow-travel { to { offset-distance: 100%; } }
 
 /* 卡片渲染控色 */
 .card-income { border: 2px solid rgba(74, 222, 128, 0.45) !important; background: linear-gradient(160deg, rgba(16,24,40,0.85), rgba(74, 222, 128, 0.06)) !important; box-shadow: 0 4px 24px rgba(74,222,128,0.12), 0 8px 32px rgba(0,0,0,0.4); }
