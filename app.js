@@ -1038,17 +1038,19 @@ function initSidebarToggle() {
     }
 }
 
-// ── 11. Sandbox 管理 ──────────────────────────────────────────
-const LS_ACTIVE_USER  = "dream-ledger:activeUser";
-const LS_SANDBOX      = "dream-ledger:sandbox";
-const LS_RECORDS      = "dream-ledger:records";
-const SANDBOX_VERSION = "2.0";
+// ── 11. 四模式管理 ────────────────────────────────────────────
+const LS_ACTIVE_USER = "dream-ledger:activeUser";
+const LS_RECORDS     = "dream-ledger:records";
+const LS_TEST        = "dream-ledger:test";
+const LS_DEMO        = "dream-ledger:demo";
+const TEST_VERSION   = "1.0";
+const DEMO_VERSION   = "1.0";
 
 function getActiveUser() {
     const stored = localStorage.getItem(LS_ACTIVE_USER);
     // 遷移舊鍵名：primary → user，sandbox → demo
-    if (stored === 'primary') { localStorage.setItem(LS_ACTIVE_USER, 'user');  return 'user'; }
-    if (stored === 'sandbox') { localStorage.setItem(LS_ACTIVE_USER, 'demo');  return 'demo'; }
+    if (stored === 'primary') { localStorage.setItem(LS_ACTIVE_USER, 'user'); return 'user'; }
+    if (stored === 'sandbox') { localStorage.setItem(LS_ACTIVE_USER, 'demo'); return 'demo'; }
     return stored || 'user';
 }
 
@@ -1056,73 +1058,49 @@ function isReadOnly() {
     return getActiveUser() === 'readonly';
 }
 
-function getSandboxData() {
-    const raw = localStorage.getItem(LS_SANDBOX);
-    if (!raw) return null;
-    try { return JSON.parse(raw); } catch { return null; }
-}
-
 // 將 user-added records（id 以 'rec_' 開頭）的金額套用到 dreamUser.realAssets.cash
 function applyRecordsDelta(records) {
     records
         .filter(r => r.id.startsWith('rec_') && !r.isEvent && r.amount > 0)
         .forEach(r => {
-            if (r.type === 'income')  dreamUser.realAssets.cash += r.amount;
-            else                       dreamUser.realAssets.cash -= r.amount;
+            if (r.type === 'income') dreamUser.realAssets.cash += r.amount;
+            else                     dreamUser.realAssets.cash -= r.amount;
         });
 }
 
-function activateSandbox() {
-    let data = getSandboxData();
-    if (!data || data.version !== SANDBOX_VERSION) {
-        data = sandboxSeed;
-        localStorage.setItem(LS_SANDBOX, JSON.stringify(sandboxSeed));
-        // 版本變更時一律重置 records（保留舊版記錄會造成角色資料錯亂）
-        localStorage.setItem(LS_RECORDS + ':sandbox', JSON.stringify(sandboxSeed.records));
+// 通用外部模式載入器（test / demo 共用）
+function activateExternalMode(seed, lsDataKey, lsRecordsKey, version) {
+    let data = null;
+    const raw = localStorage.getItem(lsDataKey);
+    if (raw) { try { data = JSON.parse(raw); } catch { data = null; } }
+
+    if (!data || data.version !== version) {
+        data = seed;
+        localStorage.setItem(lsDataKey, JSON.stringify(seed));
+        localStorage.setItem(lsRecordsKey, JSON.stringify(seed.records));
     }
 
     const u = data.user;
-
-    // 替換資產（保留 getter 結構，只換數值）
     Object.keys(dreamUser.realAssets).forEach(k => delete dreamUser.realAssets[k]);
     Object.assign(dreamUser.realAssets, u.realAssets);
-
-    // 替換負債
     Object.keys(dreamUser.realLiabilities).forEach(k => delete dreamUser.realLiabilities[k]);
     Object.assign(dreamUser.realLiabilities, u.realLiabilities);
-
-    // 替換顯示元數據（category/label 層）
     if (data.liabilityMeta) dreamUser.liabilityMeta = data.liabilityMeta;
     if (data.incomeMeta)    dreamUser.incomeMeta    = data.incomeMeta;
-
-    // 替換收入（逐欄賦值，保留 getter）
     dreamUser.cashflowModel.income.baseSalary    = u.income.baseSalary;
     dreamUser.cashflowModel.income.reimbursement = u.income.reimbursement;
     dreamUser.cashflowModel.income.kgiDividend   = u.income.kgiDividend;
-
-    // 替換支出（逐欄賦值，保留 getter）
-    dreamUser.cashflowModel.expense.rent                        = u.expense.rent;
-    dreamUser.cashflowModel.expense.insurance                   = u.expense.insurance;
-    dreamUser.cashflowModel.expense.telecomSubscription         = u.expense.telecomSubscription;
+    dreamUser.cashflowModel.expense.rent                          = u.expense.rent;
+    dreamUser.cashflowModel.expense.insurance                     = u.expense.insurance;
+    dreamUser.cashflowModel.expense.telecomSubscription           = u.expense.telecomSubscription;
     dreamUser.cashflowModel.expense.loanRepayment.creditLoan      = u.expense.loanRepayment.creditLoan;
-    dreamUser.cashflowModel.expense.loanRepayment.student        = u.expense.loanRepayment.student;
+    dreamUser.cashflowModel.expense.loanRepayment.student         = u.expense.loanRepayment.student;
     dreamUser.cashflowModel.expense.loanRepayment.cardInstallment = u.expense.loanRepayment.cardInstallment;
-
-    // 替換人生事件
     lifeEvents.length = 0;
     data.events.forEach(e => lifeEvents.push(e));
-
-    // 替換快照
     snapshots.length = 0;
     data.snapshots.forEach(s => snapshots.push(s));
-
-    // Reload 時重新套用 user-added records 對現金的影響
-    const storedRecords = JSON.parse(localStorage.getItem(LS_RECORDS + ':sandbox') || '[]');
-    applyRecordsDelta(storedRecords);
-
-    // 顯示 Demo banner
-    const banner = document.getElementById('demo-banner');
-    if (banner) banner.style.display = 'flex';
+    applyRecordsDelta(JSON.parse(localStorage.getItem(lsRecordsKey) || '[]'));
 }
 
 function switchUser(userType) {
@@ -1130,10 +1108,17 @@ function switchUser(userType) {
     location.reload();
 }
 
+function resetTest() {
+    if (!confirm('重建 Test User？所有測試記錄將被清除並恢復預設資料。')) return;
+    localStorage.removeItem(LS_TEST);
+    localStorage.removeItem(LS_RECORDS + ':test');
+    location.reload();
+}
+
 function resetDemo() {
     if (!confirm('重建 Demo？所有 Demo 記錄將被清除並恢復預設資料。')) return;
-    localStorage.removeItem(LS_SANDBOX);
-    localStorage.removeItem(LS_RECORDS + ':sandbox');
+    localStorage.removeItem(LS_DEMO);
+    localStorage.removeItem(LS_RECORDS + ':demo');
     location.reload();
 }
 
@@ -1146,9 +1131,9 @@ function updateUserSwitcherUI(activeUser) {
 // ── 12. Records CRUD ──────────────────────────────────────────
 function getRecordsKey() {
     const m = getActiveUser();
-    // demo 沿用舊 sandbox 儲存鍵，user + readonly 共享同一份資料
-    if (m === 'demo') return LS_RECORDS + ':sandbox';
-    return LS_RECORDS + ':user';
+    if (m === 'test')     return LS_RECORDS + ':test';
+    if (m === 'demo')     return LS_RECORDS + ':demo';
+    return LS_RECORDS + ':user'; // user + readonly 共享
 }
 
 function loadRecords() {
@@ -1367,6 +1352,7 @@ function renderModeBadge(mode) {
     const map = {
         user:     { cls: 'mode-badge-user',     text: 'User Mode' },
         readonly: { cls: 'mode-badge-readonly',  text: 'Read Only' },
+        test:     { cls: 'mode-badge-test',      text: 'Test User' },
         demo:     { cls: 'mode-badge-demo',      text: 'Demo Mode' },
     };
     const cfg = map[mode] || map.user;
@@ -1376,17 +1362,32 @@ function renderModeBadge(mode) {
 
 // ── 13. 系統啟動 ──────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
-    // 遷移舊 ':primary' records → ':user'
+    // ── 一次性 localStorage 遷移 ─────────────────────────────
+    // ':primary' → ':user'
     if (!localStorage.getItem(LS_RECORDS + ':user')) {
         const old = localStorage.getItem(LS_RECORDS + ':primary');
         if (old) localStorage.setItem(LS_RECORDS + ':user', old);
     }
+    // 舊 sandbox data/records → demo
+    if (!localStorage.getItem(LS_DEMO)) {
+        const old = localStorage.getItem('dream-ledger:sandbox');
+        if (old) localStorage.setItem(LS_DEMO, old);
+    }
+    if (!localStorage.getItem(LS_RECORDS + ':demo')) {
+        const old = localStorage.getItem(LS_RECORDS + ':sandbox');
+        if (old) localStorage.setItem(LS_RECORDS + ':demo', old);
+    }
 
     const activeUser = getActiveUser();
-    if (activeUser === 'demo') {
-        activateSandbox();
+    if (activeUser === 'test') {
+        activateExternalMode(testUserSeed, LS_TEST, LS_RECORDS + ':test', TEST_VERSION);
+        const b = document.getElementById('test-banner');
+        if (b) b.style.display = 'flex';
+    } else if (activeUser === 'demo') {
+        activateExternalMode(demoUserSeed, LS_DEMO, LS_RECORDS + ':demo', DEMO_VERSION);
+        const b = document.getElementById('demo-banner');
+        if (b) b.style.display = 'flex';
     } else {
-        // user / readonly：確保 records 鍵存在
         if (!localStorage.getItem(LS_RECORDS + ':user')) {
             localStorage.setItem(LS_RECORDS + ':user', JSON.stringify([]));
         }
