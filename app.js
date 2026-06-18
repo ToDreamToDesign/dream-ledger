@@ -92,6 +92,7 @@ function renderDashboard() {
     set("debt",             formatCurrency(totalLiab));
     set("d-assets2",        formatCurrency(totalAssets));
     set("d-liab2",          formatCurrency(totalLiab));
+    set("d-cash",           formatCurrency(dreamUser.realAssets.cash));
     const nw2El = document.getElementById("d-networth2");
     if (nw2El) {
         nw2El.textContent = formatCurrency(netWorth);
