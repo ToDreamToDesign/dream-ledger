@@ -225,7 +225,7 @@ nav { display: flex; flex-direction: column; gap: 6px; }
 .card::before {
     content: '';
     position: absolute; inset: -1px; border-radius: 15px;
-    border: 10px solid var(--sheen);
+    border: 3px solid var(--sheen);
     box-shadow: 0 0 8px 1px var(--sheen);
     animation: card-breathe 3.5s ease-in-out infinite;
     pointer-events: none; z-index: 0;
