@@ -1361,6 +1361,19 @@ function applyReadOnlyUI() {
     if (banner) banner.style.display = 'flex';
 }
 
+function renderModeBadge(mode) {
+    const badge = document.getElementById('mode-badge');
+    if (!badge) return;
+    const map = {
+        user:     { cls: 'mode-badge-user',     text: 'User Mode' },
+        readonly: { cls: 'mode-badge-readonly',  text: 'Read Only' },
+        demo:     { cls: 'mode-badge-demo',      text: 'Demo Mode' },
+    };
+    const cfg = map[mode] || map.user;
+    badge.className = 'mode-badge ' + cfg.cls;
+    badge.textContent = cfg.text;
+}
+
 // ── 13. 系統啟動 ──────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
     // 遷移舊 ':primary' records → ':user'
@@ -1380,6 +1393,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (activeUser === 'readonly') applyReadOnlyUI();
     }
     updateUserSwitcherUI(activeUser);
+    renderModeBadge(activeUser);
 
     // Landing overlay
     const landingOverlay = document.getElementById('landing-overlay');
