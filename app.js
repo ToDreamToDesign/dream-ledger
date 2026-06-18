@@ -375,6 +375,7 @@ function submitRecordForm() {
 }
 
 function editRecord(id) {
+    if (isReadOnly()) return;
     const records = loadRecords();
     const r = records.find(rec => rec.id === id);
     if (!r) return;
@@ -1044,7 +1045,15 @@ const LS_RECORDS      = "dream-ledger:records";
 const SANDBOX_VERSION = "2.0";
 
 function getActiveUser() {
-    return localStorage.getItem(LS_ACTIVE_USER) || 'primary';
+    const stored = localStorage.getItem(LS_ACTIVE_USER);
+    // 遷移舊鍵名：primary → user，sandbox → demo
+    if (stored === 'primary') { localStorage.setItem(LS_ACTIVE_USER, 'user');  return 'user'; }
+    if (stored === 'sandbox') { localStorage.setItem(LS_ACTIVE_USER, 'demo');  return 'demo'; }
+    return stored || 'user';
+}
+
+function isReadOnly() {
+    return getActiveUser() === 'readonly';
 }
 
 function getSandboxData() {
@@ -1111,8 +1120,8 @@ function activateSandbox() {
     const storedRecords = JSON.parse(localStorage.getItem(LS_RECORDS + ':sandbox') || '[]');
     applyRecordsDelta(storedRecords);
 
-    // 顯示 Sandbox banner
-    const banner = document.getElementById('sandbox-banner');
+    // 顯示 Demo banner
+    const banner = document.getElementById('demo-banner');
     if (banner) banner.style.display = 'flex';
 }
 
@@ -1121,8 +1130,8 @@ function switchUser(userType) {
     location.reload();
 }
 
-function resetSandbox() {
-    if (!confirm('重建 Sandbox？所有 Sandbox 記錄將被清除並恢復預設資料。')) return;
+function resetDemo() {
+    if (!confirm('重建 Demo？所有 Demo 記錄將被清除並恢復預設資料。')) return;
     localStorage.removeItem(LS_SANDBOX);
     localStorage.removeItem(LS_RECORDS + ':sandbox');
     location.reload();
@@ -1136,7 +1145,10 @@ function updateUserSwitcherUI(activeUser) {
 
 // ── 12. Records CRUD ──────────────────────────────────────────
 function getRecordsKey() {
-    return LS_RECORDS + ':' + getActiveUser();
+    const m = getActiveUser();
+    // demo 沿用舊 sandbox 儲存鍵，user + readonly 共享同一份資料
+    if (m === 'demo') return LS_RECORDS + ':sandbox';
+    return LS_RECORDS + ':user';
 }
 
 function loadRecords() {
@@ -1150,6 +1162,7 @@ function saveRecordsToStorage(records) {
 }
 
 function addRecord() {
+    if (isReadOnly()) return;
     const desc     = document.getElementById('rec-desc')?.value.trim();
     const amount   = parseFloat(document.getElementById('rec-amount')?.value || '0');
     const type     = document.getElementById('rec-type')?.value || 'expense';
@@ -1210,6 +1223,7 @@ function addRecord() {
 }
 
 function deleteRecord(id) {
+    if (isReadOnly()) return;
     const records = loadRecords();
     const rec = records.find(r => r.id === id);
 
@@ -1341,17 +1355,29 @@ function initRecordForm() {
     }
 }
 
+function applyReadOnlyUI() {
+    document.body.classList.add('mode-readonly');
+    const banner = document.getElementById('readonly-banner');
+    if (banner) banner.style.display = 'flex';
+}
+
 // ── 13. 系統啟動 ──────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
-    // 先判斷使用者模式，Sandbox 模式需在渲染前覆寫資料
+    // 遷移舊 ':primary' records → ':user'
+    if (!localStorage.getItem(LS_RECORDS + ':user')) {
+        const old = localStorage.getItem(LS_RECORDS + ':primary');
+        if (old) localStorage.setItem(LS_RECORDS + ':user', old);
+    }
+
     const activeUser = getActiveUser();
-    if (activeUser === 'sandbox') {
+    if (activeUser === 'demo') {
         activateSandbox();
     } else {
-        // Primary：初始化 primary records（若不存在）
-        if (!localStorage.getItem(LS_RECORDS + ':primary')) {
-            localStorage.setItem(LS_RECORDS + ':primary', JSON.stringify([]));
+        // user / readonly：確保 records 鍵存在
+        if (!localStorage.getItem(LS_RECORDS + ':user')) {
+            localStorage.setItem(LS_RECORDS + ':user', JSON.stringify([]));
         }
+        if (activeUser === 'readonly') applyReadOnlyUI();
     }
     updateUserSwitcherUI(activeUser);
 
