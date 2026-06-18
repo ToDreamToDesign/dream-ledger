@@ -1341,37 +1341,7 @@ function initRecordForm() {
     }
 }
 
-// ── 13. 卡片流光邊框（等線速 offset-path） ────────────────────
-function initCardBorderFlow() {
-    const RADIUS = 14; // 需與 CSS border-radius: 14px 一致
-
-    document.querySelectorAll('.card').forEach(card => {
-        ['card-flow-fwd', 'card-flow-rev'].forEach(cls => {
-            const el = document.createElement('div');
-            el.className = 'card-flow-light ' + cls;
-            card.appendChild(el);
-        });
-
-        function updatePath() {
-            const w = card.offsetWidth;
-            const h = card.offsetHeight;
-            if (!w || !h) return;
-            const r = RADIUS;
-            // 圓角矩形路徑，順時針，元素中心沿邊框移動
-            const p = `path('M ${r},0 H ${w-r} Q ${w},0 ${w},${r} V ${h-r} Q ${w},${h} ${w-r},${h} H ${r} Q 0,${h} 0,${h-r} V ${r} Q 0,0 ${r},0 Z')`;
-            card.querySelectorAll('.card-flow-light').forEach(el => {
-                el.style.offsetPath = p;
-            });
-        }
-
-        updatePath();
-        if (typeof ResizeObserver !== 'undefined') {
-            new ResizeObserver(updatePath).observe(card);
-        }
-    });
-}
-
-// ── 14. 系統啟動 ──────────────────────────────────────────────
+// ── 13. 系統啟動 ──────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
     // 先判斷使用者模式，Sandbox 模式需在渲染前覆寫資料
     const activeUser = getActiveUser();
@@ -1401,7 +1371,6 @@ document.addEventListener("DOMContentLoaded", () => {
     initRecordForm();
 
     renderDashboard();
-    initCardBorderFlow();
     renderAssets();
     renderLiabilities();
     renderEventAccordion('timeline-list');
